@@ -20,7 +20,7 @@ BASE_SCALE = 1000000
               help='Number of threads used to process data.')
 def main(samples, fasta, sizes, threads):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG)
+    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
     next(samples)
     samples_lines = samples.read().splitlines()
