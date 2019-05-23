@@ -3,6 +3,7 @@ import os
 import subprocess
 
 import click
+from test.test_bufio import lengths
 
 BASE_SCALE = 1000000
 
@@ -52,24 +53,26 @@ def analyse(sample, srr, fasta, sizes, threads):
         download(sample, srr)
     bam_raw = sample + '-raw.bam'
     print ('Running BWA on sample {}'.format(sample))
-    bwa(fastq, fastq2, fasta, bam_raw, threads)
+    #bwa(fastq, fastq2, fasta, bam_raw, threads)
     print ('Filtering BAM and removing duplicates on sample {}'.format(sample))
     bam_filtered = sample + '-filtered.bam'
-    filter_mapped(bam_raw, bam_filtered, threads)
+    #filter_mapped(bam_raw, bam_filtered, threads)
     bam_dedup = sample + '-dedup.bam'
-    remove_duplicates(bam_filtered, bam_dedup, threads)
+    #remove_duplicates(bam_filtered, bam_dedup, threads)
     bam = sample + '.bam'
-    sort(bam_dedup, bam, threads)
+    #sort(bam_dedup, bam, threads)
     print ('Compute genome coverage for sample {}'.format(sample))
     bam_first_mate = sample + '-mate1.bam'
-    first_mate(bam, bam_first_mate, threads)
+    #first_mate(bam, bam_first_mate, threads)
     bed_first_mate = sample + '-mate1.bed'
-    bam_to_bed(bam_first_mate, bed_first_mate)
+    #bam_to_bed(bam_first_mate, bed_first_mate)
+    bed_first_mate_center = sample + '-mate1-center.bed'
+    center_annotations(bed_first_mate, bed_first_mate_center)
     count = count_bed(bed_first_mate)
     scale = BASE_SCALE / count
     bed = sample + ".bed"
     bigwig = sample + ".bw"
-    genome_coverage(bed_first_mate, bed, sizes, sample, scale)
+    genome_coverage(bed_first_mate_center, bed, sizes, sample, scale)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
@@ -199,6 +202,32 @@ def bam_to_bed(bam, bed):
         raise AssertionError('Error when converting BAM ' + bam + ' to BED')
 
 
+def center_annotations(bed, output):
+    '''Resize annotations to 1 positioned at the center.'''
+    with open(bed, "r") as infile:
+        with open(output, "w") as outfile:
+            for line in infile:
+                if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
+                    outfile.write(line)
+                    continue
+                columns = line.rstrip('\r\n').split('\t')
+                if len(columns) >= 3:
+                    start = int(columns[1])
+                    end = int(columns[2])
+                    size = end - start
+                    start = start + int(size / 2)
+                    end = start + 1
+                    outfile.write(columns[0])
+                    outfile.write("\t")
+                    outfile.write(str(start))
+                    outfile.write("\t")
+                    outfile.write(str(end))
+                    for i in range(3,len(columns)):
+                        outfile.write("\t")
+                        outfile.write(columns[i])
+                    outfile.write("\n")
+
+
 def count_bed(bed, strand=None):
     '''Counts number of entry in BED, can be limited to a specific strand.'''
     count = 0
@@ -219,7 +248,7 @@ def count_bed(bed, strand=None):
 def genome_coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     '''Compute genome coverage.'''
     coverage_output = bed_input + '.cov'
-    cmd = ['bedtools', 'genomecov', '-bg', '-5', '-i', bed_input, '-g', sizes]
+    cmd = ['bedtools', 'genomecov', '-bg', '-i', bed_input, '-g', sizes]
     if not scale is None:
         cmd.extend(['-scale', str(scale)]) 
     if not strand is None:
