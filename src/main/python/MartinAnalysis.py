@@ -65,19 +65,7 @@ def analyse(sample, srr, fasta, sizes, threads):
     first_mate(bam, bam_first_mate)
     bed_first_mate = sample + '-mate1.bed'
     bam_to_bed(bam_first_mate, bed_first_mate)
-    plus_count = count_bed(bed_first_mate, '+')
-    minus_count = count_bed(bed_first_mate, '-')
-    count = plus_count + minus_count
-    plus_scale = BASE_SCALE / plus_count
-    bed_plus = sample + "-plus.bed"
-    bigwig_plus = sample + "-plus.bw"
-    genome_coverage(bed_first_mate, bed_plus, sizes, sample, plus_scale, '+')
-    bedgraph_to_bigwig(bed_plus, bigwig_plus, sizes)
-    minus_scale = BASE_SCALE / minus_count
-    bed_minus = sample + "-minus.bed"
-    bigwig_minus = sample + "-minus.bw"
-    genome_coverage(bed_first_mate, bed_minus, sizes, sample, minus_scale, '-')
-    bedgraph_to_bigwig(bed_minus, bigwig_minus, sizes)
+    count = count_bed(bed_first_mate)
     scale = BASE_SCALE / count
     bed = sample + ".bed"
     bigwig = sample + ".bw"
