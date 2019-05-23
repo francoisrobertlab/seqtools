@@ -12,16 +12,13 @@ BASE_SCALE = 1000000
               help='Sample names listed one sample name by line.'
               ' The first line is ignored.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise it must be provided.')
-@click.option('--merge', '-m', type=click.File('r'), default='merge.txt',
-              help='Merge samples listed on the same line (tab-separated).'
-              ' The first line is ignored.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
 @click.option('--sizes', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
 @click.option('--threads', '-t', default=1,
               help='Number of threads used to process data.')
-def main(samples, merge, fasta, sizes, threads):
+def main(samples, fasta, sizes, threads):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG)
     bwa_index(fasta)
