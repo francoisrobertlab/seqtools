@@ -25,6 +25,7 @@ def main(samples, threads):
 
 
 def bam_to_bed(sample, threads):
+    '''Convert BAM file to BED for a single sample.'''
     print ('Convert BAM to BED for sample {}'.format(sample))
     bam = sample + '.bam'
     bedpe = sample + '.bedpe'
