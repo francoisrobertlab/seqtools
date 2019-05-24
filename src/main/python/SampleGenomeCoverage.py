@@ -3,7 +3,6 @@ import os
 import subprocess
 
 import click
-from test.test_bufio import lengths
 
 BASE_SCALE = 1000000
 
@@ -53,17 +52,17 @@ def analyse(sample, srr, fasta, sizes, threads):
         download(sample, srr)
     bam_raw = sample + '-raw.bam'
     print ('Running BWA on sample {}'.format(sample))
-    #bwa(fastq, fastq2, fasta, bam_raw, threads)
+    # bwa(fastq, fastq2, fasta, bam_raw, threads)
     print ('Filtering BAM and removing duplicates on sample {}'.format(sample))
     bam_filtered = sample + '-filtered.bam'
-    #filter_mapped(bam_raw, bam_filtered, threads)
+    # filter_mapped(bam_raw, bam_filtered, threads)
     bam_dedup = sample + '-dedup.bam'
-    #remove_duplicates(bam_filtered, bam_dedup, threads)
+    # remove_duplicates(bam_filtered, bam_dedup, threads)
     bam = sample + '.bam'
-    #sort(bam_dedup, bam, threads)
+    # sort(bam_dedup, bam, threads)
     print ('Compute genome coverage for sample {}'.format(sample))
     bedpe = sample + '.bedpe'
-    #bam_to_bedpe(bam, bedpe, threads)
+    # bam_to_bedpe(bam, bedpe, threads)
     bed_raw = sample + "-raw.bed"
     bedpe_to_bed(bedpe, bed_raw)
     bed_center = sample + "-center.bed"
@@ -116,7 +115,7 @@ def bwa(fastq, fastq2, fasta, bam_output, threads=None):
         raise AssertionError('Error when running BWA with command ' + bwa_cmd)
     cmd = ['samtools', 'view', '-b']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -129,7 +128,7 @@ def filter_mapped(bam_input, bam_output, threads=None):
     '''Filter BAM file to remove poorly mapped sequences.'''
     cmd = ['samtools', 'view', '-f', '2', '-F', '2048', '-b']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -142,7 +141,7 @@ def remove_duplicates(bam_input, bam_output, threads=None):
     fixmate_output = bam_input + '.fix'
     cmd = ['samtools', 'fixmate', '-m']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([bam_input, fixmate_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -151,7 +150,7 @@ def remove_duplicates(bam_input, bam_output, threads=None):
     sort_output = bam_input + '.sort'
     cmd = ['samtools', 'sort']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_output, fixmate_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -160,7 +159,7 @@ def remove_duplicates(bam_input, bam_output, threads=None):
     os.remove(fixmate_output)
     cmd = ['samtools', 'markdup', '-r']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([sort_output, bam_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -173,7 +172,7 @@ def sort(bam_input, bam_output, threads=None):
     '''Sort BAM file.'''
     cmd = ['samtools', 'sort']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -185,7 +184,7 @@ def first_mate(bam_input, bam_output, threads=None):
     '''Remove second mate from BAM file.'''
     cmd = ['samtools', 'view', '-f', '64', '-b']
     if not threads is None:
-        cmd.extend(['--threads', str(threads-1)])
+        cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
@@ -267,7 +266,7 @@ def center_annotations(bed, output):
                     outfile.write(str(start))
                     outfile.write("\t")
                     outfile.write(str(end))
-                    for i in range(3,len(columns)):
+                    for i in range(3, len(columns)):
                         outfile.write("\t")
                         outfile.write(columns[i])
                     outfile.write("\n")
