@@ -5,8 +5,6 @@ import subprocess
 import AlignSample
 import click
 
-BASE_SCALE = 1000000
-
 
 @click.command()
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
