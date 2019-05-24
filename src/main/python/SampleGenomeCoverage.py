@@ -186,18 +186,6 @@ def sort(bam_input, bam_output, threads=None):
         raise AssertionError('Error when sorting BAM ' + bam_input)
 
 
-def first_mate(bam_input, bam_output, threads=None):
-    '''Remove second mate from BAM file.'''
-    cmd = ['samtools', 'view', '-f', '64', '-b']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend(['-o', bam_output, bam_input])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when removing second mate from BAM ' + bam_input)
-
-
 def bam_to_bedpe(bam, bedpe, threads=None):
     '''Convert BAM file to BEDPE.'''
     sort_output = bam + '.sort'
