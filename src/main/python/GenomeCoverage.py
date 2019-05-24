@@ -37,6 +37,7 @@ def genome_coverage(sample, sizes):
     bed = sample + ".bed"
     bigwig = sample + ".bw"
     coverage(bed_center, bed, sizes, sample, scale)
+    os.remove(bed_center)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
