@@ -18,7 +18,13 @@ BASE_SCALE = 1000000
               help='Size of chromosomes.')
 @click.option('--threads', '-t', default=1,
               help='Number of threads used to process data.')
-def main(samples, fasta, sizes, threads):
+@click.option('--splitLength', type=int, default=None,
+              help='Split reads in bins by their length.')
+@click.option('--splitMinLength', default=125,
+              help='Split reads minimum length.')
+@click.option('--splitMaxLength', default=325,
+              help='Split reads maximum length.')
+def main(samples, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
@@ -30,10 +36,10 @@ def main(samples, fasta, sizes, threads):
         sample_info = sample_line.split('\t');
         sample = sample_info[0]
         srr = sample_info[1] if len(sample_info) > 1 else None
-        analyse(sample, srr, fasta, sizes, threads)
+        analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
 
 
-def analyse(sample, srr, fasta, sizes, threads):
+def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
     '''Analyse a single sample.'''
     print ('Analyse sample {}'.format(sample))
     fastq = sample + '_1.fastq'
