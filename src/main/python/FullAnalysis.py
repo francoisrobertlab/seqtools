@@ -6,6 +6,7 @@ import AlignSample
 import BamToBed
 import DownloadSample
 import GenomeCoverage
+import SplitGenomeCoverage
 import click
 
 
@@ -48,6 +49,8 @@ def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, spl
     AlignSample.align(sample, fasta, threads)
     BamToBed.bam_to_bed(sample, threads)
     GenomeCoverage.genome_coverage(sample, sizes)
+    if splitlength is not None:
+        SplitGenomeCoverage.split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
 
 
 if __name__ == '__main__':
