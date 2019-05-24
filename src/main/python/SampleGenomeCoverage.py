@@ -62,18 +62,19 @@ def analyse(sample, srr, fasta, sizes, threads):
     bam = sample + '.bam'
     #sort(bam_dedup, bam, threads)
     print ('Compute genome coverage for sample {}'.format(sample))
-    bam_first_mate = sample + '-mate1.bam'
-    #first_mate(bam, bam_first_mate, threads)
-    bed_first_mate = sample + '-mate1.bed'
-    #bam_to_bed(bam_first_mate, bed_first_mate)
-    bed_first_mate_center = sample + '-mate1-center.bed'
-    center_annotations(bed_first_mate, bed_first_mate_center)
-    count = count_bed(bed_first_mate)
+    bedpe = sample + '.bedpe'
+    #bam_to_bedpe(bam, bedpe, threads)
+    bed_raw = sample + "-raw.bed"
+    bedpe_to_bed(bedpe, bed_raw)
+    bed_center = sample + "-center.bed"
+    center_annotations(bed_raw, bed_center)
+    count = count_bed(bed_center)
     scale = BASE_SCALE / count
     bed = sample + ".bed"
     bigwig = sample + ".bw"
-    genome_coverage(bed_first_mate_center, bed, sizes, sample, scale)
+    genome_coverage(bed_center, bed, sizes, sample, scale)
     bedgraph_to_bigwig(bed, bigwig, sizes)
+    # TODO Filter BEDPE file.
 
 
 def download(sample, srr):
@@ -164,7 +165,7 @@ def remove_duplicates(bam_input, bam_output, threads=None):
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
     if not os.path.isfile(bam_output):
-        raise AssertionError('Error when removing duplicates from BAM ' + bam_output)
+        raise AssertionError('Error when removing duplicates from BAM ' + sort_output)
     os.remove(sort_output)
 
 
@@ -192,16 +193,60 @@ def first_mate(bam_input, bam_output, threads=None):
         raise AssertionError('Error when removing second mate from BAM ' + bam_input)
 
 
-def bam_to_bed(bam, bed):
-    '''Convert BAM file to BED.'''
-    cmd = ['bedtools', 'bamtobed', '-i', bam]
+def bam_to_bedpe(bam, bedpe, threads=None):
+    '''Convert BAM file to BEDPE.'''
+    sort_output = bam + '.sort'
+    cmd = ['samtools', 'sort', '-n']
+    if not threads is None:
+        cmd.extend(['--threads', str(threads - 1)])
+    cmd.extend(['-o', sort_output, bam])
+    logging.debug('Running {}'.format(cmd))
+    subprocess.call(cmd)
+    if not os.path.isfile(sort_output):
+        raise AssertionError('Error when sorting BAM ' + bam)
+    cmd = ['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', sort_output]
+    logging.debug('Running {}'.format(cmd))
+    with open(bedpe, "w") as outfile:
+        subprocess.call(cmd, stdout=outfile)
+    if not os.path.isfile(bedpe):
+        raise AssertionError('Error when converting BAM ' + sort_output + ' to BEDPE')
+    os.remove(sort_output)
+
+
+def bedpe_to_bed(bedpe, bed):
+    '''Converts BEDPE file to BED by merging the paired reads.'''
+    merge_output = bedpe + '-merge.bed'
+    with open(bedpe, "r") as infile:
+        with open(merge_output, "w") as outfile:
+            for line in infile:
+                if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
+                    outfile.write(line)
+                    continue
+                columns = line.rstrip('\r\n').split('\t')
+                start1 = int(columns[1])
+                end1 = int(columns[2])
+                start2 = int(columns[4])
+                end2 = int(columns[5])
+                start = min(start1, start2)
+                end = max(end1, end2)
+                outfile.write(columns[0])
+                outfile.write("\t")
+                outfile.write(str(start))
+                outfile.write("\t")
+                outfile.write(str(end))
+                for i in range(6, len(columns)):
+                    outfile.write("\t")
+                    outfile.write(columns[i])
+                outfile.write("\n")
+    cmd = ['bedtools', 'sort', '-i', merge_output]
     logging.debug('Running {}'.format(cmd))
     with open(bed, "w") as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(bed):
-        raise AssertionError('Error when converting BAM ' + bam + ' to BED')
+        raise AssertionError('Error when sorting BED ' + merge_output + ' to ' + bed)
+    os.remove(merge_output)
 
-
+    
 def center_annotations(bed, output):
     '''Resize annotations to 1 positioned at the center.'''
     with open(bed, "r") as infile:
@@ -214,8 +259,8 @@ def center_annotations(bed, output):
                 if len(columns) >= 3:
                     start = int(columns[1])
                     end = int(columns[2])
-                    size = end - start
-                    start = start + int(size / 2)
+                    length = end - start
+                    start = start + int(length / 2)
                     end = start + 1
                     outfile.write(columns[0])
                     outfile.write("\t")
@@ -231,17 +276,16 @@ def center_annotations(bed, output):
 def count_bed(bed, strand=None):
     '''Counts number of entry in BED, can be limited to a specific strand.'''
     count = 0
-    file = open(bed, 'r')
-    for line in file:
-        if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
-            continue
-        if strand is None:
-            count += 1
-        else:
-            columns = line.rstrip('\r\n').split('\t')
-            if len(columns) >= 6 and columns[5] == strand:
+    with open(bed, "r") as infile:
+        for line in infile:
+            if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
+                continue
+            if strand is None:
                 count += 1
-    file.close()
+            else:
+                columns = line.rstrip('\r\n').split('\t')
+                if len(columns) >= 6 and columns[5] == strand:
+                    count += 1
     return count
 
 
