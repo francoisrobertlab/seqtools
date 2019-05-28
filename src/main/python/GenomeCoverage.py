@@ -115,6 +115,15 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     os.remove(sort_output)
 
 
+def empty_bed(bed_output, sample, strand=None):
+    '''Create an empty BED file.'''
+    track = 'track type=bedGraph name="' + sample
+    if not strand is None:
+        track += ' Minus' if strand == '-' else ' Plus'
+    with open(bed_output, "w") as outfile:
+        outfile.write(track + '\n')
+
+
 def bedgraph_to_bigwig(bed, bigwig, sizes):
     '''Converts bedgraph file to bigwig.'''
     cmd = ['bedGraphToBigWig', bed, sizes, bigwig]

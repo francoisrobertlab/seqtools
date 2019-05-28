@@ -44,13 +44,17 @@ def split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxle
             bed_bin_center = '{}-{}-{}-center.bed'.format(sample, bin_start, bin_end)
             GenomeCoverage.center_annotations(bed_bin_raw, bed_bin_center)
             os.remove(bed_bin_raw)
-            count = GenomeCoverage.count_bed(bed_bin_center)
-            scale = GenomeCoverage.BASE_SCALE / count
             bed = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
             bigwig = '{}-{}-{}.bw'.format(sample, bin_start, bin_end)
-            GenomeCoverage.coverage(bed_bin_center, bed, sizes, sample, scale)
+            count = GenomeCoverage.count_bed(bed_bin_center)
+            if count == 0:
+                GenomeCoverage.empty_bed(bed, sample)
+                GenomeCoverage.bedgraph_to_bigwig(bed, bigwig, sizes)
+            else :
+                scale = GenomeCoverage.BASE_SCALE / count
+                GenomeCoverage.coverage(bed_bin_center, bed, sizes, sample, scale)
+                GenomeCoverage.bedgraph_to_bigwig(bed, bigwig, sizes)
             os.remove(bed_bin_center)
-            GenomeCoverage.bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
 def filter_annotations_by_length(bed, output, minLength, maxLength):
