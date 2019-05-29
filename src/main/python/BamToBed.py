@@ -32,6 +32,7 @@ def bam_to_bed(sample, threads):
     bam_to_bedpe(bam, bedpe, threads)
     bed_raw = sample + "-raw.bed"
     bedpe_to_bed(bedpe, bed_raw)
+    os.remove(bedpe)
 
 
 def bam_to_bedpe(bam, bedpe, threads=None):
