@@ -29,19 +29,11 @@ def main(samples, fasta, threads):
 
 def align(sample, fasta, threads):
     '''Align a single sample.'''
-    print ('Analyse sample {}'.format(sample))
+    print ('Running BWA on sample {}'.format(sample))
     fastq1 = fastq(sample, 1)
     fastq2 = fastq(sample, 2)
     bam_raw = sample + '-raw.bam'
-    print ('Running BWA on sample {}'.format(sample))
     bwa(fastq1, fastq2, fasta, bam_raw, threads)
-    print ('Filtering BAM and removing duplicates on sample {}'.format(sample))
-    bam_filtered = sample + '-filtered.bam'
-    filter_mapped(bam_raw, bam_filtered, threads)
-    bam_dedup = sample + '-dedup.bam'
-    remove_duplicates(bam_filtered, bam_dedup, threads)
-    bam = sample + '.bam'
-    sort(bam_dedup, bam, threads)
 
 
 def fastq(sample, read=1):
@@ -86,62 +78,6 @@ def bwa(fastq1, fastq2, fasta, bam_output, threads=None):
     if not os.path.isfile(bam_output):
         raise AssertionError('Error when converting SAM ' + sam_output + ' to BAM ' + bam_output)
     os.remove(sam_output)
-
-
-def filter_mapped(bam_input, bam_output, threads=None):
-    '''Filter BAM file to remove poorly mapped sequences.'''
-    cmd = ['samtools', 'view', '-f', '2', '-F', '2048', '-b']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend(['-o', bam_output, bam_input])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when filtering BAM ' + bam_input)
-
-
-def remove_duplicates(bam_input, bam_output, threads=None):
-    '''Remove duplicated sequences from BAM file.'''
-    fixmate_output = bam_input + '.fix'
-    cmd = ['samtools', 'fixmate', '-m']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend([bam_input, fixmate_output])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(fixmate_output):
-        raise AssertionError('Error when fixing duplicates in BAM ' + bam_input)
-    sort_output = bam_input + '.sort'
-    cmd = ['samtools', 'sort']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend(['-o', sort_output, fixmate_output])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(sort_output):
-        raise AssertionError('Error when sorting BAM ' + fixmate_output)
-    os.remove(fixmate_output)
-    cmd = ['samtools', 'markdup', '-r']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend([sort_output, bam_output])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when removing duplicates from BAM ' + sort_output)
-    os.remove(sort_output)
-
-
-def sort(bam_input, bam_output, threads=None):
-    '''Sort BAM file.'''
-    cmd = ['samtools', 'sort']
-    if not threads is None:
-        cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend(['-o', bam_output, bam_input])
-    logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when sorting BAM ' + bam_input)
 
 
 if __name__ == '__main__':

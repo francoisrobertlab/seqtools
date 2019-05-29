@@ -5,6 +5,7 @@ import subprocess
 import AlignSample
 import BamToBed
 import DownloadSample
+import FilterBam
 import GenomeCoverage
 import SplitGenomeCoverage
 import click
@@ -47,6 +48,7 @@ def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, spl
     print ('Analyse sample {}'.format(sample))
     DownloadSample.download(sample, srr)
     AlignSample.align(sample, fasta, threads)
+    FilterBam.filter_bam(sample, fasta, threads)
     BamToBed.bam_to_bed(sample, threads)
     GenomeCoverage.genome_coverage(sample, sizes)
     if splitlength is not None:
