@@ -7,8 +7,7 @@ import click
 
 @click.command()
 @click.option('--merge', '-s', type=click.File('r'), default='merge.txt',
-              help='Merge name if first columns and sample names to merge on following columns - tab delimited.'
-              ' The first line is ignored.')
+              help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 def main(merge):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
