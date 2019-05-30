@@ -13,7 +13,6 @@ import click
 @click.command()
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
               help='Sample names listed one sample name by line.'
-              ' The first line is ignored.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise it must be provided.')
 @click.option('--merge', '-m', type=click.Path, default=None,
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
@@ -33,7 +32,6 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     AlignSample.bwa_index(fasta)
-    next(samples)
     samples_lines = samples.read().splitlines()
     for sample_line in samples_lines:
         if sample_line.startswith('#'):

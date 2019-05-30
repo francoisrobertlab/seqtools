@@ -7,14 +7,12 @@ import click
 
 @click.command()
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
-              help='Sample names listed one sample name by line.'
-              ' The first line is ignored.')
+              help='Sample names listed one sample name by line.')
 @click.option('--threads', '-t', default=1,
               help='Number of threads used to process data.')
 def main(samples, threads):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    next(samples)
     samples_lines = samples.read().splitlines()
     for sample_line in samples_lines:
         if sample_line.startswith('#'):

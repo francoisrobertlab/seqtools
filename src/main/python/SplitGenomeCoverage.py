@@ -8,8 +8,7 @@ import click
 
 @click.command()
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
-              help='Sample names listed one sample name by line.'
-              ' The first line is ignored.')
+              help='Sample names listed one sample name by line.')
 @click.option('--sizes', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
 @click.option('--splitLength', type=int, default=25,
@@ -21,7 +20,6 @@ import click
 def main(samples, sizes, splitlength, splitminlength, splitmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    next(samples)
     samples_lines = samples.read().splitlines()
     for sample_line in samples_lines:
         if sample_line.startswith('#'):

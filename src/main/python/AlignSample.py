@@ -7,8 +7,7 @@ import click
 
 @click.command()
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
-              help='Sample names listed one sample name by line.'
-              ' The first line is ignored.')
+              help='Sample names listed one sample name by line.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
 @click.option('--threads', '-t', default=1,
@@ -17,7 +16,6 @@ def main(samples, fasta, threads):
     '''Align samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
-    next(samples)
     samples_lines = samples.read().splitlines()
     for sample_line in samples_lines:
         if sample_line.startswith('#'):
