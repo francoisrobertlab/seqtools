@@ -14,7 +14,7 @@ import click
 @click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
               help='Sample names listed one sample name by line.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise it must be provided.')
-@click.option('--merge', '-m', type=click.Path, default=None,
+@click.option('--merge', '-m', type=click.Path(), default=None,
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
