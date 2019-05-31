@@ -36,7 +36,7 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     for sample_line in samples_lines:
         if sample_line.startswith('#'):
             continue
-        sample_info = sample_line.split('\t');
+        sample_info = sample_line.rstrip("\n\r").split('\t');
         sample = sample_info[0]
         srr = sample_info[1] if len(sample_info) > 1 else None
         analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
@@ -45,7 +45,7 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
             for merge_line in infile:
                 if merge_line.startswith('#'):
                     continue
-                merge_info = merge_line.split('\t');
+                merge_info = merge_line.rstrip("\n\r").split('\t');
                 sample = merge_info[0]
                 MergeSampleBed.merge_samples(sample, merge_info[1:])
                 coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
@@ -56,7 +56,7 @@ def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, spl
     print ('Analyse sample {}'.format(sample))
     DownloadSample.download(sample, srr)
     AlignSample.align(sample, fasta, threads)
-    FilterBam.filter_bam(sample, fasta, threads)
+    FilterBam.filter_bam(sample, threads)
     BamToBed.bam_to_bed(sample, threads)
     coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
 
