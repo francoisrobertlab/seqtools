@@ -19,7 +19,7 @@ def main(samples, sizes):
     for sample_line in samples_lines:
         if sample_line.startswith('#'):
             continue
-        sample_info = sample_line.split('\t');
+        sample_info = sample_line.rstrip("\n\r").split('\t');
         sample = sample_info[0]
         genome_coverage(sample, sizes)
 

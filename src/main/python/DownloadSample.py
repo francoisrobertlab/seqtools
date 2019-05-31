@@ -17,7 +17,7 @@ def main(samples):
     for sample_line in samples_lines:
         if sample_line.startswith('#'):
             continue
-        sample_info = sample_line.split('\t');
+        sample_info = sample_line.rstrip("\n\r").split('\t');
         sample = sample_info[0]
         srr = sample_info[1] if len(sample_info) > 1 else None
         download(sample, srr)

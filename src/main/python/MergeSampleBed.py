@@ -15,7 +15,7 @@ def main(merge):
     for merge_line in merge_lines:
         if merge_line.startswith('#'):
             continue
-        merge_info = merge_line.split('\t');
+        merge_info = merge_line.rstrip("\n\r").split('\t');
         merge_samples(merge_info[0], merge_info[1:])
 
 
