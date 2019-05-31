@@ -40,7 +40,6 @@ def split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxle
             print ('Compute genome coverage on file {} for sample {}'.format(bed_bin_raw, sample))
             bed_bin_center = '{}-{}-{}-center.bed'.format(sample, bin_start, bin_end)
             GenomeCoverage.center_annotations(bed_bin_raw, bed_bin_center)
-            os.remove(bed_bin_raw)
             bed = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
             bigwig = '{}-{}-{}.bw'.format(sample, bin_start, bin_end)
             count = GenomeCoverage.count_bed(bed_bin_center)
