@@ -26,7 +26,7 @@ import click
               help='Split reads in bins by their length.')
 @click.option('--splitMinLength', default=100,
               help='Split reads minimum length.')
-@click.option('--splitMaxLength', default=400,
+@click.option('--splitMaxLength', default=500,
               help='Split reads maximum length.')
 def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''

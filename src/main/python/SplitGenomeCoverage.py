@@ -10,11 +10,11 @@ import click
               help='Sample names listed one sample name by line.')
 @click.option('--sizes', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
-@click.option('--splitLength', type=int, default=25,
+@click.option('--splitLength', type=int, default=10,
               help='Split reads in bins by their length.')
 @click.option('--splitMinLength', default=100,
               help='Split reads minimum length.')
-@click.option('--splitMaxLength', default=400,
+@click.option('--splitMaxLength', default=500,
               help='Split reads maximum length.')
 def main(samples, sizes, splitlength, splitminlength, splitmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
