@@ -35,20 +35,21 @@ def split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxle
         bed_raw = sample + '-raw.bed'
         for bin_start in range(splitminlength, splitmaxlength, splitlength):
             bin_end = bin_start + splitlength
-            bed_bin_raw = '{}-raw-{}-{}.bed'.format(sample, bin_start, bin_end)
+            sample_bin = '{}-{}-{}'.format(sample, bin_start, bin_end)
+            bed_bin_raw = sample_bin + '-raw.bed'
             filter_annotations_by_length(bed_raw, bed_bin_raw, bin_start, bin_end)
             print ('Compute genome coverage on file {} for sample {}'.format(bed_bin_raw, sample))
-            bed_bin_center = '{}-{}-{}-center.bed'.format(sample, bin_start, bin_end)
+            bed_bin_center = sample_bin + '-center.bed'
             GenomeCoverage.center_annotations(bed_bin_raw, bed_bin_center)
-            bed = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
-            bigwig = '{}-{}-{}.bw'.format(sample, bin_start, bin_end)
+            bed = sample_bin + '.bed'
+            bigwig = sample_bin + '.bw'
             count = GenomeCoverage.count_bed(bed_bin_center)
             if count == 0:
-                GenomeCoverage.empty_bed(bed, sample)
+                GenomeCoverage.empty_bed(bed, sample_bin)
                 GenomeCoverage.bedgraph_to_bigwig(bed, bigwig, sizes)
             else :
                 scale = GenomeCoverage.BASE_SCALE / count
-                GenomeCoverage.coverage(bed_bin_center, bed, sizes, sample, scale)
+                GenomeCoverage.coverage(bed_bin_center, bed, sizes, sample_bin, scale)
                 GenomeCoverage.bedgraph_to_bigwig(bed, bigwig, sizes)
             os.remove(bed_bin_center)
 
