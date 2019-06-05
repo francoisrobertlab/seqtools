@@ -44,8 +44,8 @@ def vap(sample, parameters):
     subprocess.call(cmd)
     try:
         splits_values = parse_heatmap_values(splits, output)
-    except:
-        raise AssertionError('Error when running VAP with parameters ' + sample_parameters)
+    except AssertionError as exception:
+        raise AssertionError('Error when running VAP with parameters ' + sample_parameters, exception)
     merged_heatmap = sample + '-heatmap.txt';
     create_heatmap(sample, genes, splits, splits_values, merged_heatmap)
     shutil.rmtree(output)
