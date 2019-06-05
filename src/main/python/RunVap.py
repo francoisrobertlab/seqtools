@@ -85,13 +85,16 @@ def parse_genes(parameters):
 
 
 def parse_heatmap_values(sample_splits, output_folder):
+    error_count = 0
     splits_values = {}
     for split in sample_splits:
         splits_values[split] = {}
         split_glob = output_folder + '/ind_data_' + split + '*.txt';
         split_data = glob.glob(split_glob)
         if not split_data:
-            raise AssertionError('Cannot open file ' + split_glob)
+            error_count += 1
+            logging.warn('Cannot open VAP output file {}'.format(split_glob))
+            continue
         with open(split_data[0], 'r') as infile:
             index = None
             for line in infile:
@@ -103,6 +106,8 @@ def parse_heatmap_values(sample_splits, output_folder):
                         gene = columns[0]
                         value = columns[index]
                         splits_values[split][gene] = value
+    if error_count == len(sample_splits):
+        raise AssertionError('Cannot open any VAP output file')
     return splits_values
 
 
@@ -127,7 +132,10 @@ def create_heatmap(sample, genes, splits, splits_values, output):
             outfile.write(gene)
             for split in splits:
                 outfile.write('\t')
-                outfile.write(splits_values[split][gene])
+                if splits_values[split] and splits_values[split][gene]:
+                    outfile.write(splits_values[split][gene])
+                else:
+                    outfile.write('0')
             outfile.write('\n')
 
 
