@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 
+import SplitGenomeCoverage
 import click
 
 
@@ -31,9 +32,8 @@ def vap(sample, parameters):
     if not os.path.exists(output):
         os.mkdir(output);
     sample_parameters = output + '/parameters.txt';
-    beds = glob.glob(sample + '[-_]*[!raw].bed')
-    splits = [bed[:-4] for bed in beds]
-    splits.sort()
+    splits = SplitGenomeCoverage.splits(sample)
+    beds = [split + '.bed' for split in splits]
     genes = parse_genes(parameters)
     create_parameters(beds, output, parameters, sample_parameters);
     cmd = ['./vap']

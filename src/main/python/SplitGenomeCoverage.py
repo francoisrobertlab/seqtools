@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 
@@ -56,7 +57,6 @@ def split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxle
 
 def filter_annotations_by_length(bed, output, minLength, maxLength):
     '''Filter BED file and keep only annotations that have specified size. Minimum size is included but max size is excluded.'''
-    count = 0
     with open(bed, "r") as infile:
         with open(output, "w") as outfile:
             for line in infile:
@@ -70,6 +70,14 @@ def filter_annotations_by_length(bed, output, minLength, maxLength):
                     length = end - start
                     if length >= minLength and length < maxLength:
                         outfile.write(line)
+
+
+def splits(sample):
+    '''Returns all splits for sample, sorted.'''
+    beds = glob.glob(sample + '[-_]*[!raw].bed')
+    sample_splits = [bed[:-4] for bed in beds]
+    sample_splits.sort()
+    return sample_splits
 
 
 if __name__ == '__main__':
