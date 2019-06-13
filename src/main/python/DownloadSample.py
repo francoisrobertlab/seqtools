@@ -3,23 +3,21 @@ import os
 import subprocess
 
 import AlignSample
+import FullAnalysis
 import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.'
-              ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise it must be provided.')
+              ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise FASTQ file must be provided.')
 def main(samples):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.rstrip("\n\r").split('\t');
-        sample = sample_info[0]
-        srr = sample_info[1] if len(sample_info) > 1 else None
+    samples_columns = FullAnalysis.all_columns(samples)
+    for sample_columns in samples_columns:
+        sample = sample_columns[0]
+        srr = sample_columns[1] if len(sample_columns) > 1 else None
         download(sample, srr)
 
 
