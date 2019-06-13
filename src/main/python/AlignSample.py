@@ -1,12 +1,14 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
 
+import FullAnalysis
 import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
@@ -16,12 +18,8 @@ def main(samples, fasta, threads):
     '''Align samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.rstrip("\n\r").split('\t');
-        sample = sample_info[0]
+    sample_names = FullAnalysis.first_column(samples)
+    for sample in sample_names:
         align(sample, fasta, threads)
 
 
@@ -49,7 +47,7 @@ def bwa_index(fasta):
     bwa_index_cmd = ['bwa', 'index', fasta]
     fasta_indexed = fasta + '.bwt';
     logging.debug('Running {}'.format(bwa_index_cmd))
-    subprocess.call(bwa_index_cmd)
+    subprocess.run(bwa_index_cmd, check=True)
     if not os.path.isfile(fasta_indexed):
         raise AssertionError('Error when indexing FASTA ' + fasta)
 
@@ -64,7 +62,7 @@ def bwa(fastq1, fastq2, fasta, bam_output, threads=None):
     if os.path.isfile(fastq2):
         cmd.append(fastq2)
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
+    subprocess.run(cmd, check=True)
     if not os.path.isfile(sam_output):
         raise AssertionError('Error when running BWA with command ' + bwa_cmd)
     cmd = ['samtools', 'view', '-b']
@@ -72,7 +70,7 @@ def bwa(fastq1, fastq2, fasta, bam_output, threads=None):
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
+    subprocess.run(cmd, check=True)
     if not os.path.isfile(bam_output):
         raise AssertionError('Error when converting SAM ' + sam_output + ' to BAM ' + bam_output)
     os.remove(sam_output)
