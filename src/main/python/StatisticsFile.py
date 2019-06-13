@@ -2,8 +2,9 @@ import logging
 import os
 import re
 import subprocess
-import GenomeCoverage
 
+import FullAnalysis
+import GenomeCoverage
 import SplitGenomeCoverage
 import click
 
@@ -18,20 +19,9 @@ import click
 def main(samples, merge, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    sample_names = first_column(samples)
-    merge_names = first_column(merge) if os.path.isfile(merge) else None
+    sample_names = FullAnalysis.first_column(samples)
+    merge_names = FullAnalysis.first_column(merge) if os.path.isfile(merge) else None
     all_statistics(sample_names, merge_names, output)
-
-
-def first_column(file):
-    fcs = []
-    with open(file, 'r') as lines:
-        for line in lines:
-            if line.startswith('#'):
-                continue
-            fc = line.rstrip("\n\r").split('\t')[0];
-            fcs.extend([fc])
-    return fcs
 
 
 def all_statistics(samples, merges, output):
