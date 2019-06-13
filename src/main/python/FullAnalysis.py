@@ -11,10 +11,10 @@ import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.'
-              ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise it must be provided.')
-@click.option('--merge', '-m', type=click.Path(), default=None,
+              ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise FASTQ file must be provided.')
+@click.option('--merge', '-m', type=click.Path(), default='merge.txt',
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
@@ -32,23 +32,31 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     AlignSample.bwa_index(fasta)
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.rstrip("\n\r").split('\t');
-        sample = sample_info[0]
-        srr = sample_info[1] if len(sample_info) > 1 else None
+    samples_columns = all_columns(samples)
+    for sample_columns in samples_columns:
+        sample = sample_columns[0]
+        srr = sample_columns[1] if len(sample_columns) > 1 else None
         analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
-    if merge is not None:
-        with open(merge) as infile:
-            for merge_line in infile:
-                if merge_line.startswith('#'):
-                    continue
-                merge_info = merge_line.rstrip("\n\r").split('\t');
-                sample = merge_info[0]
-                MergeSampleBed.merge_samples(sample, merge_info[1:])
-                coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+    merge_names = first_column(merge) if os.path.isfile(merge) else None
+    for sample in merge_names:
+        MergeSampleBed.merge_samples(sample, merge_info[1:])
+        coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+
+
+def all_columns(file):
+    all = []
+    with open(file, 'r') as lines:
+        for line in lines:
+            if line.startswith('#'):
+                continue
+            columns = line.rstrip("\n\r").split('\t');
+            all.extend([columns])
+    return all
+    
+    
+def first_column(file):
+    all = all_columns(file)
+    return [columns[0] for columns in all]
 
 
 def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
