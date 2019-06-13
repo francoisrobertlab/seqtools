@@ -74,7 +74,10 @@ def bedpe_to_bed(bedpe, bed):
                 outfile.write(str(start))
                 outfile.write("\t")
                 outfile.write(str(end))
-                for i in range(6, len(columns)):
+                for i in range(6, 9):
+                    outfile.write("\t")
+                    outfile.write(columns[i])
+                for i in range(10, len(columns)):
                     outfile.write("\t")
                     outfile.write(columns[i])
                 outfile.write("\n")
