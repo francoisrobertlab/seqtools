@@ -1,4 +1,5 @@
 import logging
+import os
 
 import AlignSample
 import BamToBed
@@ -37,9 +38,11 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
         sample = sample_columns[0]
         srr = sample_columns[1] if len(sample_columns) > 1 else None
         analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
-    merge_names = first_column(merge) if os.path.isfile(merge) else None
-    for sample in merge_names:
-        MergeSampleBed.merge_samples(sample, merge_info[1:])
+    merges_columns = all_columns(merge) if os.path.isfile(merge) else []
+    for merge_columns in merges_columns:
+        sample = merge_columns[0]
+        samples_to_merge = merge_columns[1:] if len(merge_columns) > 1 else None
+        MergeSampleBed.merge_samples(sample, samples_to_merge)
         coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
 
 
