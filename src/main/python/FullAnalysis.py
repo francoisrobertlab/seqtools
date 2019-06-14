@@ -52,7 +52,7 @@ def all_columns(file):
         for line in lines:
             if line.startswith('#'):
                 continue
-            columns = line.rstrip("\n\r").split('\t');
+            columns = line.rstrip('\n\r').split('\t');
             all.extend([columns])
     return all
     
