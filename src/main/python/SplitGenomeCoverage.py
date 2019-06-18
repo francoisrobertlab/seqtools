@@ -1,7 +1,6 @@
-import glob
 import logging
 import os
-
+import re
 import GenomeCoverage
 import click
 
@@ -74,7 +73,9 @@ def filter_annotations_by_length(bed, output, minLength, maxLength):
 
 def splits(sample):
     '''Returns all splits for sample, sorted.'''
-    beds = glob.glob(sample + '[-_]*[!raw].bed')
+    regex = re.compile(sample + '-\d+-\d+\.bed')
+    files = os.listdir()
+    beds = filter(regex.match, files)
     sample_splits = [bed[:-4] for bed in beds]
     sample_splits.sort()
     return sample_splits
