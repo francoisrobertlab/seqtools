@@ -1,5 +1,8 @@
 import logging
+import os
+import re
 import FullAnalysis
+import SplitGenomeCoverage
 import click
 
 
@@ -13,6 +16,7 @@ def main(samples, annotations):
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     samples_names = FullAnalysis.first_column(samples)
     parsed_annotations = FullAnalysis.all_columns(annotations)
+    sufix = basename_no_ext(annotations)
     annotations_chrom = {}
     for annotation in parsed_annotations:
         chromosome = annotation[0]
@@ -23,16 +27,32 @@ def main(samples, annotations):
             annotations_chrom[chromosome][strand] = []
         annotations_chrom[chromosome][strand].append(annotation)
     for sample in samples_names:
-        filter_bed(sample, annotations_chrom)
+        filter_sample(sample, annotations_chrom, sufix)
 
 
-def filter_bed(sample, annotations_chrom):
-    '''Filter raw BED files to keep reads for which their center overlap specified annotations.'''
+def basename_no_ext(file):
+    '''Returns basename of file without extension.'''
+    return os.path.splitext(os.path.basename(file))[0]
+
+
+def filter_sample(sample, annotations_chrom, sufix):
+    '''Filter sample's raw BED files to keep reads for which their center overlap specified annotations.'''
     print ('Filter raw BED files with annotations for sample {}'.format(sample))
     bed_raw = sample + '-raw.bed'
-    bed_filtered = sample + '-annotations.bed'
-    with open(bed_raw) as infile:
-        with open(bed_filtered, 'w') as outfile:
+    bed_filtered = '{}-{}.bed'.format(sample, sufix)
+    filter_bed(bed_raw, annotations_chrom, bed_filtered)
+    splits = SplitGenomeCoverage.splits(sample)
+    if splits:
+        for split in splits:
+            bed = split + '-raw.bed'
+            bed_filtered = '{}-{}.bed'.format(split, sufix)
+            filter_bed(bed, annotations_chrom, bed_filtered)
+
+
+def filter_bed(bed, annotations_chrom, output):
+    '''Filter BED file to keep reads for which their center overlap specified annotations.'''
+    with open(bed) as infile:
+        with open(output, 'w') as outfile:
             for line in infile:
                 if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
                     continue
@@ -52,6 +72,17 @@ def overlap_any_annotation(read, annotations):
     for annotation in annotations:
         ret |= read[0] == annotation[0] and read[5] == annotation[5] and center >= int(annotation[1]) and center < int(annotation[2])
     return ret
+
+
+def filtered(sample, annotations):
+    '''Returns all filtered BED for sample, sorted.'''
+    sufix = basename_no_ext(annotations)
+    regex = re.compile(sample + '.*-{}.bed'.format(sufix))
+    files = os.listdir()
+    beds = filter(regex.match, files)
+    filtereds = [bed[:-4] for bed in beds]
+    filtereds.sort()
+    return filtereds
 
 
 if __name__ == '__main__':
