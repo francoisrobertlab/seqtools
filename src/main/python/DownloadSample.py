@@ -17,17 +17,20 @@ def main(samples):
     samples_columns = FullAnalysis.all_columns(samples)
     for sample_columns in samples_columns:
         sample = sample_columns[0]
-        srr = sample_columns[1] if len(sample_columns) > 1 else None
+        fastq = sample_columns[1] if len(sample_columns) > 1 else None
+        srr = sample_columns[2] if len(sample_columns) > 2 else None
         download(sample, srr)
 
 
-def download(sample, srr):
+def download(sample, fastq, srr):
     '''Download reads of a sample.'''
-    fastq = AlignSample.fastq(sample, 1)
-    if fastq is None and srr:
+    if not fastq:
+        fastq = sample
+    fastq_exists = AlignSample.fastq(fastq, 1)
+    if fastq_exists is None and srr:
         print ('Downloading FASTQ for sample {} with SRR {}'.format(sample, srr))
-        fastq = sample + '_1.fastq.gz'
-        fastq2 = sample + '_2.fastq.gz'
+        fastq = fastq + '_1.fastq.gz'
+        fastq2 = fastq + '_2.fastq.gz'
         srr_output = srr + '_1.fastq.gz'
         srr_output2 = srr + '_2.fastq.gz'
         cmd = ['fastq-dump', '--split-files', '--gzip', srr];

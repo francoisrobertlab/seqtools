@@ -36,8 +36,9 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     samples_columns = all_columns(samples)
     for sample_columns in samples_columns:
         sample = sample_columns[0]
-        srr = sample_columns[1] if len(sample_columns) > 1 else None
-        analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
+        fastq = sample_columns[1] if len(sample_columns) > 1 else None
+        srr = sample_columns[2] if len(sample_columns) > 2 else None
+        analyse(sample, fastq, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
     merges_columns = all_columns(merge) if os.path.isfile(merge) else []
     for merge_columns in merges_columns:
         sample = merge_columns[0]
@@ -62,11 +63,11 @@ def first_column(file):
     return [columns[0] for columns in all]
 
 
-def analyse(sample, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
+def analyse(sample, fastq, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
     '''Analyse a single sample.'''
     print ('Analyse sample {}'.format(sample))
-    DownloadSample.download(sample, srr)
-    AlignSample.align(sample, fasta, threads)
+    DownloadSample.download(sample, fastq, srr)
+    AlignSample.align(sample, fastq, fasta, threads)
     FilterBam.filter_bam(sample, threads)
     BamToBed.bam_to_bed(sample, threads)
     coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)

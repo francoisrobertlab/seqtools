@@ -1,6 +1,7 @@
 from distutils.command.check import check
 import logging
 import os
+import re
 import subprocess
 
 import FullAnalysis
@@ -18,28 +19,31 @@ def main(samples, fasta, threads):
     '''Align samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
-    sample_names = FullAnalysis.first_column(samples)
-    for sample in sample_names:
-        align(sample, fasta, threads)
+    samples_columns = FullAnalysis.all_columns(samples)
+    for sample_columns in samples_columns:
+        sample = sample_columns[0]
+        fastq = sample_columns[1] if len(sample_columns) > 1 else None
+        align(sample, fastq, fasta, threads)
 
 
-def align(sample, fasta, threads):
+def align(sample, sample_fastq, fasta, threads):
     '''Align a single sample.'''
     print ('Running BWA on sample {}'.format(sample))
-    fastq1 = fastq(sample, 1)
-    fastq2 = fastq(sample, 2)
+    if not sample_fastq:
+        sample_fastq = sample
+    fastq1 = fastq(sample_fastq, 1)
+    fastq2 = fastq(sample_fastq, 2)
     bam_raw = sample + '-raw.bam'
     bwa(fastq1, fastq2, fasta, bam_raw, threads)
 
 
 def fastq(sample, read=1):
     '''Returns existing FASTQ file for sample - read 1 or read 2, defaults to read 1.'''
-    fastq = sample + '_' + str(read) + '.fastq'
-    if not os.path.isfile(fastq):
-        fastq = sample + '_' + str(read) + '.fastq.gz'
-    if not os.path.isfile(fastq):
+    files = [f for f in os.listdir('.') if re.match('^' + re.escape(sample) + r'_R?' + str(read) + r'\.fastq(\.gz)?$', f)]
+    if len(files) == 0:
         return None
-    return fastq
+    else:
+        return files[0]
     
 
 def bwa_index(fasta):
