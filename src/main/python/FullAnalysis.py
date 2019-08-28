@@ -1,4 +1,5 @@
 import logging
+from multiprocessing import Pool
 import os
 
 import AlignSample
@@ -34,17 +35,23 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     AlignSample.bwa_index(fasta)
     samples_columns = all_columns(samples)
+    samples_pool_args = []
     for sample_columns in samples_columns:
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
         srr = sample_columns[2] if len(sample_columns) > 2 else None
-        analyse(sample, fastq, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength)
+        samples_pool_args.append((sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength))
+    with Pool(threads) as pool:
+        pool.starmap(analyse, samples_pool_args)
     merges_columns = all_columns(merge) if os.path.isfile(merge) else []
+    merges_pool_args = []
     for merge_columns in merges_columns:
         sample = merge_columns[0]
         samples_to_merge = merge_columns[1:] if len(merge_columns) > 1 else None
         MergeSampleBed.merge_samples(sample, samples_to_merge)
-        coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+        merges_pool_args.append((sample, sizes, splitlength, splitminlength, splitmaxlength))
+    with Pool(threads) as pool:
+        pool.starmap(coverage, merges_pool_args)
 
 
 def all_columns(file):
@@ -63,14 +70,18 @@ def first_column(file):
     return [columns[0] for columns in all]
 
 
-def analyse(sample, fastq, srr, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
+def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength):
     '''Analyse a single sample.'''
-    print ('Analyse sample {}'.format(sample))
-    DownloadSample.download(sample, fastq, srr)
-    AlignSample.align(sample, fastq, fasta, threads)
-    FilterBam.filter_bam(sample, threads)
-    BamToBed.bam_to_bed(sample, threads)
-    coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+    try:
+        print ('Analyse sample {}'.format(sample))
+        DownloadSample.download(sample, fastq, srr)
+        AlignSample.align(sample, fastq, fasta, 1)
+        FilterBam.filter_bam(sample, 1)
+        BamToBed.bam_to_bed(sample, 1)
+        coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+    except Exception as e:
+        logging.exception('Could not analyse sample {}'.format(sample))
+        raise e
 
 
 def coverage(sample, sizes, splitlength, splitminlength, splitmaxlength):
