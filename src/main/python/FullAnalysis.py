@@ -75,7 +75,7 @@ def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, split
     try:
         print ('Analyse sample {}'.format(sample))
         DownloadSample.download(sample, fastq, srr)
-        AlignSample.align(sample, fastq, fasta, 1)
+        AlignSample.align(sample, fastq, fasta)
         FilterBam.filter_bam(sample, 1)
         BamToBed.bam_to_bed(sample, 1)
         coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)

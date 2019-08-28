@@ -1,5 +1,6 @@
 from distutils.command.check import check
 import logging
+from multiprocessing import Pool
 import os
 import re
 import subprocess
@@ -20,13 +21,16 @@ def main(samples, fasta, threads):
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
     samples_columns = FullAnalysis.all_columns(samples)
+    samples_pool_args = []
     for sample_columns in samples_columns:
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
-        align(sample, fastq, fasta, threads)
+        samples_pool_args.append((sample, fastq, fasta))
+    with Pool(threads) as pool:
+        pool.starmap(align, samples_pool_args)
 
 
-def align(sample, sample_fastq, fasta, threads):
+def align(sample, sample_fastq, fasta, threads=None):
     '''Align a single sample.'''
     print ('Running BWA on sample {}'.format(sample))
     if not sample_fastq:
