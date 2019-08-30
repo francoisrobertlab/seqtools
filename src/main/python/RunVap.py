@@ -4,24 +4,21 @@ import os
 import shutil
 import subprocess
 
+import FullAnalysis
 import SplitGenomeCoverage
 import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.')
 @click.option('--parameters', '-p', type=click.Path(exists=True), default='parameters.txt',
               help='VAP parameters file.')
 def main(samples, parameters):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.split('\t');
-        sample = sample_info[0]
+    samples_names = FullAnalysis.first_column(samples)
+    for sample in samples_names:
         vap(sample, parameters)
 
 
@@ -93,7 +90,7 @@ def parse_heatmap_values(sample_splits, output_folder):
         split_data = glob.glob(split_glob)
         if not split_data:
             error_count += 1
-            logging.warn('Cannot open VAP output file {}'.format(split_glob))
+            logging.warning('Cannot open VAP output file {}'.format(split_glob))
             continue
         with open(split_data[0], 'r') as infile:
             index = None
