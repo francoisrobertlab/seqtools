@@ -15,8 +15,10 @@ import click
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
 @click.option('--threads', '-t', default=1,
-              help='Number of threads used to process data.')
-def main(samples, fasta, threads):
+              help='Number of threads used to process data per sample.')
+@click.option('--poolThreads', '-T', default=2,
+              help='Samples to process in parallel.')
+def main(samples, fasta, threads, poolthreads):
     '''Align samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_index(fasta)
@@ -25,8 +27,8 @@ def main(samples, fasta, threads):
     for sample_columns in samples_columns:
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
-        samples_pool_args.append((sample, fastq, fasta))
-    with Pool(threads) as pool:
+        samples_pool_args.append((sample, fastq, fasta, threads))
+    with Pool(poolthreads) as pool:
         pool.starmap(align, samples_pool_args)
 
 

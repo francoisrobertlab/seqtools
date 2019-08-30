@@ -1,4 +1,5 @@
 import logging
+from multiprocessing import Pool
 import os
 import subprocess
 
@@ -8,15 +9,20 @@ import click
 @click.command()
 @click.option('--merge', '-s', type=click.File('r'), default='merge.txt',
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
-def main(merge):
+@click.option('--poolThreads', '-T', default=2,
+              help='Samples to process in parallel.')
+def main(merge, poolthreads):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     merge_lines = merge.read().splitlines()
+    merges_pool_args = []
     for merge_line in merge_lines:
         if merge_line.startswith('#'):
             continue
         merge_info = merge_line.rstrip("\n\r").split('\t');
-        merge_samples(merge_info[0], merge_info[1:])
+        merges_pool_args.append((merge_info[0], merge_info[1:]))
+    with Pool(poolthreads) as pool:
+        pool.starmap(merge_samples, merges_pool_args)
 
 
 def merge_samples(name, samples):

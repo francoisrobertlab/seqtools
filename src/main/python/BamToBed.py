@@ -1,28 +1,29 @@
+from functools import partial
 import logging
+from multiprocessing import Pool
 import os
 import subprocess
 
+import FullAnalysis
 import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.')
 @click.option('--threads', '-t', default=1,
-              help='Number of threads used to process data.')
-def main(samples, threads):
+              help='Number of threads used to process data per sample.')
+@click.option('--poolThreads', '-T', default=2,
+              help='Samples to process in parallel.')
+def main(samples, threads, poolthreads):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.rstrip("\n\r").split('\t');
-        sample = sample_info[0]
-        bam_to_bed(sample, threads)
+    samples_names = FullAnalysis.first_column(samples)
+    with Pool(poolthreads) as pool:
+        pool.map(partial(bam_to_bed, threads=threads), samples_names)
 
 
-def bam_to_bed(sample, threads):
+def bam_to_bed(sample, threads=None):
     '''Convert BAM file to BED for a single sample.'''
     print ('Convert BAM to BED for sample {}'.format(sample))
     bam = sample + '.bam'

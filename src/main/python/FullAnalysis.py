@@ -20,17 +20,19 @@ import click
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--fasta', '-f', type=click.Path(exists=True), default='sacCer3.fa',
               help='FASTA file used for alignment.')
-@click.option('--sizes', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
+@click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
 @click.option('--threads', '-t', default=1,
-              help='Number of threads used to process data.')
+              help='Number of threads used to process data per sample.')
+@click.option('--poolThreads', '-T', default=2,
+              help='Samples to process in parallel.')
 @click.option('--splitLength', type=int, default=None,
               help='Split reads in bins by their length.')
 @click.option('--splitMinLength', default=100,
               help='Split reads minimum length.')
 @click.option('--splitMaxLength', default=500,
               help='Split reads maximum length.')
-def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
+def main(samples, merge, fasta, sizes, threads, poolthreads, splitlength, splitminlength, splitmaxlength):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     AlignSample.bwa_index(fasta)
@@ -40,8 +42,8 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
         srr = sample_columns[2] if len(sample_columns) > 2 else None
-        samples_pool_args.append((sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength))
-    with Pool(threads) as pool:
+        samples_pool_args.append((sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength, threads))
+    with Pool(poolthreads) as pool:
         pool.starmap(analyse, samples_pool_args)
     merges_columns = all_columns(merge) if os.path.isfile(merge) else []
     merges_pool_args = []
@@ -50,7 +52,7 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
         samples_to_merge = merge_columns[1:] if len(merge_columns) > 1 else None
         MergeSampleBed.merge_samples(sample, samples_to_merge)
         merges_pool_args.append((sample, sizes, splitlength, splitminlength, splitmaxlength))
-    with Pool(threads) as pool:
+    with Pool(poolthreads) as pool:
         pool.starmap(coverage, merges_pool_args)
 
 
@@ -70,14 +72,14 @@ def first_column(file):
     return [columns[0] for columns in all]
 
 
-def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength):
+def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, splitmaxlength, threads=None):
     '''Analyse a single sample.'''
     try:
         print ('Analyse sample {}'.format(sample))
         DownloadSample.download(sample, fastq, srr)
-        AlignSample.align(sample, fastq, fasta)
-        FilterBam.filter_bam(sample, 1)
-        BamToBed.bam_to_bed(sample, 1)
+        AlignSample.align(sample, fastq, fasta, threads)
+        FilterBam.filter_bam(sample, threads)
+        BamToBed.bam_to_bed(sample, threads)
         coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
     except Exception as e:
         logging.exception('Could not analyse sample {}'.format(sample))

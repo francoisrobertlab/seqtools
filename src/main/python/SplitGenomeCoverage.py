@@ -1,31 +1,33 @@
+from functools import partial
 import logging
+from multiprocessing import Pool
 import os
 import re
+
+import FullAnalysis
 import GenomeCoverage
 import click
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.File('r'), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.')
-@click.option('--sizes', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
+@click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
+@click.option('--poolThreads', '-T', default=2,
+              help='Samples to process in parallel.')
 @click.option('--splitLength', type=int, default=10,
               help='Split reads in bins by their length.')
 @click.option('--splitMinLength', default=100,
               help='Split reads minimum length.')
 @click.option('--splitMaxLength', default=500,
               help='Split reads maximum length.')
-def main(samples, sizes, splitlength, splitminlength, splitmaxlength):
+def main(samples, sizes, poolthreads, splitlength, splitminlength, splitmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_lines = samples.read().splitlines()
-    for sample_line in samples_lines:
-        if sample_line.startswith('#'):
-            continue
-        sample_info = sample_line.rstrip("\n\r").split('\t');
-        sample = sample_info[0]
-        split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+    samples_names = FullAnalysis.first_column(samples)
+    with Pool(poolthreads) as pool:
+        pool.map(partial(split_genome_coverage, sizes=sizes, splitlength=splitlength, splitminlength=splitminlength, splitmaxlength=splitmaxlength), samples_names)
 
 
 def split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxlength):
