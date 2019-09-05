@@ -6,7 +6,7 @@ import subprocess
 import FilterBed
 import FullAnalysis
 import GenomeCoverage
-import SplitGenomeCoverage
+import SplitBed
 import click
 
 
@@ -50,7 +50,7 @@ def all_statistics(samples, merges, annotations, output):
 def headers(sample, annotations):
     '''Statistics headers'''
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
-    splits = SplitGenomeCoverage.splits(sample)
+    splits = SplitBed.splits(sample)
     splits_headers = [split[len(sample) + 1:] for split in splits]
     headers.extend(splits_headers)
     filtereds = FilterBed.filtered(sample, annotations)
@@ -69,7 +69,7 @@ def sample_statistics(sample, annotations):
     sample_stats.extend([flagstat_total(bam_filtered) if os.path.isfile(bam_filtered) else ''])
     bed_raw = sample + '-raw.bed'
     sample_stats.extend([GenomeCoverage.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
-    splits = SplitGenomeCoverage.splits(sample)
+    splits = SplitBed.splits(sample)
     if splits:
         beds = [split + '-raw.bed' for split in splits]
         counts = [GenomeCoverage.count_bed(bed) for bed in beds]

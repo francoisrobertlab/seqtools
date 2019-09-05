@@ -5,7 +5,7 @@ import shutil
 import subprocess
 
 import FullAnalysis
-import SplitGenomeCoverage
+import SplitBed
 import click
 
 
@@ -29,7 +29,7 @@ def vap(sample, parameters):
     if not os.path.exists(output):
         os.mkdir(output);
     sample_parameters = output + '/parameters.txt';
-    splits = SplitGenomeCoverage.splits(sample)
+    splits = SplitBed.splits(sample)
     beds = [split + '.bed' for split in splits]
     genes = parse_genes(parameters)
     create_parameters(beds, output, parameters, sample_parameters);

@@ -1,13 +1,12 @@
 import glob
 import logging
 import os
-from pathlib import Path
 import shutil
 import subprocess
 
 import FullAnalysis
-import SplitGenomeCoverage
 import click
+from pathlib import Path
 
 
 @click.command()

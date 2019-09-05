@@ -5,6 +5,7 @@ import os
 import subprocess
 
 import FullAnalysis
+import SplitBed
 import click
 
 BASE_SCALE = 1000000
@@ -28,13 +29,20 @@ def main(samples, sizes, poolthreads):
 def genome_coverage(sample, sizes):
     '''Compute genome coverage on a single sample.'''
     print ('Compute genome coverage on sample {}'.format(sample))
+    do_genome_coverage(sample, sizes)
+    splits = SplitBed.splits(sample)
+    for split in splits:
+        do_genome_coverage(split, sizes)
+
+
+def do_genome_coverage(sample, sizes):
     bed_raw = sample + "-raw.bed"
     bed_ignore_strand = sample + "-istrand.bed"
     ignore_strand(bed_raw, bed_ignore_strand)
     count = count_bed(bed_ignore_strand)
     scale = BASE_SCALE / count
-    bed = sample + ".bed"
-    bigwig = sample + ".bw"
+    bed = sample + '.bed'
+    bigwig = sample + '.bw'
     coverage(bed_ignore_strand, bed, sizes, sample, scale)
     os.remove(bed_ignore_strand)
     bedgraph_to_bigwig(bed, bigwig, sizes)

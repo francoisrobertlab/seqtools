@@ -2,7 +2,7 @@ import logging
 import os
 import re
 import FullAnalysis
-import SplitGenomeCoverage
+import SplitBed
 import click
 
 
@@ -41,7 +41,7 @@ def filter_sample(sample, annotations_chrom, sufix):
     bed_raw = sample + '-raw.bed'
     bed_filtered = '{}-{}.bed'.format(sample, sufix)
     filter_bed(bed_raw, annotations_chrom, bed_filtered)
-    splits = SplitGenomeCoverage.splits(sample)
+    splits = SplitBed.splits(sample)
     if splits:
         for split in splits:
             bed = split + '-raw.bed'

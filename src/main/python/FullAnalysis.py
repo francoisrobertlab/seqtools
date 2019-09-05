@@ -8,7 +8,7 @@ import DownloadSample
 import FilterBam
 import GenomeCoverage
 import MergeSampleBed
-import SplitGenomeCoverage
+import SplitBed
 import click
 
 
@@ -53,7 +53,7 @@ def main(samples, merge, fasta, sizes, threads, poolthreads, splitlength, splitm
         MergeSampleBed.merge_samples(sample, samples_to_merge)
         merges_pool_args.append((sample, sizes, splitlength, splitminlength, splitmaxlength))
     with Pool(poolthreads) as pool:
-        pool.starmap(coverage, merges_pool_args)
+        pool.starmap(analyse_merged, merges_pool_args)
 
 
 def all_columns(file):
@@ -80,18 +80,24 @@ def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, split
         AlignSample.align(sample, fastq, fasta, threads)
         FilterBam.filter_bam(sample, threads)
         BamToBed.bam_to_bed(sample, threads)
-        coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+        if splitlength is not None:
+            SplitBed.split_bed(sample, splitlength, splitminlength, splitmaxlength)
+        GenomeCoverage.genome_coverage(sample, sizes)
     except Exception as e:
         logging.exception('Could not analyse sample {}'.format(sample))
         raise e
 
 
-def coverage(sample, sizes, splitlength, splitminlength, splitmaxlength):
+def analyse_merged(sample, sizes, splitlength, splitminlength, splitmaxlength):
     '''Compute coverage of a single sample.'''
     print ('Analyse sample {}'.format(sample))
-    GenomeCoverage.genome_coverage(sample, sizes)
-    if splitlength is not None:
-        SplitGenomeCoverage.split_genome_coverage(sample, sizes, splitlength, splitminlength, splitmaxlength)
+    try:
+        if splitlength is not None:
+            SplitBed.split_bed(sample, splitlength, splitminlength, splitmaxlength)
+        GenomeCoverage.genome_coverage(sample, sizes)
+    except Exception as e:
+        logging.exception('Could not analyse sample {}'.format(sample))
+        raise e
 
 
 if __name__ == '__main__':
