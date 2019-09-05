@@ -29,41 +29,31 @@ def genome_coverage(sample, sizes):
     '''Compute genome coverage on a single sample.'''
     print ('Compute genome coverage on sample {}'.format(sample))
     bed_raw = sample + "-raw.bed"
-    bed_center = sample + "-center.bed"
-    center_annotations(bed_raw, bed_center)
-    count = count_bed(bed_center)
+    bed_ignore_strand = sample + "-istrand.bed"
+    ignore_strand(bed_raw, bed_ignore_strand)
+    count = count_bed(bed_ignore_strand)
     scale = BASE_SCALE / count
     bed = sample + ".bed"
     bigwig = sample + ".bw"
-    coverage(bed_center, bed, sizes, sample, scale)
-    os.remove(bed_center)
+    coverage(bed_ignore_strand, bed, sizes, sample, scale)
+    os.remove(bed_ignore_strand)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
-def center_annotations(bed, output):
+def ignore_strand(bed, output):
     '''Resize annotations to 1 positioned at the center.'''
-    with open(bed, "r") as infile:
-        with open(output, "w") as outfile:
-            for line in infile:
-                if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
-                    outfile.write(line)
-                    continue
-                columns = line.rstrip('\r\n').split('\t')
-                if len(columns) >= 3:
-                    start = int(columns[1])
-                    end = int(columns[2])
-                    length = end - start
-                    start = start + int(length / 2)
-                    end = start + 1
-                    outfile.write(columns[0])
-                    outfile.write("\t")
-                    outfile.write(str(start))
-                    outfile.write("\t")
-                    outfile.write(str(end))
-                    for i in range(3, len(columns)):
-                        outfile.write("\t")
-                        outfile.write(columns[i])
-                    outfile.write("\n")
+    with open(bed, "r") as infile, open(output, "w") as outfile:
+        for line in infile:
+            if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
+                outfile.write(line)
+                continue
+            columns = line.rstrip('\r\n').split('\t')
+            if len(columns) >= 6:
+                outfile.write('\t'.join(columns))
+                outfile.write("\n")
+                columns[5] = '+' if columns[5] == '-' else '-'
+                outfile.write('\t'.join(columns))
+                outfile.write("\n")
 
 
 def count_bed(bed, strand=None):
@@ -85,7 +75,7 @@ def count_bed(bed, strand=None):
 def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     '''Compute genome coverage.'''
     coverage_output = bed_input + '.cov'
-    cmd = ['bedtools', 'genomecov', '-bg', '-i', bed_input, '-g', sizes]
+    cmd = ['bedtools', 'genomecov', '-bg', '-5', '-i', bed_input, '-g', sizes]
     if not scale is None:
         cmd.extend(['-scale', str(scale)]) 
     if not strand is None:
@@ -106,11 +96,9 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     track = 'track type=bedGraph name="' + sample + '"'
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
-    with open(sort_output, "r") as infile:
-        with open(bed_output, "w") as outfile:
-            outfile.write(track + '\n')
-            for line in infile:
-                outfile.write(line)
+    with open(sort_output, "r") as infile, open(bed_output, "w") as outfile:
+        outfile.write(track + '\n')
+        outfile.writelines(infile)
     os.remove(sort_output)
 
 
