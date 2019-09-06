@@ -10,6 +10,9 @@ DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 . "$DIR/loadmodules.sh"
 
-source bin/venv/bin/activate
-python bin/src/main/python/SplitBed.py -T 4
-python bin/src/main/python/GenomeCoverage.py -T 4
+VENV_DIR="$DIR/../../../venv"
+PYTHON_DIR="$DIR/../python"
+
+source $VENV_DIR/venv/bin/activate
+python $PYTHON_DIR/SplitBed.py -T 4
+python $PYTHON_DIR/GenomeCoverage.py -T 4
