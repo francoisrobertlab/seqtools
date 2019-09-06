@@ -6,14 +6,7 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-. "$DIR/loadmodules.sh"
-
-VENV_DIR="$DIR/../../../venv"
-PYTHON_DIR="$DIR/../python"
-
-source $VENV_DIR/bin/activate
-python $PYTHON_DIR/MergeSampleBed.py -T 4
-python $PYTHON_DIR/SplitBed.py -T 4 -s merge.txt
-python $PYTHON_DIR/GenomeCoverage.py -T 4 -s merge.txt
+. $CHEC_VENV/activate
+python $CHEC_PATH/MergeSampleBed.py -T 4
+python $CHEC_PATH/SplitBed.py -T 4 -s merge.txt
+python $CHEC_PATH/GenomeCoverage.py -T 4 -s merge.txt

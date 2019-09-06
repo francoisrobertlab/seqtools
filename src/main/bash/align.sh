@@ -6,14 +6,7 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-. "$DIR/loadmodules.sh"
-
-VENV_DIR="$DIR/../../../venv"
-PYTHON_DIR="$DIR/../python"
-
-source $VENV_DIR/venv/bin/activate
-python $PYTHON_DIR/AlignSample.py -T 4 -t 4
-python $PYTHON_DIR/FilterBam.py -T 4 -t 4
-python $PYTHON_DIR/BamToBed.py -T 4 -t 4
+. $CHEC_VENV/activate
+python $CHEC_PATH/AlignSample.py -T 4 -t 4
+python $CHEC_PATH/FilterBam.py -T 4 -t 4
+python $CHEC_PATH/BamToBed.py -T 4 -t 4

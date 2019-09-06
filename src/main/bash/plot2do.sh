@@ -6,12 +6,5 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-DIR="${BASH_SOURCE%/*}"
-if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
-. "$DIR/loadmodules.sh"
-
-VENV_DIR="$DIR/../../../venv"
-PYTHON_DIR="$DIR/../python"
-
-source $VENV_DIR/venv/bin/activate
-python $PYTHON_DIR/Plot2do.py $@
+. $CHEC_VENV/activate
+python $CHEC_PATH/Plot2do.py $@
