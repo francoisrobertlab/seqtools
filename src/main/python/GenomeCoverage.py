@@ -40,7 +40,7 @@ def do_genome_coverage(sample, sizes):
     bed_ignore_strand = sample + "-istrand.bed"
     ignore_strand(bed_raw, bed_ignore_strand)
     count = count_bed(bed_ignore_strand)
-    scale = BASE_SCALE / count
+    scale = BASE_SCALE / max(count, 1)
     bed = sample + '.bed'
     bigwig = sample + '.bw'
     coverage(bed_ignore_strand, bed, sizes, sample, scale)
