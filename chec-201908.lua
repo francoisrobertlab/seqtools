@@ -22,6 +22,7 @@ always_load("samtools/1.9")
 always_load("bedtools/2.27.1")
 always_load("kentutils/20180716")
 always_load("r/3.6.0")
+always_load("vap")
 
 local base = "~/projects/def-robertf/chec-201908"
 prepend_path("PATH", pathJoin(base,"src/main/bash"))
