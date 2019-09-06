@@ -6,7 +6,8 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-module load python/3.7.4
+module load nixpkgs/16.09 python/3.7.4
 module load nixpkgs/16.09 gcc/7.3.0 r/3.6.0
-source ~/projects/def-robertf/mnase-201908/venv/bin/activate
-python ~/projects/def-robertf/mnase-201908/src/main/python/Plot2do.py $@
+
+source bin/venv/bin/activate
+python bin/src/main/python/Plot2do.py $@

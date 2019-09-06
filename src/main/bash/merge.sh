@@ -6,10 +6,10 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-module load python/3.7.4
-module load nixpkgs/16.09 gcc/5.4.0 bedtools/2.27.1
-# TODO Create a module for kent-tools
-module load kent-tools/1.04.00
+DIR="${BASH_SOURCE%/*}"
+if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
+. "$DIR/loadmodules.sh"
+
 source bin/venv/bin/activate
 python bin/src/main/python/MergeSampleBed.py -T 4
 python bin/src/main/python/SplitBed.py -T 4 -s merge.txt
