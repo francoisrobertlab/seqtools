@@ -6,6 +6,5 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-. $CHEC_VENV/activate
 python $CHEC_PATH/RunVap.py
 python $CHEC_PATH/RunVap.py -s merge.txt

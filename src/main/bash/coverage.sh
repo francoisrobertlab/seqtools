@@ -7,6 +7,5 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
-. $CHEC_VENV/activate
 python $CHEC_PATH/SplitBed.py -i $SLURM_ARRAY_TASK_ID
 python $CHEC_PATH/GenomeCoverage.py -i $SLURM_ARRAY_TASK_ID
