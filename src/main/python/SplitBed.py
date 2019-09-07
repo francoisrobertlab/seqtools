@@ -1,6 +1,4 @@
-from functools import partial
 import logging
-from multiprocessing import Pool
 import os
 import re
 
@@ -11,20 +9,22 @@ import click
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
 @click.option('--splitLength', type=int, default=10,
               help='Split reads in bins by their length.')
 @click.option('--splitMinLength', default=100,
               help='Split reads minimum length.')
 @click.option('--splitMaxLength', default=500,
               help='Split reads maximum length.')
-def main(samples, poolthreads, splitlength, splitminlength, splitmaxlength):
+def main(samples, index, splitlength, splitminlength, splitmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     samples_names = FullAnalysis.first_column(samples)
-    with Pool(poolthreads) as pool:
-        pool.map(partial(split_bed, splitlength=splitlength, splitminlength=splitminlength, splitmaxlength=splitmaxlength), samples_names)
+    if index != None:
+        samples_names = [samples_names[index]]
+    for sample in samples_names:
+        split_bed(sample, splitlength, splitminlength, splitmaxlength)
 
 
 def split_bed(sample, splitlength, splitminlength, splitmaxlength):

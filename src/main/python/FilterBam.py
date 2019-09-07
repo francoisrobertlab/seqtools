@@ -1,6 +1,4 @@
-from functools import partial
 import logging
-from multiprocessing import Pool
 import os
 import subprocess
 
@@ -13,14 +11,16 @@ import click
               help='Sample names listed one sample name by line.')
 @click.option('--threads', '-t', default=1,
               help='Number of threads used to process data per sample.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
-def main(samples, threads, poolthreads):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(samples, threads, index):
     '''Filter BAM files to remove unmapped sequences and duplicates.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     samples_names = FullAnalysis.first_column(samples)
-    with Pool(poolthreads) as pool:
-        pool.map(partial(filter_bam, threads=threads), samples_names)
+    if index != None:
+        samples_names = [samples_names[index]]
+    for sample in samples_names:
+        filter_bam(sample, threads)
 
 
 def filter_bam(sample, threads=None):

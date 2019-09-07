@@ -1,6 +1,4 @@
-from functools import partial
 import logging
-from multiprocessing import Pool
 import os
 import subprocess
 
@@ -16,14 +14,16 @@ BASE_SCALE = 1000000
               help='Sample names listed one sample name by line.')
 @click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
-def main(samples, sizes, poolthreads):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(samples, sizes, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     samples_names = FullAnalysis.first_column(samples)
-    with Pool(poolthreads) as pool:
-        pool.map(partial(genome_coverage, sizes=sizes), samples_names)
+    if index != None:
+        samples_names = [samples_names[index]]
+    for sample in samples_names:
+        genome_coverage(sample, sizes)
 
 
 def genome_coverage(sample, sizes):

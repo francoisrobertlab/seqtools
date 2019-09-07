@@ -1,5 +1,4 @@
 import logging
-from multiprocessing import Pool
 import os
 import subprocess
 
@@ -12,20 +11,19 @@ import click
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise FASTQ file must be provided.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
-def main(samples, poolthreads):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(samples, index):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     samples_columns = FullAnalysis.all_columns(samples)
-    samples_pool_args = []
+    if index != None:
+        samples_columns = [samples_columns[index]]
     for sample_columns in samples_columns:
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
         srr = sample_columns[2] if len(sample_columns) > 2 else None
-        samples_pool_args.append((sample, fastq, srr))
-    with Pool(poolthreads) as pool:
-        pool.starmap(download, samples_pool_args)
+        download(sample, fastq, srr)
 
 
 def download(sample, fastq, srr):

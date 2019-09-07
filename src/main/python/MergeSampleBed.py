@@ -3,26 +3,25 @@ from multiprocessing import Pool
 import os
 import subprocess
 
+import FullAnalysis
 import click
 
 
 @click.command()
 @click.option('--merge', '-s', type=click.File('r'), default='merge.txt',
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
-def main(merge, poolthreads):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(merge, index):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    merge_lines = merge.read().splitlines()
-    merges_pool_args = []
-    for merge_line in merge_lines:
-        if merge_line.startswith('#'):
-            continue
-        merge_info = merge_line.rstrip("\n\r").split('\t');
-        merges_pool_args.append((merge_info[0], merge_info[1:]))
-    with Pool(poolthreads) as pool:
-        pool.starmap(merge_samples, merges_pool_args)
+    merges_columns = FullAnalysis.all_columns(merge)
+    if index != None:
+        merges_columns = [merges_columns[index]]
+    for merge_columns in merges_columns:
+        name = merge_info[0]
+        samples = merge_info[1:]
+        merge_samples(name, samples)
 
 
 def merge_samples(name, samples):

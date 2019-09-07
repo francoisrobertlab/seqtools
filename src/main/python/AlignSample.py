@@ -1,6 +1,5 @@
 from distutils.command.check import check
 import logging
-from multiprocessing import Pool
 import os
 import re
 import subprocess
@@ -16,20 +15,20 @@ import click
               help='FASTA file used for alignment.')
 @click.option('--threads', '-t', default=1,
               help='Number of threads used to process data per sample.')
-@click.option('--poolThreads', '-T', default=2,
-              help='Samples to process in parallel.')
-def main(samples, fasta, threads, poolthreads):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(samples, fasta, threads, index):
     '''Align samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    bwa_index(fasta)
+    if index == None:
+        bwa_index(fasta)
     samples_columns = FullAnalysis.all_columns(samples)
-    samples_pool_args = []
+    if index != None:
+        samples_columns = [samples_columns[index]]
     for sample_columns in samples_columns:
         sample = sample_columns[0]
         fastq = sample_columns[1] if len(sample_columns) > 1 else None
-        samples_pool_args.append((sample, fastq, fasta, threads))
-    with Pool(poolthreads) as pool:
-        pool.starmap(align, samples_pool_args)
+        align(sample, fastq, fasta, threads)
 
 
 def align(sample, sample_fastq, fasta, threads=None):
