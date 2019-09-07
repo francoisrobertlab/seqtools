@@ -33,9 +33,9 @@ def vap(sample, parameters):
     beds = [split + '.bed' for split in splits]
     genes = parse_genes(parameters)
     create_parameters(beds, output, parameters, sample_parameters);
-    cmd = ['./vap']
+    cmd = ['vap']
     if os.name == 'nt':
-        cmd = ['./vap.exe']
+        cmd = ['vap.exe']
     cmd.extend(['-p', sample_parameters])
     logging.debug('Running {}'.format(cmd))
     subprocess.call(cmd)
