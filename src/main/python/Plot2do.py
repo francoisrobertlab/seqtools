@@ -49,11 +49,15 @@ from pathlib import Path
 @click.option('--squeezePlot', default=None,
               help='Simplify the plot and squeeze the heat map.'
               ' [options: on, off (default)]')
-def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot):
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index):
     '''Run plot2DO on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     file_parent = Path(file).parent
     samples_names = FullAnalysis.first_column(file)
+    if index != None:
+        samples_names = [samples_names[index]]
     for sample in samples_names:
         plot2do(file_parent / sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
 
