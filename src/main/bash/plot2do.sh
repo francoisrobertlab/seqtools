@@ -12,4 +12,6 @@ then
   SLURM_ARRAY_TASK_ID=0
 fi
 
+# Parameters for Martin.
+# -t dyads -r Plus1 -L 400 -m 0.02
 python $CHEC_PATH/Plot2do.py -i $SLURM_ARRAY_TASK_ID $@
