@@ -7,4 +7,9 @@
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 
+if [ -z "$SLURM_ARRAY_TASK_ID" ]
+then
+  SLURM_ARRAY_TASK_ID=0
+fi
+
 python $CHEC_PATH/Plot2do.py -i $SLURM_ARRAY_TASK_ID $@
