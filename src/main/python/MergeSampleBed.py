@@ -8,7 +8,7 @@ import click
 
 
 @click.command()
-@click.option('--merge', '-s', type=click.File('r'), default='merge.txt',
+@click.option('--merge', '-m', type=click.Path(), default='merge.txt',
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
@@ -19,8 +19,8 @@ def main(merge, index):
     if index != None:
         merges_columns = [merges_columns[index]]
     for merge_columns in merges_columns:
-        name = merge_info[0]
-        samples = merge_info[1:]
+        name = merge_columns[0]
+        samples = merge_columns[1:]
         merge_samples(name, samples)
 
 
