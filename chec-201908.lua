@@ -1,13 +1,18 @@
 help([[
 For detailed instructions, go to:
-   https://github.com/francoisrobertlab/chec-201908
+    https://github.com/francoisrobertlab/chec-201908
+
+This module sets the following environment variables:
+    CHEC_BASE: directory containing ChEC-Seq source code
+    CHEC_PATH: directory containing ChEC-Seq analysis tools in python
+    CHEC_VENV: directory containing ChEC-Seq's virtual environment for python
 
 This module loads the following modules and their requirements:
-   - bwa/0.7.17
-   - samtools/1.9
-   - bedtools/2.27.1
-   - kentutils/20180716
-   - r/3.6.0
+    - bwa/0.7.17
+    - samtools/1.9
+    - bedtools/2.27.1
+    - kentutils/20180716
+    - r/3.6.0
 ]])
 
 whatis("Version: 1.0.0")
