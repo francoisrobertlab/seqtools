@@ -2,9 +2,9 @@ import logging
 import os
 import subprocess
 
-import RunBwa
 import click
 import pandas as pd
+from . import RunBwa
 
 
 @click.command()

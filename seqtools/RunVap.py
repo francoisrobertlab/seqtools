@@ -4,9 +4,9 @@ import os
 import shutil
 import subprocess
 
-import SplitBed
 import click
 import pandas as pd
+from . import SplitBed
 
 
 @click.command()

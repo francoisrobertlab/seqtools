@@ -3,10 +3,10 @@ import os
 import re
 import subprocess
 
-import GenomeCoverage
-import SplitBed
 import click
 import pandas as pd
+from . import GenomeCoverage
+from . import SplitBed
 
 
 @click.command()
