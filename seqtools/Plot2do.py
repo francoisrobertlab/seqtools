@@ -55,7 +55,7 @@ def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxl
     '''Run plot2DO on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     file_parent = Path(file).parent
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = pd.read_csv(file, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
