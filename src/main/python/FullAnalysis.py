@@ -4,7 +4,6 @@ import os
 import RunBwa
 import BamToBed
 import DownloadSample
-import FilterBam
 import GenomeCoverage
 import MergeSampleBed
 import SplitBed
@@ -68,8 +67,7 @@ def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, split
     try:
         print ('Analyse sample {}'.format(sample))
         DownloadSample.download(sample, fastq, srr)
-        RunBwa.align(sample, fastq, fasta, threads)
-        FilterBam.filter_bam(sample, threads)
+        RunBwa.bwa(sample, fastq, fasta, threads)
         BamToBed.bam_to_bed(sample, threads)
         if splitlength is not None:
             SplitBed.split_bed(sample, splitlength, splitminlength, splitmaxlength)
