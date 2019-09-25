@@ -3,8 +3,8 @@ from multiprocessing import Pool
 import os
 import subprocess
 
-import FullAnalysis
 import click
+import pandas as pd
 
 
 @click.command()
@@ -15,12 +15,13 @@ import click
 def main(merge, index):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    merges_columns = FullAnalysis.all_columns(merge)
+    merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
+    print (merge_columns)
     if index != None:
-        merges_columns = [merges_columns[index]]
-    for merge_columns in merges_columns:
-        name = merge_columns[0]
-        samples = merge_columns[1:]
+        merge_columns = [merge_columns.iloc[index]]
+    for columns in merge_columns:
+        name = columns[0]
+        samples = [sample for sample in columns[1:]]
         merge_samples(name, samples)
 
 
