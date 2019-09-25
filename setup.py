@@ -16,5 +16,18 @@ setup(
     install_requires=[
         'click>=7.0',
         'pandas>=0.25.1'
-    ]
+    ],
+    entry_points={
+        'console_scripts': [
+            'bam2bed = seqtools.Bam2Bed:main',
+            'download = seqtools.DownloadSample:main',
+            'genecov = seqtools.GenomeCoverage:main',
+            'merge = seqtools.MergeBed:main',
+            'plot2do = seqtools.Plot2do:main',
+            'bwa = seqtools.RunBwa:main',
+            'vap = seqtools.RunVap:main',
+            'split = seqtools.SplitBed:main',
+            'statistics = seqtools.StatisticsFile:main',
+        ]
+    }
 )
