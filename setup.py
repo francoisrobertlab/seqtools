@@ -12,5 +12,9 @@ setup(
     license='GNU General Public License version 3',
     classifiers=[
         'License :: OSI Approved :: GNU General Public License version 3'
+    ],
+    install_requires=[
+        'click>=7.0',
+        'pandas>=0.25.1'
     ]
 )
