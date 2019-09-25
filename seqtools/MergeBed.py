@@ -16,10 +16,9 @@ def main(merge, index):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
-    print (merge_columns)
     if index != None:
-        merge_columns = [merge_columns.iloc[index]]
-    for columns in merge_columns:
+        merge_columns = merge_columns.iloc[index:index + 1]
+    for index, columns in merge_columns.iterrows():
         name = columns[0]
         samples = [sample for sample in columns[1:]]
         merge_samples(name, samples)
