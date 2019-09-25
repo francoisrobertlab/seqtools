@@ -24,8 +24,8 @@ setup(
             'genecov = seqtools.GenomeCoverage:main',
             'merge = seqtools.MergeBed:main',
             'plot2do = seqtools.Plot2do:main',
-            'bwa = seqtools.RunBwa:main',
-            'vap = seqtools.RunVap:main',
+            'runbwa = seqtools.RunBwa:main',
+            'runvap = seqtools.RunVap:main',
             'split = seqtools.SplitBed:main',
             'statistics = seqtools.StatisticsFile:main',
         ]
