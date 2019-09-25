@@ -1,2 +1,2 @@
-# chec-201908
-ChEC-SEQ analysis by Celia Jeronimo
+# seqtools
+Tools to analyze NGS data
