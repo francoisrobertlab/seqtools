@@ -2,9 +2,9 @@ import logging
 import os
 import subprocess
 
-import FullAnalysis
 import SplitBed
 import click
+import pandas as pd
 
 BASE_SCALE = 1000000
 
@@ -19,10 +19,10 @@ BASE_SCALE = 1000000
 def main(samples, sizes, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_names = FullAnalysis.first_column(samples)
+    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
-        samples_names = [samples_names[index]]
-    for sample in samples_names:
+        sample_names = [sample_names[index]]
+    for sample in sample_names:
         genome_coverage(sample, sizes)
 
 
