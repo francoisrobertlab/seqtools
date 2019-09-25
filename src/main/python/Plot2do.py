@@ -1,10 +1,10 @@
 import logging
 import os
+from pathlib import Path
 import subprocess
 
-import FullAnalysis
 import click
-from pathlib import Path
+import pandas as pd
 
 
 @click.command()
@@ -55,10 +55,10 @@ def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxl
     '''Run plot2DO on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     file_parent = Path(file).parent
-    samples_names = FullAnalysis.first_column(file)
+    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
-        samples_names = [samples_names[index]]
-    for sample in samples_names:
+        sample_names = [sample_names[index]]
+    for sample in sample_names:
         plot2do(file_parent / sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
 
 
