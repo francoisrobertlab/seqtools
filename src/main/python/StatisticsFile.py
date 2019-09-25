@@ -3,7 +3,6 @@ import os
 import re
 import subprocess
 
-import FilterBed
 import FullAnalysis
 import GenomeCoverage
 import SplitBed
@@ -15,8 +14,6 @@ import click
               help='Sample names listed one sample name by line.')
 @click.option('--merge', '-m', type=click.Path(), default='merge.txt',
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
-@click.option('--annotations', '-a', type=click.Path(), default='annotations.bed',
-              help='File used for FilterBed script, if any.')
 @click.option('--output', '-o', type=click.Path(), default='statistics.txt',
               help='Output file were statistics are written.')
 def main(samples, merge, annotations, output):
@@ -53,9 +50,6 @@ def headers(sample, annotations):
     splits = SplitBed.splits(sample)
     splits_headers = [split[len(sample) + 1:] for split in splits]
     headers.extend(splits_headers)
-    filtereds = FilterBed.filtered(sample, annotations)
-    filtereds_headers = [filtered[len(sample) + 1:] for filtered in filtereds]
-    headers.extend(filtereds_headers)
     return headers
     
     
@@ -72,11 +66,6 @@ def sample_statistics(sample, annotations):
     splits = SplitBed.splits(sample)
     if splits:
         beds = [split + '-raw.bed' for split in splits]
-        counts = [GenomeCoverage.count_bed(bed) for bed in beds]
-        sample_stats.extend(counts)
-    filtereds = FilterBed.filtered(sample, annotations)
-    if filtereds:
-        beds = [filtered + '.bed' for filtered in filtereds]
         counts = [GenomeCoverage.count_bed(bed) for bed in beds]
         sample_stats.extend(counts)
     return sample_stats
