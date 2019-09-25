@@ -36,32 +36,15 @@ def genome_coverage(sample, sizes):
 
 
 def do_genome_coverage(sample, sizes):
-    bed_raw = sample + "-raw.bed"
-    bed_ignore_strand = sample + "-istrand.bed"
-    ignore_strand(bed_raw, bed_ignore_strand)
-    count = count_bed(bed_ignore_strand)
+    bed_source = sample + "-cov.bed"
+    if not os.path.exists(bed_source):
+        bed_source = sample + "-raw.bed"
+    count = count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
     bed = sample + '.bed'
     bigwig = sample + '.bw'
-    coverage(bed_ignore_strand, bed, sizes, sample, scale)
-    os.remove(bed_ignore_strand)
+    coverage(bed_source, bed, sizes, sample, scale)
     bedgraph_to_bigwig(bed, bigwig, sizes)
-
-
-def ignore_strand(bed, output):
-    '''Resize annotations to 1 positioned at the center.'''
-    with open(bed, "r") as infile, open(output, "w") as outfile:
-        for line in infile:
-            if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
-                outfile.write(line)
-                continue
-            columns = line.rstrip('\r\n').split('\t')
-            if len(columns) >= 6:
-                outfile.write('\t'.join(columns))
-                outfile.write("\n")
-                columns[5] = '+' if columns[5] == '-' else '-'
-                outfile.write('\t'.join(columns))
-                outfile.write("\n")
 
 
 def count_bed(bed, strand=None):
