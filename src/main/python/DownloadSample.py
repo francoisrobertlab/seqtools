@@ -3,8 +3,8 @@ import os
 import subprocess
 
 import RunBwa
-import FullAnalysis
 import click
+import pandas as pd
 
 
 @click.command()
@@ -16,20 +16,18 @@ import click
 def main(samples, index):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_columns = FullAnalysis.all_columns(samples)
+    sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
     if index != None:
-        samples_columns = [samples_columns[index]]
-    for sample_columns in samples_columns:
-        sample = sample_columns[0]
-        fastq = sample_columns[1] if len(sample_columns) > 1 else None
-        srr = sample_columns[2] if len(sample_columns) > 2 else None
-        download(sample, fastq, srr)
+        sample_columns = [sample_columns.iloc[index]]
+    for columns in sample_columns:
+        sample = columns[0]
+        srr = columns[1] if len(columns) > 1 else None
+        download(sample, srr)
 
 
-def download(sample, fastq, srr):
+def download(sample, srr):
     '''Download reads of a sample.'''
-    if not fastq:
-        fastq = sample
+    fastq = sample
     fastq_exists = RunBwa.fastq(fastq, 1)
     if fastq_exists is None and srr:
         print ('Downloading FASTQ for sample {} with SRR {}'.format(sample, srr))
