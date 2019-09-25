@@ -16,7 +16,7 @@ from . import SplitBed
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--output', '-o', type=click.Path(), default='statistics.txt',
               help='Output file were statistics are written.')
-def main(samples, merge, annotations, output):
+def main(samples, merge, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
