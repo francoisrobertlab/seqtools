@@ -2,8 +2,8 @@ import logging
 import os
 import subprocess
 
-import FullAnalysis
 import click
+import pandas as pd
 
 
 @click.command()
@@ -16,10 +16,10 @@ import click
 def main(samples, threads, index):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_names = FullAnalysis.first_column(samples)
+    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
-        samples_names = [samples_names[index]]
-    for sample in samples_names:
+        sample_names = [sample_names[index]]
+    for sample in sample_names:
         bam_to_bed(sample, threads)
 
 
