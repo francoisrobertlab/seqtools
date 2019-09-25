@@ -2,7 +2,7 @@ import logging
 import os
 
 import RunBwa
-import BamToBed
+import Bam2Bed
 import DownloadSample
 import GenomeCoverage
 import MergeSampleBed
@@ -68,7 +68,7 @@ def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, split
         print ('Analyse sample {}'.format(sample))
         DownloadSample.download(sample, fastq, srr)
         RunBwa.bwa(sample, fastq, fasta, threads)
-        BamToBed.bam_to_bed(sample, threads)
+        Bam2Bed.bam_to_bed(sample, threads)
         if splitlength is not None:
             SplitBed.split_bed(sample, splitlength, splitminlength, splitmaxlength)
         GenomeCoverage.genome_coverage(sample, sizes)
