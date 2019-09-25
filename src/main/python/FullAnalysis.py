@@ -4,7 +4,7 @@ import os
 import Bam2Bed
 import DownloadSample
 import GenomeCoverage
-import MergeSampleBed
+import MergeBed
 import RunBwa
 import SplitBed
 import click
@@ -42,7 +42,7 @@ def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, spl
     for merge_columns in merges_columns:
         sample = merge_columns[0]
         samples_to_merge = merge_columns[1:] if len(merge_columns) > 1 else None
-        MergeSampleBed.merge_samples(sample, samples_to_merge)
+        MergeBed.merge_samples(sample, samples_to_merge)
         analyse_merged(sample, sizes, splitlength, splitminlength, splitmaxlength)
 
 
