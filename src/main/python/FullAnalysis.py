@@ -1,7 +1,7 @@
 import logging
 import os
 
-import AlignSample
+import RunBwa
 import BamToBed
 import DownloadSample
 import FilterBam
@@ -32,7 +32,7 @@ import click
 def main(samples, merge, fasta, sizes, threads, splitlength, splitminlength, splitmaxlength):
     '''Analyse Martin et al. data from November 2018 in Genetics.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    AlignSample.bwa_index(fasta)
+    RunBwa.bwa_index(fasta)
     samples_columns = all_columns(samples)
     for sample_columns in samples_columns:
         sample = sample_columns[0]
@@ -56,8 +56,8 @@ def all_columns(file):
             columns = line.rstrip('\n\r').split('\t');
             all.extend([columns])
     return all
-    
-    
+
+
 def first_column(file):
     all = all_columns(file)
     return [columns[0] for columns in all]
@@ -68,7 +68,7 @@ def analyse(sample, fastq, srr, fasta, sizes, splitlength, splitminlength, split
     try:
         print ('Analyse sample {}'.format(sample))
         DownloadSample.download(sample, fastq, srr)
-        AlignSample.align(sample, fastq, fasta, threads)
+        RunBwa.align(sample, fastq, fasta, threads)
         FilterBam.filter_bam(sample, threads)
         BamToBed.bam_to_bed(sample, threads)
         if splitlength is not None:

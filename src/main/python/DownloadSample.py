@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 
-import AlignSample
+import RunBwa
 import FullAnalysis
 import click
 
@@ -30,7 +30,7 @@ def download(sample, fastq, srr):
     '''Download reads of a sample.'''
     if not fastq:
         fastq = sample
-    fastq_exists = AlignSample.fastq(fastq, 1)
+    fastq_exists = RunBwa.fastq(fastq, 1)
     if fastq_exists is None and srr:
         print ('Downloading FASTQ for sample {} with SRR {}'.format(sample, srr))
         fastq1 = fastq + '_1.fastq'
