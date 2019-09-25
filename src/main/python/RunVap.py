@@ -4,9 +4,9 @@ import os
 import shutil
 import subprocess
 
-import FullAnalysis
 import SplitBed
 import click
+import pandas as pd
 
 
 @click.command()
@@ -17,8 +17,8 @@ import click
 def main(samples, parameters):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    samples_names = FullAnalysis.first_column(samples)
-    for sample in samples_names:
+    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    for sample in sample_names:
         vap(sample, parameters)
 
 
