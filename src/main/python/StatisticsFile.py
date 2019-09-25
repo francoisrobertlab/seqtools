@@ -3,10 +3,10 @@ import os
 import re
 import subprocess
 
-import FullAnalysis
 import GenomeCoverage
 import SplitBed
 import click
+import pandas as pd
 
 
 @click.command()
@@ -19,8 +19,8 @@ import click
 def main(samples, merge, annotations, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    sample_names = FullAnalysis.first_column(samples)
-    merge_names = FullAnalysis.first_column(merge) if os.path.isfile(merge) else None
+    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
     all_statistics(sample_names, merge_names, annotations, output)
 
 
