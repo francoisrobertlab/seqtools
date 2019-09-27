@@ -6,6 +6,7 @@ import subprocess
 
 import click
 import pandas as pd
+from seqtools.seq import Fastq
 
 
 @click.command()
@@ -39,10 +40,10 @@ def bwa(sample, fasta, threads=None):
     :param fasta: fasta file
     :param threads: number of threads that BWA will use - optional'''
     print ('Running BWA on sample {}'.format(sample))
-    fastq1 = fastq(sample, 1)
+    fastq1 = Fastq.fastq(sample, 1)
     if fastq1 is None:
         raise AssertionError('Cannot find FASTQ files for sample ' + sample)
-    fastq2 = fastq(sample, 2)
+    fastq2 = Fastq.fastq(sample, 2)
     paired = fastq2 is not None and os.path.isfile(fastq2)
     bam_raw = sample + '-raw.bam'
     run_bwa(fastq1, fastq2, fasta, bam_raw, threads)
@@ -55,15 +56,6 @@ def bwa(sample, fasta, threads=None):
         bam_sort_input = bam_dedup
     bam = sample + '.bam'
     sort(bam_sort_input, bam, threads)
-
-
-def fastq(sample, read=1):
-    '''Returns existing FASTQ file for sample - read 1 or read 2, defaults to read 1.'''
-    files = [f for f in os.listdir('.') if re.match('^' + re.escape(sample) + r'_R?' + str(read) + r'\.fastq(\.gz)?$', f)]
-    if len(files) == 0:
-        return None
-    else:
-        return files[0]
 
 
 def bwa_index(fasta):

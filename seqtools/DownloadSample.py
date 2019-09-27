@@ -4,7 +4,7 @@ import subprocess
 
 import click
 import pandas as pd
-from . import RunBwa
+from seqtools.seq import Fastq
 
 
 @click.command()
@@ -28,7 +28,7 @@ def main(samples, index):
 def download(sample, srr):
     '''Download reads of a sample.'''
     fastq = sample
-    fastq_exists = RunBwa.fastq(fastq, 1)
+    fastq_exists = Fastq.fastq(fastq, 1)
     if fastq_exists is None and srr:
         print ('Downloading FASTQ for sample {} with SRR {}'.format(sample, srr))
         fastq1 = fastq + '_1.fastq'
