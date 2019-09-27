@@ -3,9 +3,10 @@ import os
 import re
 import subprocess
 
+from bed import Bed
 import click
 import pandas as pd
-from . import GenomeCoverage
+
 from . import SplitBed
 
 
@@ -62,11 +63,11 @@ def sample_statistics(sample, annotations):
     bam_filtered = sample + '-filtered.bam'
     sample_stats.extend([flagstat_total(bam_filtered) if os.path.isfile(bam_filtered) else ''])
     bed_raw = sample + '-raw.bed'
-    sample_stats.extend([GenomeCoverage.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
+    sample_stats.extend([Bed.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
     splits = SplitBed.splits(sample)
     if splits:
         beds = [split + '-raw.bed' for split in splits]
-        counts = [GenomeCoverage.count_bed(bed) for bed in beds]
+        counts = [Bed.count_bed(bed) for bed in beds]
         sample_stats.extend(counts)
     return sample_stats
 

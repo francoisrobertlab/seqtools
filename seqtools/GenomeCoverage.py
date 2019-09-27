@@ -2,8 +2,10 @@ import logging
 import os
 import subprocess
 
+from bed import Bed
 import click
 import pandas as pd
+
 from . import SplitBed
 
 BASE_SCALE = 1000000
@@ -39,28 +41,12 @@ def do_genome_coverage(sample, sizes):
     bed_source = sample + "-cov.bed"
     if not os.path.exists(bed_source):
         bed_source = sample + "-raw.bed"
-    count = count_bed(bed_source)
+    count = Bed.count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
     bed = sample + '.bed'
     bigwig = sample + '.bw'
     coverage(bed_source, bed, sizes, sample, scale)
     bedgraph_to_bigwig(bed, bigwig, sizes)
-
-
-def count_bed(bed, strand=None):
-    '''Counts number of entry in BED, can be limited to a specific strand.'''
-    count = 0
-    with open(bed, "r") as infile:
-        for line in infile:
-            if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
-                continue
-            if strand is None:
-                count += 1
-            else:
-                columns = line.rstrip('\r\n').split('\t')
-                if len(columns) >= 6 and columns[5] == strand:
-                    count += 1
-    return count
 
 
 def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
@@ -91,15 +77,6 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
         outfile.write(track + '\n')
         outfile.writelines(infile)
     os.remove(sort_output)
-
-
-def empty_bed(bed_output, sample, strand=None):
-    '''Create an empty BED file.'''
-    track = 'track type=bedGraph name="' + sample + '"'
-    if not strand is None:
-        track += ' Minus' if strand == '-' else ' Plus'
-    with open(bed_output, "w") as outfile:
-        outfile.write(track + '\n')
 
 
 def bedgraph_to_bigwig(bed, bigwig, sizes):
