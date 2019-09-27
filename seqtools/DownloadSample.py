@@ -18,8 +18,8 @@ def main(samples, index):
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
     if index != None:
-        sample_columns = [sample_columns.iloc[index]]
-    for columns in sample_columns:
+        sample_columns = sample_columns.iloc[index:index + 1]
+    for index, columns in sample_columns.iterrows():
         sample = columns[0]
         srr = columns[1] if len(columns) > 1 else None
         download(sample, srr)
