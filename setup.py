@@ -15,7 +15,7 @@ setup(
     ],
     install_requires=[
         'click>=7.0',
-        'pandas>=0.25.1'
+        'pandas>=0.25.0'
     ],
     entry_points={
         'console_scripts': [
