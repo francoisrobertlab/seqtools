@@ -2,9 +2,9 @@ import logging
 import os
 import subprocess
 
-from bed import Bed
 import click
 import pandas as pd
+from seqtools.bed import Bed
 
 from . import SplitBed
 
