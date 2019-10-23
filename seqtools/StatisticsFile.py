@@ -22,20 +22,20 @@ def main(samples, merge, output):
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
-    all_statistics(sample_names, merge_names, annotations, output)
+    all_statistics(sample_names, merge_names, output)
 
 
-def all_statistics(samples, merges, annotations, output):
+def all_statistics(samples, merges, output):
     stats_headers = None
     samples_stats = []
     for sample in samples:
         if stats_headers is None:
-            stats_headers = headers(sample, annotations)
-        sample_stats = sample_statistics(sample, annotations)
+            stats_headers = headers(sample)
+        sample_stats = sample_statistics(sample)
         samples_stats.append(sample_stats)
     if merges:
         for merge in merges:
-            sample_stats = sample_statistics(merge, annotations)
+            sample_stats = sample_statistics(merge)
             samples_stats.append(sample_stats)
     with open(output, 'w') as out:
         out.write('\t'.join(stats_headers))
@@ -45,7 +45,7 @@ def all_statistics(samples, merges, annotations, output):
             out.write('\n')
 
 
-def headers(sample, annotations):
+def headers(sample):
     '''Statistics headers'''
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
     splits = SplitBed.splits(sample)
@@ -54,7 +54,7 @@ def headers(sample, annotations):
     return headers
     
     
-def sample_statistics(sample, annotations):
+def sample_statistics(sample):
     '''Statistics of a single sample.'''
     print ('Computing statistics for sample {}'.format(sample))
     sample_stats = [sample]
