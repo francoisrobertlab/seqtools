@@ -33,7 +33,7 @@ def all_statistics(samples, merges, output):
             stats_headers = headers(sample)
         sample_stats = sample_statistics(sample)
         samples_stats.append(sample_stats)
-    if merges:
+    if os.path.exists(merges):
         for merge in merges:
             sample_stats = sample_statistics(merge)
             samples_stats.append(sample_stats)
