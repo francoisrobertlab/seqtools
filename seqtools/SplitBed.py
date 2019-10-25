@@ -24,7 +24,8 @@ def main(samples, index, splitlength, splitminlength, splitmaxlength):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        split_bed(sample, splitlength, splitminlength, splitmaxlength)
+        splits(sample)
+        # split_bed(sample, splitlength, splitminlength, splitmaxlength)
 
 
 def split_bed(sample, splitlength, splitminlength, splitmaxlength):
@@ -57,12 +58,16 @@ def filter_bed_by_length(bed, output, minLength, maxLength):
 
 def splits(sample):
     '''Returns all splits for sample, sorted.'''
-    regex = re.compile(sample + '-\d+-\d+-raw\.bed')
+    regex = re.compile(sample + '-(\d+)-\d+-raw\.bed')
     files = os.listdir()
     beds = filter(regex.match, files)
     sample_splits = [bed[:-8] for bed in beds]
-    sample_splits.sort()
+    sample_splits.sort(key=splitkey)
     return sample_splits
+
+
+def splitkey(split):
+    return int(re.search('\d+', split)[0])
 
 
 if __name__ == '__main__':
