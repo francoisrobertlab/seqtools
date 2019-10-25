@@ -21,16 +21,16 @@ def main(samples, merge, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
-    merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
+    merge_names = pd.DataFrame()
+    if os.path.exists(merge):
+        merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
     all_statistics(sample_names, merge_names, output)
 
 
 def all_statistics(samples, merges, output):
-    stats_headers = None
+    stats_headers = headers(samples)
     samples_stats = []
     for sample in samples:
-        if stats_headers is None:
-            stats_headers = headers(sample)
         sample_stats = sample_statistics(sample)
         samples_stats.append(sample_stats)
     if not merges.empty:
@@ -45,11 +45,14 @@ def all_statistics(samples, merges, output):
             out.write('\n')
 
 
-def headers(sample):
+def headers(samples):
     '''Statistics headers'''
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
-    splits = SplitBed.splits(sample)
-    splits_headers = [split[len(sample) + 1:] for split in splits]
+    splits_headers = set()
+    for sample in samples:
+        splits_headers.update([split[len(sample) + 1:] for split in SplitBed.splits(sample)])
+    splits_headers = [header for header in splits_headers]
+    splits_headers.sort(key=SplitBed.splitkey)
     headers.extend(splits_headers)
     return headers
     
