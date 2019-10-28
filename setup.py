@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="SeqTools",
-    version="0.5",
+    version="0.6-SNAPSHOT",
     packages=find_packages(),
     author="Christian Poitras",
     author_email="christian.poitras@ircm.qc.ca",
