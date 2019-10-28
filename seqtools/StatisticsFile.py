@@ -28,36 +28,40 @@ def main(samples, merge, output):
 
 
 def all_statistics(samples, merges, output):
-    stats_headers = headers(samples)
+    all_headers = headers(samples, merges)
+    splits = all_headers[1]
     samples_stats = []
     for sample in samples:
-        sample_stats = sample_statistics(sample)
+        sample_stats = sample_statistics(sample, splits)
         samples_stats.append(sample_stats)
     if not merges.empty:
         for merge in merges:
-            sample_stats = sample_statistics(merge)
+            sample_stats = sample_statistics(merge, splits)
             samples_stats.append(sample_stats)
     with open(output, 'w') as out:
-        out.write('\t'.join(stats_headers))
+        out.write('\t'.join(all_headers[0]))
         out.write('\n')
         for sample_stats in samples_stats:
             out.write('\t'.join([str(value) for value in sample_stats]))
             out.write('\n')
 
 
-def headers(samples):
+def headers(samples, merges):
     '''Statistics headers'''
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
     splits_headers = set()
     for sample in samples:
         splits_headers.update([split[len(sample) + 1:] for split in SplitBed.splits(sample)])
+    if not merges.empty:
+        for merge in merges:
+            splits_headers.update([split[len(sample) + 1:] for split in SplitBed.splits(sample)])
     splits_headers = [header for header in splits_headers]
     splits_headers.sort(key=SplitBed.splitkey)
     headers.extend(splits_headers)
-    return headers
+    return (headers, splits_headers)
     
     
-def sample_statistics(sample):
+def sample_statistics(sample, splits):
     '''Statistics of a single sample.'''
     print ('Computing statistics for sample {}'.format(sample))
     sample_stats = [sample]
@@ -67,10 +71,9 @@ def sample_statistics(sample):
     sample_stats.extend([flagstat_total(bam_filtered) if os.path.isfile(bam_filtered) else ''])
     bed_raw = sample + '-raw.bed'
     sample_stats.extend([Bed.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
-    splits = SplitBed.splits(sample)
     if splits:
-        beds = [split + '-raw.bed' for split in splits]
-        counts = [Bed.count_bed(bed) for bed in beds]
+        beds = [sample + '-' + split + '-raw.bed' for split in splits]
+        counts = [Bed.count_bed(bed) if os.path.isfile(bed) else '0' for bed in beds]
         sample_stats.extend(counts)
     return sample_stats
 
