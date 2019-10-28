@@ -24,8 +24,7 @@ def main(samples, index, splitlength, splitminlength, splitmaxlength):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        splits(sample)
-        # split_bed(sample, splitlength, splitminlength, splitmaxlength)
+        split_bed(sample, splitlength, splitminlength, splitmaxlength)
 
 
 def split_bed(sample, splitlength, splitminlength, splitmaxlength):
