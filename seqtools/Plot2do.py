@@ -1,10 +1,10 @@
 import logging
 import os
-from pathlib import Path
 import subprocess
 
 import click
 import pandas as pd
+from pathlib import Path
 
 
 @click.command()
@@ -98,12 +98,6 @@ def plot2do(sample, type, genome, reference, sites, align, sitelabel, minlength,
         raw_cmd.extend(['-f', raw_bed])
         logging.debug('Running {}'.format(raw_cmd))
         subprocess.call(raw_cmd)
-    top_bed = '{}-top10.bed'.format(sample)
-    if os.path.isfile(top_bed):
-        top_cmd = cmd
-        top_cmd.extend(['-f', top_bed])
-        logging.debug('Running {}'.format(top_cmd))
-        subprocess.call(top_cmd)
 
 
 if __name__ == '__main__':
