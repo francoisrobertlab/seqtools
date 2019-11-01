@@ -21,6 +21,7 @@ setup(
         'console_scripts': [
             'bam2bed = seqtools.Bam2Bed:main',
             'download = seqtools.DownloadSample:main',
+            'filterbam = seqtools.FilterBam:main',
             'genecov = seqtools.GenomeCoverage:main',
             'merge = seqtools.MergeBed:main',
             'plot2do = seqtools.Plot2do:main',
