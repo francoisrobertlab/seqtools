@@ -30,11 +30,11 @@ def merge_samples(name, samples):
     merged_bed_tmp = name + '-tmp.bed'
     with open(merged_bed_tmp, "w") as outfile:
         for sample in samples:
-            sample_bed = sample + '-raw.bed'
+            sample_bed = sample + '.bed'
             with open(sample_bed, "r") as infile:
                 for line in infile:
                     outfile.write(line)
-    merged_bed = name + '-raw.bed'
+    merged_bed = name + '.bed'
     cmd = ['bedtools', 'sort', '-i', merged_bed_tmp]
     logging.debug('Running {}'.format(cmd))
     with open(merged_bed, "w") as outfile:

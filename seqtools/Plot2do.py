@@ -92,7 +92,7 @@ def plot2do(sample, type, genome, reference, sites, align, sitelabel, minlength,
         cmd.extend(['--simplifyPlot', simplifyplot])
     if squeezeplot:
         cmd.extend(['--squeezePlot', squeezeplot])
-    raw_bed = '{}-raw.bed'.format(sample)
+    raw_bed = '{}.bed'.format(sample)
     if os.path.isfile(raw_bed):
         raw_cmd = cmd
         raw_cmd.extend(['-f', raw_bed])

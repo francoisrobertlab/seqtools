@@ -38,13 +38,13 @@ def genome_coverage(sample, sizes):
 
 
 def do_genome_coverage(sample, sizes):
-    bed_source = sample + "-cov.bed"
+    bed_source = sample + "-forcov.bed"
     if not os.path.exists(bed_source):
-        bed_source = sample + "-raw.bed"
+        bed_source = sample + ".bed"
     count = Bed.count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
-    bed = sample + '.bed'
-    bigwig = sample + '.bw'
+    bed = sample + '-cov.bed'
+    bigwig = sample + '-cov.bw'
     coverage(bed_source, bed, sizes, sample, scale)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 

@@ -29,7 +29,7 @@ def bam2bed(sample, threads=None):
     bam = sample + '.bam'
     bedpe = sample + '.bedpe'
     bam2bedpe(bam, bedpe, threads)
-    bed_raw = sample + "-raw.bed"
+    bed_raw = sample + ".bed"
     bedpe2bed(bedpe, bed_raw)
     os.remove(bedpe)
 

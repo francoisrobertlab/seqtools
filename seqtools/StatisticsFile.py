@@ -69,10 +69,10 @@ def sample_statistics(sample, splits):
     sample_stats.extend([flagstat_total(bam_raw) if os.path.isfile(bam_raw) else ''])
     bam_filtered = sample + '-filtered.bam'
     sample_stats.extend([flagstat_total(bam_filtered) if os.path.isfile(bam_filtered) else ''])
-    bed_raw = sample + '-raw.bed'
+    bed_raw = sample + '.bed'
     sample_stats.extend([Bed.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
     if splits:
-        beds = [sample + '-' + split + '-raw.bed' for split in splits]
+        beds = [sample + '-' + split + '.bed' for split in splits]
         counts = [Bed.count_bed(bed) if os.path.isfile(bed) else '0' for bed in beds]
         sample_stats.extend(counts)
     return sample_stats

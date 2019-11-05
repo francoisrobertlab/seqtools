@@ -33,8 +33,8 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
     '''Split BED file from a single sample based on lenght of annotations.'''
     print ('Split BED file of sample {}'.format(sample))
     if splitlength is not None:
-        bed_raw = sample + '-raw.bed'
-        bed_sort = sample + '-raw-sort.bed'
+        bed_raw = sample + '.bed'
+        bed_sort = sample + '-sort.bed'
         sort_bed_by_size(bed_raw, bed_sort)
         with open(bed_sort, 'r') as infile:
             line = infile.readline()
@@ -42,7 +42,7 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
             for bin_start in range(splitminlength, splitmaxlength, splitlength):
                 bin_end = bin_start + splitlength
                 bin_file_tmp = '{}-{}-{}-tmp.bed'.format(sample, bin_start, bin_end)
-                bin_file = '{}-{}-{}-raw.bed'.format(sample, bin_start, bin_end)
+                bin_file = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
                 with open(bin_file_tmp, 'w') as outfile:
                     while length < bin_end:
                         if length >= bin_start:
@@ -83,7 +83,7 @@ def annotation_length(line):
 
 def splits(sample):
     '''Returns all splits for sample, sorted.'''
-    regex = re.compile(sample + '-(\d+)-\d+-raw\.bed')
+    regex = re.compile(sample + '-(\d+)-\d+\.bed')
     files = os.listdir()
     beds = filter(regex.match, files)
     sample_splits = [bed[:-8] for bed in beds]
