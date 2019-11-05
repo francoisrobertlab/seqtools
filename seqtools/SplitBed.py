@@ -1,6 +1,8 @@
+import datetime
 import logging
 import os
 import re
+import subprocess
 
 import click
 import pandas as pd
@@ -32,27 +34,51 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
     print ('Split BED file of sample {}'.format(sample))
     if splitlength is not None:
         bed_raw = sample + '-raw.bed'
-        for bin_start in range(splitminlength, splitmaxlength, splitlength):
-            bin_end = bin_start + splitlength
-            sample_bin = '{}-{}-{}'.format(sample, bin_start, bin_end)
-            bed_bin_raw = sample_bin + '-raw.bed'
-            filter_bed_by_length(bed_raw, bed_bin_raw, bin_start, bin_end)
+        bed_sort = sample + '-raw-sort.bed'
+        sort_bed_by_size(bed_raw, bed_sort)
+        with open(bed_sort, 'r') as infile:
+            line = infile.readline()
+            length = annotation_length(line)
+            for bin_start in range(splitminlength, splitmaxlength, splitlength):
+                bin_end = bin_start + splitlength
+                bin_file_tmp = '{}-{}-{}-tmp.bed'.format(sample, bin_start, bin_end)
+                bin_file = '{}-{}-{}-raw.bed'.format(sample, bin_start, bin_end)
+                with open(bin_file_tmp, 'w') as outfile:
+                    while length < bin_end:
+                        if length >= bin_start:
+                            outfile.write(line)
+                        line = infile.readline()
+                        length = annotation_length(line)
+                sort_bed(bin_file_tmp, bin_file)
+                os.remove(bin_file_tmp)
 
 
-def filter_bed_by_length(bed, output, minLength, maxLength):
-    '''Filter BED file and keep only annotations that have specified size. Minimum size is included but max size is excluded.'''
-    with open(bed, "r") as infile, open(output, "w") as outfile:
-        for line in infile:
-            if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
-                outfile.write(line)
-                continue
-            columns = line.rstrip('\r\n').split('\t')
-            if len(columns) >= 3:
-                start = int(columns[1])
-                end = int(columns[2])
-                length = end - start
-                if length >= minLength and length < maxLength:
-                    outfile.write(line)
+def sort_bed_by_size(bed, output):
+    '''Sort BED file by size'''
+    cmd = ['bedtools', 'sort', '-sizeA', '-i', bed]
+    logging.debug('Running {}'.format(cmd))
+    with open(output, 'w') as outfile:
+        subprocess.call(cmd, stdout=outfile)
+    if not os.path.isfile(output):
+        raise AssertionError('Error when sorting BED ' + bed)
+
+
+def sort_bed(bed, output):
+    '''Sort BED file by '''
+    cmd = ['bedtools', 'sort', '-i', bed]
+    logging.debug('Running {}'.format(cmd))
+    with open(output, 'w') as outfile:
+        subprocess.call(cmd, stdout=outfile)
+    if not os.path.isfile(output):
+        raise AssertionError('Error when sorting BED ' + bed)
+
+
+def annotation_length(line):
+    columns = line.rstrip('\r\n').split('\t')
+    length = -1
+    if len(columns) >= 3:
+        length = int(columns[2]) - int(columns[1])
+    return length
 
 
 def splits(sample):
