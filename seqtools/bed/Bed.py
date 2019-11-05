@@ -1,7 +1,7 @@
 def count_bed(bed, strand=None):
     '''Counts number of entry in BED, can be limited to a specific strand.'''
     count = 0
-    with open(bed, "r") as infile:
+    with open(bed, 'r') as infile:
         for line in infile:
             if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
                 continue
@@ -16,8 +16,8 @@ def count_bed(bed, strand=None):
 
 def empty_bed(bed_output, sample, strand=None):
     '''Create an empty BED file.'''
-    track = 'track type=bedGraph name="' + sample + '"'
+    track = 'track type=bedGraph name='' + sample + '''
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
-    with open(bed_output, "w") as outfile:
+    with open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')

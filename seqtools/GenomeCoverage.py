@@ -38,9 +38,9 @@ def genome_coverage(sample, sizes):
 
 
 def do_genome_coverage(sample, sizes):
-    bed_source = sample + "-forcov.bed"
+    bed_source = sample + '-forcov.bed'
     if not os.path.exists(bed_source):
-        bed_source = sample + ".bed"
+        bed_source = sample + '.bed'
     count = Bed.count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'
@@ -58,22 +58,22 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     if not strand is None:
         cmd.extend(['-strand', strand]) 
     logging.debug('Running {}'.format(cmd))
-    with open(coverage_output, "w") as outfile:
+    with open(coverage_output, 'w') as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(coverage_output):
         raise AssertionError('Error when computing genome coverage on ' + bed_input)
     sort_output = bed_input + '.sort'
     cmd = ['bedtools', 'sort', '-i', coverage_output]
     logging.debug('Running {}'.format(cmd))
-    with open(sort_output, "w") as outfile:
+    with open(sort_output, 'w') as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(sort_output):
         raise AssertionError('Error when sorting BED ' + coverage_output)
     os.remove(coverage_output)
-    track = 'track type=bedGraph name="' + sample + '"'
+    track = 'track type=bedGraph name='' + sample + '''
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
-    with open(sort_output, "r") as infile, open(bed_output, "w") as outfile:
+    with open(sort_output, 'r') as infile, open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')
         outfile.writelines(infile)
     os.remove(sort_output)

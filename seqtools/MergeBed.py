@@ -28,16 +28,16 @@ def merge_samples(name, samples):
     '''Merge BED files related to samples.'''
     print ('Merging samples {} into a single sample {}'.format(samples, name))
     merged_bed_tmp = name + '-tmp.bed'
-    with open(merged_bed_tmp, "w") as outfile:
+    with open(merged_bed_tmp, 'w') as outfile:
         for sample in samples:
             sample_bed = sample + '.bed'
-            with open(sample_bed, "r") as infile:
+            with open(sample_bed, 'r') as infile:
                 for line in infile:
                     outfile.write(line)
     merged_bed = name + '.bed'
     cmd = ['bedtools', 'sort', '-i', merged_bed_tmp]
     logging.debug('Running {}'.format(cmd))
-    with open(merged_bed, "w") as outfile:
+    with open(merged_bed, 'w') as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(merged_bed):
         raise AssertionError('Error when sorting BED ' + merged_bed_tmp)

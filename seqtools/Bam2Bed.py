@@ -29,7 +29,7 @@ def bam2bed(sample, threads=None):
     bam = sample + '.bam'
     bedpe = sample + '.bedpe'
     bam2bedpe(bam, bedpe, threads)
-    bed_raw = sample + ".bed"
+    bed_raw = sample + '.bed'
     bedpe2bed(bedpe, bed_raw)
     os.remove(bedpe)
 
@@ -47,7 +47,7 @@ def bam2bedpe(bam, bedpe, threads=None):
         raise AssertionError('Error when sorting BAM ' + bam)
     cmd = ['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', sort_output]
     logging.debug('Running {}'.format(cmd))
-    with open(bedpe, "w") as outfile:
+    with open(bedpe, 'w') as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(bedpe):
         raise AssertionError('Error when converting BAM ' + sort_output + ' to BEDPE')
@@ -57,8 +57,8 @@ def bam2bedpe(bam, bedpe, threads=None):
 def bedpe2bed(bedpe, bed):
     '''Converts BEDPE file to BED by merging the paired reads.'''
     merge_output = bedpe + '-merge.bed'
-    with open(bedpe, "r") as infile:
-        with open(merge_output, "w") as outfile:
+    with open(bedpe, 'r') as infile:
+        with open(merge_output, 'w') as outfile:
             for line in infile:
                 if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
                     outfile.write(line)
@@ -71,20 +71,20 @@ def bedpe2bed(bedpe, bed):
                 start = min(start1, start2)
                 end = max(end1, end2)
                 outfile.write(columns[0])
-                outfile.write("\t")
+                outfile.write('\t')
                 outfile.write(str(start))
-                outfile.write("\t")
+                outfile.write('\t')
                 outfile.write(str(end))
                 for i in range(6, 9):
-                    outfile.write("\t")
+                    outfile.write('\t')
                     outfile.write(columns[i])
                 for i in range(10, len(columns)):
-                    outfile.write("\t")
+                    outfile.write('\t')
                     outfile.write(columns[i])
-                outfile.write("\n")
+                outfile.write('\n')
     cmd = ['bedtools', 'sort', '-i', merge_output]
     logging.debug('Running {}'.format(cmd))
-    with open(bed, "w") as outfile:
+    with open(bed, 'w') as outfile:
         subprocess.call(cmd, stdout=outfile)
     if not os.path.isfile(bed):
         raise AssertionError('Error when sorting BED ' + merge_output + ' to ' + bed)
