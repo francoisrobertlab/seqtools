@@ -36,6 +36,7 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
         bed_raw = sample + '.bed'
         bed_sort = sample + '-sort.bed'
         sort_bed_by_size(bed_raw, bed_sort)
+        logging.debug('Splitting sorted BED {}'.format(bed_sort))
         with open(bed_sort, 'r') as infile:
             line = infile.readline()
             length = annotation_length(line)
@@ -44,13 +45,14 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
                 bin_file_tmp = '{}-{}-{}-tmp.bed'.format(sample, bin_start, bin_end)
                 bin_file = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
                 with open(bin_file_tmp, 'w') as outfile:
-                    while length < bin_end:
+                    while line != '' and length < bin_end:
                         if length >= bin_start:
                             outfile.write(line)
                         line = infile.readline()
                         length = annotation_length(line)
                 sort_bed(bin_file_tmp, bin_file)
                 os.remove(bin_file_tmp)
+        os.remove(bed_sort)
 
 
 def sort_bed_by_size(bed, output):
