@@ -70,7 +70,7 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     if not os.path.isfile(sort_output):
         raise AssertionError('Error when sorting BED ' + coverage_output)
     os.remove(coverage_output)
-    track = 'track type=bedGraph name='' + sample + '''
+    track = 'track type=bedGraph name="' + sample + '"'
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
     with open(sort_output, 'r') as infile, open(bed_output, 'w') as outfile:
