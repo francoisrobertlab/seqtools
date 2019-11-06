@@ -29,6 +29,7 @@ setup(
             'runbwa = seqtools.RunBwa:main',
             'runvap = seqtools.RunVap:main',
             'split = seqtools.SplitBed:main',
+            'slowsplit = seqtools.SlowSplitBed:main',
             'statistics = seqtools.StatisticsFile:main',
         ]
     }
