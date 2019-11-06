@@ -88,7 +88,7 @@ def splits(sample):
     regex = re.compile(sample + '-(\d+)-\d+\.bed')
     files = os.listdir()
     beds = filter(regex.match, files)
-    sample_splits = [bed[:-8] for bed in beds]
+    sample_splits = [bed[:-4] for bed in beds]
     sample_splits.sort(key=splitkey)
     return sample_splits
 
