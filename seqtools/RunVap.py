@@ -30,7 +30,7 @@ def vap(sample, parameters):
         os.mkdir(output);
     sample_parameters = output + '/parameters.txt';
     splits = SplitBed.splits(sample)
-    beds = [split + '.bed' for split in splits]
+    beds = [split + '-cov.bed' for split in splits]
     genes = parse_genes(parameters)
     create_parameters(beds, output, parameters, sample_parameters);
     cmd = ['vap']
