@@ -1,9 +1,11 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
 
 import click
 import pandas as pd
+from seqtools.bed import Bed
 
 
 @click.command()
@@ -41,14 +43,13 @@ def intersect(sample, tag, annotations, annot_length):
     print ('Keep only reads that intersects specified annotations for sample {}'.format(sample))
     bed_raw = sample + '.bed'
     bed_tag_raw = tag + '.bed'
-    bed_tmp = tag + '-tmp.bed'
+    bed_intersect_tmp = tag + '-tosort.bed'
+    bed_sort_tmp = tag + '-tmp.bed'
     cmd = ['bedtools', 'intersect', '-a', annotations, '-b', bed_raw, '-wb']
     logging.debug('Running {}'.format(cmd))
-    with open(bed_tmp, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(bed_tmp):
-        raise AssertionError('Error when calling bedtools intersect for sample ' + sample)
-    with open(bed_tmp, 'r') as infile, open(bed_tag_raw, 'w') as outfile:
+    with open(bed_intersect_tmp, 'w') as outfile:
+        subprocess.run(cmd, stdout=outfile, check=True)
+    with open(bed_intersect_tmp, 'r') as infile, open(bed_sort_tmp, 'w') as outfile:
         for line in infile:
             if line.startswith('#'):
                 outfile.write(line)
@@ -58,8 +59,17 @@ def intersect(sample, tag, annotations, annot_length):
                     outfile.write(columns[i])
                     outfile.write('\t')
                 outfile.write('\n')
-    os.remove(bed_tmp)
+    os.remove(bed_intersect_tmp)
+    sort_bed(bed_sort_tmp, bed_tag_raw)
+
     
+def sort_bed(input, output):
+    '''Sort BED file by chromosome and start'''
+    cmd = ['bedtools', 'sort', '-i', input]
+    logging.debug('Running {}'.format(cmd))
+    with open(output, 'w') as outfile:
+        subprocess.run(cmd, stdout=outfile, check=True)
+
 
 if __name__ == '__main__':
     main()
