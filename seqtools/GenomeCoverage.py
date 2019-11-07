@@ -65,12 +65,7 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     if not os.path.isfile(coverage_output):
         raise AssertionError('Error when computing genome coverage on ' + bed_input)
     sort_output = bed_input + '.sort'
-    cmd = ['bedtools', 'sort', '-i', coverage_output]
-    logging.debug('Running {}'.format(cmd))
-    with open(sort_output, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(sort_output):
-        raise AssertionError('Error when sorting BED ' + coverage_output)
+    Bed.sort(coverage_output, sort_output)
     os.remove(coverage_output)
     track = 'track type=bedGraph name="' + sample + '"'
     if not strand is None:

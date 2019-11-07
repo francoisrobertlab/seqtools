@@ -1,3 +1,6 @@
+from distutils.command.check import check
+
+
 def count_bed(bed, strand=None):
     '''Counts number of entry in BED, can be limited to a specific strand.'''
     count = 0
@@ -21,3 +24,19 @@ def empty_bed(bed_output, sample, strand=None):
         track += ' Minus' if strand == '-' else ' Plus'
     with open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')
+
+
+def sort(input, output):
+    '''Sort BED file by chromosome and start'''
+    cmd = ['bedtools', 'sort', '-i', input]
+    logging.debug('Running {}'.format(cmd))
+    with open(output, 'w') as outfile:
+        subprocess.run(cmd, stdout=outfile, check=True)
+
+
+def sort_bysize(input, output):
+    '''Sort BED file by size'''
+    cmd = ['bedtools', 'sort', '-sizeA', '-i', input]
+    logging.debug('Running {}'.format(cmd))
+    with open(output, 'w') as outfile:
+        subprocess.run(cmd, stdout=outfile, check=True)

@@ -6,6 +6,7 @@ import subprocess
 
 import click
 import pandas as pd
+from seqtools.bed import Bed
 
 
 @click.command()
@@ -35,7 +36,7 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
     if splitlength is not None:
         bed_raw = sample + '.bed'
         bed_sort = sample + '-sort.bed'
-        sort_bed_by_size(bed_raw, bed_sort)
+        Bed.sort_bysize(bed_raw, bed_sort)
         with open(bed_sort, 'r') as infile:
             line = infile.readline()
             length = annotation_length(line)
@@ -50,30 +51,9 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
                             outfile.write(line)
                         line = infile.readline()
                         length = annotation_length(line)
-                sort_bed(bin_file_tmp, bin_file)
+                Bed.sort(bin_file_tmp, bin_file)
                 os.remove(bin_file_tmp)
         os.remove(bed_sort)
-
-
-def sort_bed_by_size(bed, output):
-    '''Sort BED file by size'''
-    print ('Sorting BED {}'.format(bed))
-    cmd = ['bedtools', 'sort', '-sizeA', '-i', bed]
-    logging.debug('Running {}'.format(cmd))
-    with open(output, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(output):
-        raise AssertionError('Error when sorting BED ' + bed)
-
-
-def sort_bed(bed, output):
-    '''Sort BED file by '''
-    cmd = ['bedtools', 'sort', '-i', bed]
-    logging.debug('Running {}'.format(cmd))
-    with open(output, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(output):
-        raise AssertionError('Error when sorting BED ' + bed)
 
 
 def annotation_length(line):

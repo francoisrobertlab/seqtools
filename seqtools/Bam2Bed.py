@@ -4,6 +4,7 @@ import subprocess
 
 import click
 import pandas as pd
+from seqtools.bed import Bed
 
 
 @click.command()
@@ -84,12 +85,7 @@ def bedpe2bed(bedpe, bed):
                     outfile.write('\t')
                     outfile.write(columns[i])
                 outfile.write('\n')
-    cmd = ['bedtools', 'sort', '-i', merge_output]
-    logging.debug('Running {}'.format(cmd))
-    with open(bed, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(bed):
-        raise AssertionError('Error when sorting BED ' + merge_output + ' to ' + bed)
+    Bed.sort(merge_output, bed)
     os.remove(merge_output)
 
 

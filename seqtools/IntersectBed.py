@@ -60,16 +60,8 @@ def intersect(sample, tag, annotations, annot_length):
                     outfile.write('\t')
                 outfile.write('\n')
     os.remove(bed_intersect_tmp)
-    sort_bed(bed_sort_tmp, bed_tag_raw)
+    Bed.sort(bed_sort_tmp, bed_tag_raw)
 
     
-def sort_bed(input, output):
-    '''Sort BED file by chromosome and start'''
-    cmd = ['bedtools', 'sort', '-i', input]
-    logging.debug('Running {}'.format(cmd))
-    with open(output, 'w') as outfile:
-        subprocess.run(cmd, stdout=outfile, check=True)
-
-
 if __name__ == '__main__':
     main()
