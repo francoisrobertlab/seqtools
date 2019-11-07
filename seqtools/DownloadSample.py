@@ -1,3 +1,4 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
@@ -37,7 +38,7 @@ def download(sample, srr):
         srr_output2 = srr + '_2.fastq'
         cmd = ['fasterq-dump', '--split-files', srr];
         logging.debug('Running {}'.format(cmd))
-        subprocess.call(cmd)
+        subprocess.run(cmd, check=True)
         os.rename(srr_output1, fastq1)
         if os.path.isfile(srr_output2):
             os.rename(srr_output2, fastq2)

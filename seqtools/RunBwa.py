@@ -50,8 +50,6 @@ def bwa_index(fasta):
     fasta_indexed = fasta + '.bwt';
     logging.debug('Running {}'.format(bwa_index_cmd))
     subprocess.run(bwa_index_cmd, check=True)
-    if not os.path.isfile(fasta_indexed):
-        raise AssertionError('Error when indexing FASTA ' + fasta)
 
 
 def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=None):
@@ -65,16 +63,12 @@ def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=None):
         cmd.append(fastq2)
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    if not os.path.isfile(sam_output):
-        raise AssertionError('Error when running BWA with command ' + bwa_cmd)
     cmd = ['samtools', 'view', '-b']
     if not threads is None:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when converting SAM ' + sam_output + ' to BAM ' + bam_output)
     os.remove(sam_output)
 
 

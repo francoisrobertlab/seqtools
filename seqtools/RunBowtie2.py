@@ -53,16 +53,12 @@ def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=None):
         cmd.extend(['-U', fastq1])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    if not os.path.isfile(sam_output):
-        raise AssertionError('Error when running BWA with command ' + bwa_cmd)
     cmd = ['samtools', 'view', '-b']
     if not threads is None:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when converting SAM ' + sam_output + ' to BAM ' + bam_output)
     os.remove(sam_output)
 
 

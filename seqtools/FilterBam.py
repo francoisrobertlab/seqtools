@@ -1,3 +1,4 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
@@ -52,9 +53,7 @@ def filter_mapped(bam_input, bam_output, paired, threads=None):
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when filtering BAM ' + bam_input)
+    subprocess.run(cmd, check=True)
 
 
 def remove_duplicates(bam_input, bam_output, threads=None):
@@ -66,27 +65,21 @@ def remove_duplicates(bam_input, bam_output, threads=None):
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([bam_input, fixmate_output])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(fixmate_output):
-        raise AssertionError('Error when fixing duplicates in BAM ' + bam_input)
+    subprocess.run(cmd, check=True)
     sort_output = bam_input + '.sort'
     cmd = ['samtools', 'sort']
     if not threads is None:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_output, fixmate_output])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(sort_output):
-        raise AssertionError('Error when sorting BAM ' + fixmate_output)
+    subprocess.run(cmd, check=True)
     os.remove(fixmate_output)
     cmd = ['samtools', 'markdup', '-r']
     if not threads is None:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([sort_output, bam_output])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when removing duplicates from BAM ' + sort_output)
+    subprocess.run(cmd, check=True)
     os.remove(sort_output)
 
 
@@ -98,9 +91,7 @@ def sort(bam_input, bam_output, threads=None):
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bam_output):
-        raise AssertionError('Error when sorting BAM ' + bam_input)
+    subprocess.run(cmd, check=True)
 
 
 if __name__ == '__main__':

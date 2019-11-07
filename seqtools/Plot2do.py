@@ -1,10 +1,11 @@
+from distutils.command.check import check
 import logging
 import os
+from pathlib import Path
 import subprocess
 
 import click
 import pandas as pd
-from pathlib import Path
 
 
 @click.command()
@@ -97,7 +98,7 @@ def plot2do(sample, type, genome, reference, sites, align, sitelabel, minlength,
         raw_cmd = cmd
         raw_cmd.extend(['-f', raw_bed])
         logging.debug('Running {}'.format(raw_cmd))
-        subprocess.call(raw_cmd)
+        subprocess.run(raw_cmd, check=True)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
@@ -44,15 +45,11 @@ def bam2bedpe(bam, bedpe, threads=None):
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_output, bam])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(sort_output):
-        raise AssertionError('Error when sorting BAM ' + bam)
+    subprocess.run(cmd, check=True)
     cmd = ['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', sort_output]
     logging.debug('Running {}'.format(cmd))
     with open(bedpe, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(bedpe):
-        raise AssertionError('Error when converting BAM ' + sort_output + ' to BEDPE')
+        subprocess.run(cmd, stdout=outfile, check=True)
     os.remove(sort_output)
 
 

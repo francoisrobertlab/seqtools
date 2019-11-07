@@ -1,3 +1,4 @@
+from distutils.command.check import check
 import glob
 import logging
 import os
@@ -38,7 +39,7 @@ def vap(sample, parameters):
         cmd = ['vap.exe']
     cmd.extend(['-p', sample_parameters])
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
+    subprocess.run(cmd, check=True)
     try:
         splits_values = parse_heatmap_values(splits, output)
     except AssertionError as exception:

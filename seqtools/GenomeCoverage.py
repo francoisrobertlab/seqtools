@@ -1,3 +1,4 @@
+from distutils.command.check import check
 import logging
 import os
 import subprocess
@@ -61,9 +62,7 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
         cmd.extend(['-strand', strand]) 
     logging.debug('Running {}'.format(cmd))
     with open(coverage_output, 'w') as outfile:
-        subprocess.call(cmd, stdout=outfile)
-    if not os.path.isfile(coverage_output):
-        raise AssertionError('Error when computing genome coverage on ' + bed_input)
+        subprocess.run(cmd, stdout=outfile, check=True)
     sort_output = bed_input + '.sort'
     Bed.sort(coverage_output, sort_output)
     os.remove(coverage_output)
@@ -80,9 +79,7 @@ def bedgraph_to_bigwig(bed, bigwig, sizes):
     '''Converts bedgraph file to bigwig.'''
     cmd = ['bedGraphToBigWig', bed, sizes, bigwig]
     logging.debug('Running {}'.format(cmd))
-    subprocess.call(cmd)
-    if not os.path.isfile(bigwig):
-        raise AssertionError('Error when converting BED to BIGWIG ' + bed)
+    subprocess.run(cmd, check=True)
 
 
 if __name__ == '__main__':
