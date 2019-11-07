@@ -40,6 +40,7 @@ def genome_coverage(sample, sizes):
 def do_genome_coverage(sample, sizes):
     bed_source = sample + '-forcov.bed'
     if not os.path.exists(bed_source):
+        logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
         bed_source = sample + '.bed'
     count = Bed.count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
