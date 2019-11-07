@@ -23,6 +23,7 @@ setup(
             'download = seqtools.DownloadSample:main',
             'filterbam = seqtools.FilterBam:main',
             'genecov = seqtools.GenomeCoverage:main',
+            'intersect = mnaseseqtools.IntersectBed:main',
             'merge = seqtools.MergeBed:main',
             'plot2do = seqtools.Plot2do:main',
             'runbowtie2 = seqtools.RunBowtie2:main',
