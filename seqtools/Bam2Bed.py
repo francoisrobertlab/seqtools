@@ -24,8 +24,8 @@ def main(samples, threads, index):
 
 
 def bam2bed(sample, threads=None):
-    '''Convert BAM file to BED for a single sample.'''
-    print ('Convert BAM to BED for sample {}'.format(sample))
+    '''Converts BAM file to BED for a single sample.'''
+    print ('Converting BAM to BED for sample {}'.format(sample))
     bam = sample + '.bam'
     bedpe = sample + '.bedpe'
     bam2bedpe(bam, bedpe, threads)
@@ -35,7 +35,8 @@ def bam2bed(sample, threads=None):
 
 
 def bam2bedpe(bam, bedpe, threads=None):
-    '''Convert BAM file to BEDPE.'''
+    '''Converts BAM file to BEDPE.'''
+    print ('Converting BAM {} to BEDPE {}'.format(bam, bedpe))
     sort_output = bam + '.sort'
     cmd = ['samtools', 'sort', '-n']
     if not threads is None:
@@ -56,6 +57,7 @@ def bam2bedpe(bam, bedpe, threads=None):
 
 def bedpe2bed(bedpe, bed):
     '''Converts BEDPE file to BED by merging the paired reads.'''
+    print ('Converting BAM BEDPE {} to BED {} by merging the paired reads'.format(bedpe, bed))
     merge_output = bedpe + '-merge.bed'
     with open(bedpe, 'r') as infile:
         with open(merge_output, 'w') as outfile:

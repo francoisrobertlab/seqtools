@@ -30,7 +30,7 @@ def main(samples, sizes, index):
 
 def genome_coverage(sample, sizes):
     '''Compute genome coverage on a single sample.'''
-    print ('Compute genome coverage on sample {}'.format(sample))
+    print ('Computing genome coverage on sample {}'.format(sample))
     do_genome_coverage(sample, sizes)
     splits = SplitBed.splits(sample)
     for split in splits:
@@ -42,6 +42,7 @@ def do_genome_coverage(sample, sizes):
     if not os.path.exists(bed_source):
         logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
         bed_source = sample + '.bed'
+    print ('Computing genome coverage on BED {}'.format(bed_source))
     count = Bed.count_bed(bed_source)
     scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'

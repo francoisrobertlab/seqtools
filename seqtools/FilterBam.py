@@ -42,6 +42,7 @@ def filter_bam(sample, paired, threads=None):
 
 def filter_mapped(bam_input, bam_output, paired, threads=None):
     '''Filter BAM file to remove poorly mapped sequences.'''
+    print ('Filtering BAM {} to remove poorly mapped sequences'.format(bam_input))
     cmd = ['samtools', 'view', '-b', '-F', '2048']
     if bool(paired):
         cmd.extend(['-f', '2'])
@@ -58,6 +59,7 @@ def filter_mapped(bam_input, bam_output, paired, threads=None):
 
 def remove_duplicates(bam_input, bam_output, threads=None):
     '''Remove duplicated sequences from BAM file.'''
+    print ('Removing duplicated sequences from BAM {}'.format(bam_input))
     fixmate_output = bam_input + '.fix'
     cmd = ['samtools', 'fixmate', '-m']
     if not threads is None:
@@ -90,6 +92,7 @@ def remove_duplicates(bam_input, bam_output, threads=None):
 
 def sort(bam_input, bam_output, threads=None):
     '''Sort BAM file.'''
+    print ('Sorting BAM {}'.format(bam_input))
     cmd = ['samtools', 'sort']
     if not threads is None:
         cmd.extend(['--threads', str(threads - 1)])
