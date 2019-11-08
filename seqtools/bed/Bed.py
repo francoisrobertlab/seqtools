@@ -1,4 +1,6 @@
 from distutils.command.check import check
+import logging
+import subprocess
 
 
 def count_bed(bed, strand=None):
