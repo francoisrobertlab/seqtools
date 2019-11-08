@@ -15,10 +15,14 @@ from . import SplitBed
               help='Sample names listed one sample name by line.')
 @click.option('--parameters', '-p', type=click.Path(exists=True), default='parameters.txt',
               help='VAP parameters file.')
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
 def main(samples, parameters):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    if index != None:
+        sample_names = [sample_names[index]]
     for sample in sample_names:
         vap(sample, parameters)
 
