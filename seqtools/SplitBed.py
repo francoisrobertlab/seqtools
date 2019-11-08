@@ -75,7 +75,7 @@ def splits(sample):
 
 
 def splitkey(split):
-    return int(re.search('\d+', split)[0])
+    return int(re.search('(\d+)-\d+$', split).group(1))
 
 
 if __name__ == '__main__':
