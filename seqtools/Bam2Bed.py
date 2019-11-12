@@ -16,7 +16,7 @@ from seqtools.bed import Bed
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 def main(samples, threads, index):
-    '''Analyse Martin et al. data from November 2018 in Genetics.'''
+    '''Converts BAM file to BED for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:

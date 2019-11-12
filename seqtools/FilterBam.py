@@ -17,7 +17,7 @@ import pandas as pd
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 def main(samples, paired, threads, index):
-    '''Align samples using bwa program.'''
+    '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
