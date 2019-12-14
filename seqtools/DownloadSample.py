@@ -38,7 +38,7 @@ def download(sample, threads, srr):
         fastq2 = fastq + '_2.fastq'
         srr_output1 = srr + '_1.fastq'
         srr_output2 = srr + '_2.fastq'
-        cmd = ['fasterq-dump', '--split-files', srr];
+        cmd = ['fasterq-dump', '--split-files', '--threads', threads, srr];
         logging.debug('Running {}'.format(cmd))
         subprocess.run(cmd, check=True)
         os.rename(srr_output1, fastq1)
