@@ -12,9 +12,11 @@ from seqtools.seq import Fastq
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
               help='Sample names listed one sample name by line.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise FASTQ file must be provided.')
+@click.option('--threads', '-e', default=6,
+              help='Number of threads used for download.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, index):
+def main(samples, threads, index):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
@@ -23,10 +25,10 @@ def main(samples, index):
     for index, columns in sample_columns.iterrows():
         sample = columns[0]
         srr = columns[1] if len(columns) > 1 else None
-        download(sample, srr)
+        download(sample, threads, srr)
 
 
-def download(sample, srr):
+def download(sample, threads, srr):
     '''Download reads of a sample.'''
     fastq = sample
     fastq_exists = Fastq.fastq(fastq, 1)
