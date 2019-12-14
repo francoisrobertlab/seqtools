@@ -29,10 +29,10 @@ def main(samples, fast, threads, mem, index):
     for index, columns in sample_columns.iterrows():
         sample = columns[0]
         srr = columns[1] if len(columns) > 1 else None
-        download(sample, threads, srr)
+        download(sample, srr, fast, threads, mem)
 
 
-def download(sample, srrs, fast, threads, mem):
+def download(sample, srr, fast, threads, mem):
     '''Download reads of a sample.'''
     fastq = sample
     fastq_exists = Fastq.fastq(fastq, 1)
