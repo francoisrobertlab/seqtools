@@ -41,10 +41,10 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
             line = infile.readline()
             length = annotation_length(line)
             for bin_start in range(splitminlength, splitmaxlength, splitlength):
-                bin_end = bin_start + splitlength
+                bin_end = min(bin_start + splitlength, splitmaxlength)
                 bin_file_tmp = '{}-{}-{}-tmp.bed'.format(sample, bin_start, bin_end)
                 bin_file = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
-                print ('Splitting BED to BIN {}'.format(bed_sort, bin_file))
+                print ('Splitting BED {} to BIN {}'.format(bed_sort, bin_file))
                 with open(bin_file_tmp, 'w') as outfile:
                     while line != '' and length < bin_end:
                         if length >= bin_start:

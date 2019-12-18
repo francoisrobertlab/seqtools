@@ -33,10 +33,10 @@ def split_bed(sample, splitlength, splitminlength, splitmaxlength):
     if splitlength is not None:
         bed_raw = sample + '.bed'
         for bin_start in range(splitminlength, splitmaxlength, splitlength):
-            bin_end = bin_start + splitlength
+            bin_end = min(bin_start + splitlength, splitmaxlength)
             sample_bin = '{}-{}-{}'.format(sample, bin_start, bin_end)
             bed_bin_raw = sample_bin + '.bed'
-            print ('Splitting BED to BIN {}'.format(bed_raw, bed_bin_raw))
+            print ('Splitting BED {} to BIN {}'.format(bed_raw, bed_bin_raw))
             filter_bed_by_length(bed_raw, bed_bin_raw, bin_start, bin_end)
 
 
