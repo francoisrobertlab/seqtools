@@ -11,12 +11,12 @@ import pandas as pd
               help='Sample names listed one sample name by line.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-@click.option('--splitLength', type=int, default=10,
+@click.option('--binLength', '-b', type=int, default=10,
               help='Split reads in bins by their length.')
-@click.option('--splitMinLength', default=100,
-              help='Split reads minimum length.')
-@click.option('--splitMaxLength', default=500,
-              help='Split reads maximum length.')
+@click.option('--binMinLength', '-l', type=int, default=100,
+              help='First bin minimum length.')
+@click.option('--binMaxLength', '-L', type=int, default=500,
+              help='Last bin maximum length.')
 def main(samples, index, splitlength, splitminlength, splitmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
