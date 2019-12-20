@@ -15,7 +15,8 @@ setup(
     ],
     install_requires=[
         'click>=7.0',
-        'pandas>=0.25.0'
+        'pandas>=0.25.0',
+        'pyBigWig>=0.3.17'
     ],
     entry_points={
         'console_scripts': [
@@ -25,6 +26,7 @@ setup(
             'genecov = seqtools.GenomeCoverage:main',
             'intersect = seqtools.IntersectBed:main',
             'merge = seqtools.MergeBed:main',
+            'mergebw = seqtools.MergeBigwigs:main',
             'plot2do = seqtools.Plot2do:main',
             'runbowtie2 = seqtools.RunBowtie2:main',
             'runbwa = seqtools.RunBwa:main',

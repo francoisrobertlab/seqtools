@@ -1,2 +1,3 @@
 Click==7.0
 pandas==0.25.1
+pyBigWig==0.3.17
