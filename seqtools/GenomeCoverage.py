@@ -17,28 +17,30 @@ BASE_SCALE = 1000000
               help='Sample names listed one sample name by line.')
 @click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
+@click.option('--strand', '-T', type=click.Choice(['+', '-']), default=None,
+              help='Calculate coverage of intervals from a specific strand.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, sizes, index):
+def main(samples, sizes, strand, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        genome_coverage(sample, sizes)
+        genome_coverage(sample, sizes, strand)
 
 
-def genome_coverage(sample, sizes):
+def genome_coverage(sample, sizes, strand=None):
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
-    do_genome_coverage(sample, sizes)
+    do_genome_coverage(sample, sizes, strand)
     splits = SplitBed.splits(sample)
     for split in splits:
-        do_genome_coverage(split, sizes)
+        do_genome_coverage(split, sizes, strand)
 
 
-def do_genome_coverage(sample, sizes):
+def do_genome_coverage(sample, sizes, strand=None):
     bed_source = sample + '-forcov.bed'
     if not os.path.exists(bed_source):
         logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
@@ -48,7 +50,7 @@ def do_genome_coverage(sample, sizes):
     scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'
     bigwig = sample + '-cov.bw'
-    coverage(bed_source, bed, sizes, sample, scale)
+    coverage(bed_source, bed, sizes, sample, scale, strand)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
