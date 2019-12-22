@@ -36,7 +36,7 @@ def main(samples, sizes, scale, strand, index):
 def genome_coverage(sample, sizes, scale=None, strand=None):
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
-    do_genome_coverage(sample, sizes, strand)
+    do_genome_coverage(sample, sizes, scale, strand)
     splits = SplitBed.splits(sample)
     for split in splits:
         do_genome_coverage(split, sizes, scale, strand)
@@ -53,7 +53,7 @@ def do_genome_coverage(sample, sizes, scale=None, strand=None):
         scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'
     bigwig = sample + '-cov.bw'
-    if not strand is None:
+    if strand:
         bed = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bed'
         bigwig = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bw'
     coverage(bed_source, bed, sizes, sample, scale, strand)
@@ -64,9 +64,9 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     '''Compute genome coverage.'''
     coverage_output = bed_input + '.cov'
     cmd = ['bedtools', 'genomecov', '-bg', '-5', '-i', bed_input, '-g', sizes]
-    if not scale is None:
+    if scale:
         cmd.extend(['-scale', str(scale)]) 
-    if not strand is None:
+    if strand:
         cmd.extend(['-strand', strand]) 
     logging.debug('Running {}'.format(cmd))
     with open(coverage_output, 'w') as outfile:
@@ -75,7 +75,7 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     Bed.sort(coverage_output, sort_output)
     os.remove(coverage_output)
     track = 'track type=bedGraph name="' + sample
-    if not strand is None:
+    if strand:
         track += ' Minus' if strand == '-' else ' Plus'
     track += '"'
     with open(sort_output, 'r') as infile, open(bed_output, 'w') as outfile:
