@@ -71,9 +71,10 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
     sort_output = bed_input + '.sort'
     Bed.sort(coverage_output, sort_output)
     os.remove(coverage_output)
-    track = 'track type=bedGraph name="' + sample + '"'
+    track = 'track type=bedGraph name="' + sample
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
+    track += '"'
     with open(sort_output, 'r') as infile, open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')
         outfile.writelines(infile)
