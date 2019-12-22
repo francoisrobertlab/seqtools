@@ -51,8 +51,8 @@ def do_genome_coverage(sample, sizes, strand=None):
     bed = sample + '-cov.bed'
     bigwig = sample + '-cov.bw'
     if not strand is None:
-        bed = sample + '-cov' + ('-neg' if strand == '-' else 'plus') + '.bed'
-        bigwig = sample + '-cov' + ('-neg' if strand == '-' else 'plus') + '.bw'
+        bed = sample + '-cov' + ('-neg' if strand == '-' else 'pos') + '.bed'
+        bigwig = sample + '-cov' + ('-neg' if strand == '-' else 'pos') + '.bw'
     coverage(bed_source, bed, sizes, sample, scale, strand)
     bedgraph_to_bigwig(bed, bigwig, sizes)
 
