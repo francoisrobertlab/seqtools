@@ -17,37 +17,40 @@ BASE_SCALE = 1000000
               help='Sample names listed one sample name by line.')
 @click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
               help='Size of chromosomes.')
+@click.option('--scale', '-C', type=float, default=None,
+              help='Scale for genome coverage. Defaults to 1000000 / number of reads.')
 @click.option('--strand', '-T', type=click.Choice(['+', '-']), default=None,
               help='Calculate coverage of intervals from a specific strand.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, sizes, strand, index):
+def main(samples, sizes, scale, strand, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        genome_coverage(sample, sizes, strand)
+        genome_coverage(sample, sizes, scale, strand)
 
 
-def genome_coverage(sample, sizes, strand=None):
+def genome_coverage(sample, sizes, scale=None, strand=None):
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
     do_genome_coverage(sample, sizes, strand)
     splits = SplitBed.splits(sample)
     for split in splits:
-        do_genome_coverage(split, sizes, strand)
+        do_genome_coverage(split, sizes, scale, strand)
 
 
-def do_genome_coverage(sample, sizes, strand=None):
+def do_genome_coverage(sample, sizes, scale=None, strand=None):
     bed_source = sample + '-forcov.bed'
     if not os.path.exists(bed_source):
         logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
         bed_source = sample + '.bed'
     print ('Computing genome coverage on BED {}'.format(bed_source))
     count = Bed.count_bed(bed_source)
-    scale = BASE_SCALE / max(count, 1)
+    if not scale:
+        scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'
     bigwig = sample + '-cov.bw'
     if not strand is None:
