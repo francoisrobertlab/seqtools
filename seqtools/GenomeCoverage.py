@@ -57,7 +57,7 @@ def do_genome_coverage(sample, sizes, scale=None, strand=None):
         bed = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bed'
         bigwig = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bw'
     coverage(bed_source, bed, sizes, sample, scale, strand)
-    bedgraph_to_bigwig(bed, bigwig, sizes)
+    Bed.bedgraph_to_bigwig(bed, bigwig, sizes)
 
 
 def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
@@ -82,13 +82,6 @@ def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None):
         outfile.write(track + '\n')
         outfile.writelines(infile)
     os.remove(sort_output)
-
-
-def bedgraph_to_bigwig(bed, bigwig, sizes):
-    '''Converts bedgraph file to bigwig.'''
-    cmd = ['bedGraphToBigWig', bed, sizes, bigwig]
-    logging.debug('Running {}'.format(cmd))
-    subprocess.run(cmd, check=True)
 
 
 if __name__ == '__main__':

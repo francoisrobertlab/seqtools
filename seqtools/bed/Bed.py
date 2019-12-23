@@ -42,3 +42,10 @@ def sort_bysize(input, output):
     logging.debug('Running {}'.format(cmd))
     with open(output, 'w') as outfile:
         subprocess.run(cmd, stdout=outfile, check=True)
+
+
+def bedgraph_to_bigwig(bed, bigwig, sizes):
+    '''Converts bedgraph file to bigwig.'''
+    cmd = ['bedGraphToBigWig', bed, sizes, bigwig]
+    logging.debug('Running {}'.format(cmd))
+    subprocess.run(cmd, check=True)
