@@ -13,13 +13,13 @@ BASE_SCALE = 1000000
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
-@click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
+@click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes', show_default=True,
               help='Size of chromosomes.')
 @click.option('--scale', '-C', type=float, default=None,
               help='Scale for genome coverage. Defaults to 1000000 / number of reads.')
-@click.option('--strand', '-T', type=click.Choice(['+', '-']), default=None,
+@click.option('--strand', '-T', type=click.Choice(['+', '-']), default=None, show_default=True,
               help='Calculate coverage of intervals from a specific strand.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')

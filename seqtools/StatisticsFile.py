@@ -11,11 +11,11 @@ from . import SplitBed
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
-@click.option('--merge', '-m', type=click.Path(), default='merge.txt',
+@click.option('--merge', '-m', type=click.Path(), default='merge.txt', show_default=True,
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
-@click.option('--output', '-o', type=click.Path(), default='statistics.txt',
+@click.option('--output', '-o', type=click.Path(), default='statistics.txt', show_default=True,
               help='Output file were statistics are written.')
 def main(samples, merge, output):
     '''Creates statistics file for samples.'''

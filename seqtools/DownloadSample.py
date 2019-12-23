@@ -9,14 +9,14 @@ from seqtools.seq import Fastq
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.'
               ' An SRR id can be provided (tab-separated) to download the FASTQ file automatically, otherwise FASTQ file must be provided.')
-@click.option('--fast/--slow', default=True,
+@click.option('--fast/--slow', default=True, show_default=True,
               help='Use faster or slower but safer program for download.')
-@click.option('--threads', '-e', default=6,
+@click.option('--threads', '-e', default=6, show_default=True,
               help='Number of threads used for download.')
-@click.option('--mem', '-m', default='100MB',
+@click.option('--mem', '-m', default='100MB', show_default=True,
               help='Memory allocated for sorting download.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')

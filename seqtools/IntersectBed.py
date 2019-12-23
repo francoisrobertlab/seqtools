@@ -9,11 +9,11 @@ from seqtools.bed import Bed
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples-filter.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples-filter.txt', show_default=True,
               help='Tab-separated file containing '
               'the sample names with tag in the first column and '
               'the original sample names in the second column.')
-@click.option('--annotations', '-a', type=click.Path(exists=True), default='annotations.bed',
+@click.option('--annotations', '-a', type=click.Path(exists=True), default='annotations.bed', show_default=True,
               help='Keep reads for which their center is located on specified annotations.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')

@@ -9,7 +9,7 @@ from seqtools.bed import Bed
 
 
 @click.command()
-@click.option('--merge', '-m', type=click.Path(), default='merge.txt',
+@click.option('--merge', '-m', type=click.Path(), default='merge.txt', show_default=True,
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')

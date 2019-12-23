@@ -1,15 +1,15 @@
 from distutils.command.check import check
 import logging
 import os
-from pathlib import Path
 import subprocess
 
 import click
 import pandas as pd
+from pathlib import Path
 
 
 @click.command()
-@click.option('--file', '-f', type=click.Path(exists=True), default='samples.txt',
+@click.option('--file', '-f', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
 @click.option('--type', '-t', default=None,
               help='Type of distribution to plot.'

@@ -11,9 +11,9 @@ from seqtools.seq import Fastq
 @click.command(context_settings=dict(
     ignore_unknown_options=True,
 ))
-@click.option('--samples', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
-@click.option('--threads', '-p', default=1,
+@click.option('--threads', '-p', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
 @click.option('--index', type=int, default=None,
               help='Index of sample to process in samples file.')

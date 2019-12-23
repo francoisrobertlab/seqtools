@@ -10,15 +10,15 @@ from seqtools.bed import Bed
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-@click.option('--binLength', '-b', type=int, default=10,
+@click.option('--binLength', '-b', type=int, default=10, show_default=True,
               help='Split reads in bins by their length.')
-@click.option('--binMinLength', '-l', type=int, default=100,
+@click.option('--binMinLength', '-l', type=int, default=100, show_default=True,
               help='First bin minimum length.')
-@click.option('--binMaxLength', '-L', type=int, default=500,
+@click.option('--binMaxLength', '-L', type=int, default=500, show_default=True,
               help='Last bin maximum length.')
 def main(samples, index, binlength, binminlength, binmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''

@@ -8,11 +8,11 @@ import pandas as pd
 
 
 @click.command()
-@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt',
+@click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
-@click.option('--paired/--unpaired', '-p/-u', default=True,
+@click.option('--paired/--unpaired', '-p/-u', default=True, show_default=True,
               help='Sample reads are paired')
-@click.option('--threads', '-t', default=1,
+@click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
