@@ -1,44 +1,49 @@
-import argparse
-from distutils.command.check import check
 import logging
 import os
-import subprocess
 
+import click
+import pandas as pd
 import pyBigWig as pbw
+from seqtools.bed import Bed
 
 
-def main():
-    '''Merge bigWig files.'''
+@click.command()
+@click.option('--merge', '-m', type=click.Path(), default='merge.txt',
+              help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
+@click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes',
+              help='Size of chromosomes.')
+@click.option('--index', '-i', type=int, default=None,
+              help='Index of sample to process in samples file.')
+def main(merge, sizes, index):
+    '''Merge bigWig files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    parser = argparse.ArgumentParser(description='Merge bigWig files.')
-    parser.add_argument('bigwigs', type=lambda x: is_valid_file(parser, x), nargs='+')
-    parser.add_argument('--output', '-o', default='merge.bw')
-    args = parser.parse_args()
+    merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
+    if index != None:
+        merge_columns = merge_columns.iloc[index:index + 1]
+    for index, columns in merge_columns.iterrows():
+        name = columns[0]
+        samples = [sample for sample in columns[1:]]
+        merge_samples(name, samples, sizes)
+
     
-    size = len(args.bigwigs)
-    bws = [pbw.open(bw) for bw in args.bigwigs]
-    chromosomes = {}
-    for bw in bws:
-        bw_chromosomes = bw.chroms()
-        for chromosome in bw_chromosomes:
-            if not chromosome in chromosomes or bw_chromosomes[chromosome] > chromosomes[chromosome]:
-                chromosomes[chromosome] = bw_chromosomes[chromosome]
-    chomosomes_sizes = 'chomosomes.size.tmp'
-    with open('chomosomes.size.tmp', 'w') as output:
-        for chromosome in chromosomes:
-            output.write(chromosome)
-            output.write('\t')
-            output.write(str(chromosomes[chromosome]))
-            output.write('\n')
-    bed = 'bed.tmp'
-    with open('bed.tmp', 'w') as output:
+def merge_samples(name, samples, sizes):
+    '''Merge bigWig files related to samples.'''
+    print ('Merging samples {} into a single sample {}'.format(samples, name))
+    sizes_columns = pd.read_csv(sizes, header=None, sep='\t', comment='#')
+    bws = [pbw.open(sample + '.bw') for sample in samples]
+    merged_bed_tmp = name + '-tmp.bed'
+    with open(merged_bed_tmp, 'w') as output:
         output.write('track type=wiggle_0\n')
-        for chromosome in chromosomes:
-            size = chromosomes[chromosome]
+        for index, size_columns in sizes_columns.iterrows():
+            chromosome = size_columns[0]
+            size = size_columns[1]
             sums = [0] * size
             for bw in bws:
-                values = bw.values(chromosome, 0, size)
-                sums = [sums[i] + values[i] for i in range(0, size)]
+                bw_size = bw.chroms(chromosome) if bw.chroms(chromosome) else 0
+                if bw_size == 0:
+                    continue
+                values = bw.values(chromosome, 0, min(size, bw_size))
+                sums = [sums[i] + values[i] for i in range(0, min(size, bw_size))]
             for i in range(0, len(sums)):
                 output.write(chromosome)
                 output.write('\t')
@@ -48,23 +53,12 @@ def main():
                 output.write('\t')
                 output.write(str(sums[i]))
                 output.write('\n')
-    bedgraph_to_bigwig(bed, args.output, chomosomes_sizes)
-    os.remove(chomosomes_sizes)
-    os.remove(bed)
-
-
-def is_valid_file(parser, arg):
-    if not os.path.exists(arg):
-        parser.error("The file %s does not exist" % arg)
-    else:
-        return arg
-
-
-def bedgraph_to_bigwig(bed, bigwig, sizes):
-    '''Converts bedgraph file to bigwig.'''
-    cmd = ['bedGraphToBigWig', bed, sizes, bigwig]
-    logging.debug('Running {}'.format(cmd))
-    subprocess.run(cmd, check=True)
+    merged_bed_sort_tmp = name + '-tmp-sort.bed'
+    Bed.sort(merged_bed_tmp, merged_bed_sort_tmp)
+    merged_bw = name + '.bw'
+    Bed.bedgraph_to_bigwig(merged_bed_sort_tmp, merged_bw, sizes)
+    os.remove(merged_bed_sort_tmp)
+    os.remove(merged_bed_tmp)
 
 
 if __name__ == '__main__':
