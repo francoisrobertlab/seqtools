@@ -61,6 +61,7 @@ def intersect(sample, tag, annotations, annot_length):
                 outfile.write('\n')
     os.remove(bed_intersect_tmp)
     Bed.sort(bed_sort_tmp, bed_tag_raw)
+    os.remove(bed_sort_tmp)
 
     
 if __name__ == '__main__':
