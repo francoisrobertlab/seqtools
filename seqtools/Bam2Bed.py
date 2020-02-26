@@ -41,7 +41,7 @@ def bam2bedpe(bam, bedpe, threads=None):
     print ('Converting BAM {} to BEDPE {}'.format(bam, bedpe))
     sort_output = bam + '.sort'
     cmd = ['samtools', 'sort', '-n']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_output, bam])
     logging.debug('Running {}'.format(cmd))

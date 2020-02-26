@@ -1,0 +1,8 @@
+chr1	100	150	chr1	200	250	test1	1	+	+	0	test0
+chr2	400	450	chr2	300	350	test2	2	+	+	1	test1
+chr3	500	650	chr3	600	550	test3	3	+	+	2	test2
+chr4	800	750	chr4	700	850	test4	4	+	+	3	test3
+chr5	100	150	chr5	200	250	test5	1	-	-	4	test4
+chr6	400	450	chr6	300	350	test6	2	-	-	5	test5
+chr7	500	650	chr7	600	550	test7	3	-	-	6	test6
+chr8	800	750	chr8	700	850	test8	4	-	-	7	test7
