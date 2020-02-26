@@ -42,7 +42,7 @@ def split_bed(sample, binlength, binminlength, binmaxlength):
 
 def filter_bed_by_length(bed, output, minLength, maxLength):
     '''Filter BED file and keep only annotations that have specified size. Minimum size is included but max size is excluded.'''
-    with open(bed, "r") as infile, open(output, "w") as outfile:
+    with open(bed, 'r') as infile, open(output, 'w') as outfile:
         for line in infile:
             if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
                 outfile.write(line)
