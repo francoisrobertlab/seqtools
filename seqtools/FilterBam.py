@@ -49,7 +49,7 @@ def filter_mapped(bam_input, bam_output, paired, threads=None):
         cmd.extend(['-f', '2'])
     else:
         cmd.extend(['-F', '4'])
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))
@@ -61,21 +61,21 @@ def remove_duplicates(bam_input, bam_output, threads=None):
     print ('Removing duplicated sequences from BAM {}'.format(bam_input))
     fixmate_output = bam_input + '.fix'
     cmd = ['samtools', 'fixmate', '-m']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([bam_input, fixmate_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     sort_output = bam_input + '.sort'
     cmd = ['samtools', 'sort']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_output, fixmate_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     os.remove(fixmate_output)
     cmd = ['samtools', 'markdup', '-r']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([sort_output, bam_output])
     logging.debug('Running {}'.format(cmd))
@@ -87,7 +87,7 @@ def sort(bam_input, bam_output, threads=None):
     '''Sort BAM file.'''
     print ('Sorting BAM {}'.format(bam_input))
     cmd = ['samtools', 'sort']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, bam_input])
     logging.debug('Running {}'.format(cmd))

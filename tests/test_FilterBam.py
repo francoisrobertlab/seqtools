@@ -177,6 +177,15 @@ def test_filter_mapped_single_threads(testdir):
     subprocess.run.assert_any_call(['samtools', 'view', '-b', '-F', '2048', '-F', '4', '--threads', str(threads - 1), '-o', output, bam], check=True)
 
 
+def test_filter_mapped_single_singlethread(testdir):
+    bam = 'POLR2A.bam'
+    output = 'POLR2A-out.bam'
+    threads = 1
+    subprocess.run = MagicMock()
+    fb.filter_mapped(bam, output, False, threads)
+    subprocess.run.assert_any_call(['samtools', 'view', '-b', '-F', '2048', '-F', '4', '-o', output, bam], check=True)
+
+
 def test_filter_mapped_paired(testdir):
     bam = 'POLR2A.bam'
     output = 'POLR2A-out.bam'
@@ -192,6 +201,15 @@ def test_filter_mapped_paired_threads(testdir):
     subprocess.run = MagicMock()
     fb.filter_mapped(bam, output, True, threads)
     subprocess.run.assert_any_call(['samtools', 'view', '-b', '-F', '2048', '-f', '2', '--threads', str(threads - 1), '-o', output, bam], check=True)
+
+
+def test_filter_mapped_paired_singlethread(testdir):
+    bam = 'POLR2A.bam'
+    output = 'POLR2A-out.bam'
+    threads = 1
+    subprocess.run = MagicMock()
+    fb.filter_mapped(bam, output, True, threads)
+    subprocess.run.assert_any_call(['samtools', 'view', '-b', '-F', '2048', '-f', '2', '-o', output, bam], check=True)
 
 
 def test_remove_duplicates(testdir):
@@ -223,6 +241,21 @@ def test_remove_duplicates_threads(testdir):
     assert not os.path.exists(sort)
 
 
+def test_remove_duplicates_singlethread(testdir):
+    bam = 'POLR2A.bam'
+    fix = bam + '.fix'
+    sort = bam + '.sort'
+    output = 'POLR2A-out.bam'
+    threads = 1
+    subprocess.run = MagicMock(side_effect=[create_file(['-o', fix]), create_file(['-o', sort]), create_file(['-o', output])])
+    fb.remove_duplicates(bam, output, threads)
+    subprocess.run.assert_any_call(['samtools', 'fixmate', '-m', bam, fix], check=True)
+    subprocess.run.assert_any_call(['samtools', 'sort', '-o', sort, fix], check=True)
+    subprocess.run.assert_any_call(['samtools', 'markdup', '-r', sort, output], check=True)
+    assert not os.path.exists(fix)
+    assert not os.path.exists(sort)
+
+
 def test_sort(testdir):
     bam = 'POLR2A.bam'
     output = 'POLR2A-out.bam'
@@ -238,3 +271,12 @@ def test_sort_threads(testdir):
     subprocess.run = MagicMock()
     fb.sort(bam, output, threads)
     subprocess.run.assert_any_call(['samtools', 'sort', '--threads', str(threads - 1), '-o', output, bam], check=True)
+
+
+def test_sort_singlethread(testdir):
+    bam = 'POLR2A.bam'
+    output = 'POLR2A-out.bam'
+    threads = 1
+    subprocess.run = MagicMock()
+    fb.sort(bam, output, threads)
+    subprocess.run.assert_any_call(['samtools', 'sort', '-o', output, bam], check=True)
