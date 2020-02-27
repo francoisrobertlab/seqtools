@@ -1,13 +1,13 @@
 import logging
 import os
 from pathlib import Path
+import pytest
 from shutil import copyfile
 import subprocess
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-import pytest
 
 from seqtools import Bam2Bed as bb
 from seqtools.bed import Bed
@@ -25,8 +25,6 @@ def mock_testclass():
     
     
 def create_file(*args, **kwargs):
-    logging.warning('create_file with: {}'.format(args))
-    logging.warning('create_file with kw: {}'.format(kwargs))
     if 'stdout' in kwargs:
         outfile = kwargs['stdout']
         outfile.write('test')
@@ -46,6 +44,28 @@ def test_main(testdir, mock_testclass):
     bb.bam2bed.assert_any_call('POLR2A', threads)
     bb.bam2bed.assert_any_call('ASDURF', threads)
     bb.bam2bed.assert_any_call('POLR1C', threads)
+
+
+def test_main_all_threads(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    threads = 2
+    bb.bam2bed = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(bb.main, ['-s', samples, '--threads', threads ])
+    assert result.exit_code == 0
+    bb.bam2bed.assert_any_call('POLR2A', threads)
+    bb.bam2bed.assert_any_call('ASDURF', threads)
+    bb.bam2bed.assert_any_call('POLR1C', threads)
+
+
+def test_main_second_threads(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    threads = 2
+    bb.bam2bed = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(bb.main, ['-s', samples, '--threads', threads, '-i', 1 ])
+    assert result.exit_code == 0
+    bb.bam2bed.assert_called_once_with('ASDURF', threads)
 
     
 def test_bam2bed(testdir, mock_testclass):
