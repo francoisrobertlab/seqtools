@@ -30,26 +30,26 @@ def main(samples, sizes, scale, strand, index):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        genome_coverage(sample, sizes, scale, strand)
+        sample_splits_genome_coverage(sample, sizes, scale, strand)
+
+
+def sample_splits_genome_coverage(sample, sizes, scale=None, strand=None):
+    '''Compute genome coverage on a single sample.'''
+    print ('Computing genome coverage on sample {}'.format(sample))
+    genome_coverage(sample, sizes, scale, strand)
+    splits = SplitBed.splits(sample)
+    for split in splits:
+        genome_coverage(split, sizes, scale, strand)
 
 
 def genome_coverage(sample, sizes, scale=None, strand=None):
-    '''Compute genome coverage on a single sample.'''
-    print ('Computing genome coverage on sample {}'.format(sample))
-    do_genome_coverage(sample, sizes, scale, strand)
-    splits = SplitBed.splits(sample)
-    for split in splits:
-        do_genome_coverage(split, sizes, scale, strand)
-
-
-def do_genome_coverage(sample, sizes, scale=None, strand=None):
     bed_source = sample + '-forcov.bed'
     if not os.path.exists(bed_source):
         logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
         bed_source = sample + '.bed'
     print ('Computing genome coverage on BED {}'.format(bed_source))
-    count = Bed.count_bed(bed_source)
     if not scale:
+        count = Bed.count_bed(bed_source)
         scale = BASE_SCALE / max(count, 1)
     bed = sample + '-cov.bed'
     bigwig = sample + '-cov.bw'
