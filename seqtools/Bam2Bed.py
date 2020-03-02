@@ -11,31 +11,47 @@ from seqtools.bed import Bed
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
+@click.option('--paired/--unpaired', '-p/-u', default=True, show_default=True,
+              help='Sample reads are paired')
 @click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, threads, index):
+def main(samples, paired, threads, index):
     '''Converts BAM file to BED for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        bam2bed(sample, threads)
+        bam2bed(sample, paired, threads)
 
 
-def bam2bed(sample, threads=None):
+def bam2bed(sample, paired, threads=None):
     '''Converts BAM file to BED for a single sample.'''
     print ('Converting BAM to BED for sample {}'.format(sample))
     bam = sample + '.bam'
-    bedpe = sample + '.bedpe'
-    bam2bedpe(bam, bedpe, threads)
-    bed_raw = sample + '.bed'
-    bedpe2bed(bedpe, bed_raw)
-    os.remove(bedpe)
+    bed = sample + '.bed'
+    if paired:
+        bedpe = sample + '.bedpe'
+        bam2bedpe(bam, bedpe, threads)
+        bedpe2bed(bedpe, bed)
+        os.remove(bedpe)
+    else:
+        bam2bed_unpaired(bam, bed)
 
 
+def bam2bed_unpaired(bam, bed):
+    '''Converts BAM file to BED.'''
+    conversion_output = bed + '-bam2bed.bed'
+    cmd = ['bedtools', 'bamtobed', '-i', bam]
+    logging.debug('Running {}'.format(cmd))
+    with open(conversion_output, 'w') as outfile:
+        subprocess.run(cmd, stdout=outfile, check=True)
+    Bed.sort(conversion_output, bed)
+    os.remove(conversion_output)
+    
+    
 def bam2bedpe(bam, bedpe, threads=None):
     '''Converts BAM file to BEDPE.'''
     print ('Converting BAM {} to BEDPE {}'.format(bam, bedpe))
