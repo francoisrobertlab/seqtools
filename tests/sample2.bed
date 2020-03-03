@@ -1,0 +1,8 @@
+chr1	200	250	test1	1	+
+chr2	300	350	test2	2	+
+chr3	600	550	test3	3	+
+chr4	700	850	test4	4	+
+chr5	200	250	test5	1	-
+chr6	300	350	test6	2	-
+chr7	600	550	test7	3	-
+chr8	700	850	test8	4	-
