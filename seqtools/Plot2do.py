@@ -1,11 +1,12 @@
 from distutils.command.check import check
 import logging
 import os
+from pathlib import Path
 import subprocess
 
 import click
+
 import pandas as pd
-from pathlib import Path
 
 
 @click.command()
@@ -63,7 +64,7 @@ def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxl
         plot2do(file_parent / sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
 
 
-def plot2do(sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot):
+def plot2do(sample, type=None, genome=None, reference=None, sites=None, align=None, sitelabel=None, minlength=None, maxlength=None, upstream=None, downstream=None, colorscalemax=None, simplifyplot=None, squeezeplot=None):
     '''Run plot2DO on a single sample.'''
     print ('Running plot2DO on sample {}'.format(sample))
     cmd = ['Rscript', 'plot2DO.R']
