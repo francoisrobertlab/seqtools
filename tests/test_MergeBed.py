@@ -58,7 +58,7 @@ def test_main_mergenotexists(testdir, mock_testclass):
     mb.merge_samples.assert_not_called()
 
 
-def test_merge_samples(testdir, mock_testclass):
+def test_merge_samples(testdir):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merge_bed = merge + '.bed'

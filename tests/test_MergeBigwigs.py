@@ -72,7 +72,7 @@ def test_main_sizesnotexists(testdir, mock_testclass):
     mb.merge_samples.assert_not_called()
 
 
-def test_merge_samples(testdir, mock_testclass):
+def test_merge_samples(testdir):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merged_bed_sort_tmp = merge + '-tmp-sort.bed'
