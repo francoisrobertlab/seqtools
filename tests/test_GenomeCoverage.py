@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-from more_itertools.more import side_effect
 import pytest
 
 from seqtools import GenomeCoverage as gc
