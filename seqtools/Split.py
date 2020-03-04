@@ -66,7 +66,7 @@ def annotation_length(line):
 
 def splits(sample):
     '''Returns all splits for sample, sorted.'''
-    regex = re.compile(sample + '-(\d+)-\d+\.bed')
+    regex = re.compile(sample + '-(\\d+)-\\d+\\.bed')
     files = os.listdir()
     beds = filter(regex.match, files)
     sample_splits = [bed[:-4] for bed in beds]
@@ -75,7 +75,7 @@ def splits(sample):
 
 
 def splitkey(split):
-    return int(re.search('(\d+)-\d+$', split).group(1))
+    return int(re.search('(\\d+)-\\d+$', split).group(1))
 
 
 if __name__ == '__main__':
