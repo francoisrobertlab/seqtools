@@ -1,0 +1,4 @@
+#Name Sample
+POLR2A-inter	POLR2A
+ASDURF-inter	ASDURF
+POLR1C-inter	POLR1C

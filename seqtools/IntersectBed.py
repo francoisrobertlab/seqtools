@@ -56,8 +56,9 @@ def intersect(sample, tag, annotations, annot_length):
             else:
                 columns = line.rstrip('\n\r').split('\t')
                 for i in range(annot_length, len(columns)):
+                    if i != annot_length:
+                        outfile.write('\t')
                     outfile.write(columns[i])
-                    outfile.write('\t')
                 outfile.write('\n')
     os.remove(bed_intersect_tmp)
     Bed.sort(bed_sort_tmp, bed_tag_raw)
