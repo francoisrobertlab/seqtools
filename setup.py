@@ -23,7 +23,7 @@ setup(
             'bam2bed = seqtools.Bam2Bed:main',
             'download = seqtools.DownloadSample:main',
             'filterbam = seqtools.FilterBam:main',
-            'genecov = seqtools.GenomeCoverage:main',
+            'genomecov = seqtools.GenomeCoverage:main',
             'intersect = seqtools.IntersectBed:main',
             'merge = seqtools.MergeBed:main',
             'mergebw = seqtools.MergeBigwigs:main',
