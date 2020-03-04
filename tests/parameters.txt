@@ -1,0 +1,555 @@
+			---------------------------------------------------
+			Versatile Aggregate Profiler (VAP) v1.1.0-SNAPSHOT parameters
+			---------------------------------------------------
+
+Versatile Aggregate Profiler (VAP) v1.1.0-SNAPSHOT parameters
+
+~~version 1.1.0-SNAPSHOT
+~~IMPORTANT: DO NOT CHANGE parameter_name, otherwise it will be rejected
+~~IMPORTANT: Format must be "parameter_name=value" where accepted values are inside []
+
+~~NOTE: as usual relative paths must be set based on the location of the VAP executable, which is placed in the output_directory by the interface.
+
+* Analysis mode
+
+** {analysis_mode} [ A, E, C ]
+
+   This parameter indicates which type of reference features to use.
+
+      * (A)nnotation: the reference features contained in the {{{refgroup_path}reference groups}} are annotation name (unique identifier) from a provided {{{annotations_path}annotations file}}, and the {{{reference_points}reference points}} are derived from the annotation boundaries (e.g. a reference feature is a gene where it's start and end coordinates correspond to two reference points). The orientation of the flanking annotations is used to create {{{orientation_subgroups}orientation subgroups}} if requested.
+
+      * (E)xon: the reference features contained in the {{{refgroup_path}reference groups}} are annotation name (unique identifier) from a provided {{{annotations_path}annotations file}}, and the {{{reference_points}reference points}} are derived from the exon boundaries (e.g. a reference feature is a gene containing three exons where the start and end coordinates of each exon correspond to six reference points). The orientation of the flanking annotations is ignored.
+
+      * (C)oordinate: the reference features contained in the {{{refgroup_path}reference groups}} are region coordinates directly containing the {{{reference_points}reference points}} to use (e.g. the start and end coordinates of a region of interest (reference feature) correspond to two reference points). The orientation of the flanking regions is ignored.
+
+   <usage: analysis_mode=A>
+   
+~~@analysis_mode=A
+
+
+
+* Files selection
+
+** {dataset_path} [ path ]
+
+   This parameter contains the path of one dataset file, therefore should be repeated for each dataset. VAP can process more than one round of dataset(s) and reference group(s); all the datasets (and reference groups) sharing the same alias are processed together.
+
+   The supported format of dataset file are {{{https://genome.ucsc.edu/goldenPath/help/bedgraph.html}BedGraph}} and {{{https://genome.ucsc.edu/goldenPath/help/wiggle.html}variableStep and fixedStep WIG}}. When the "track" line of a dataset file contains the field "name", this information is used as dataset name, otherwise the file name is used as dataset name in the output files.
+
+      * Path : full or relative path, cannot be empty.
+
+    <usage: dataset_path=[alias:=:]myPathData/datasetFile>
+
+~~@dataset_path=R1:=:test.bed
+
+
+
+** {refgroup_path} [ path ]
+
+   This parameter contains the path of one reference group file, therefore should be repeated for each reference group. VAP can process more than one round of dataset(s) and reference group(s); all the reference groups (and datasets) sharing the same alias are processed together.
+
+   Depending on the {{{analysis_mode}type of reference}}, the format of the reference group file differs. In {{{analysis_mode}annotation or exon}} mode, the reference group file simply contains a list of one annotation name per line (must come from the first column of the {{{annotations_path}annotations file}}, which is used to extract the coordinates of the reference features).
+   
+   In {{{analysis_mode}coordinates}} mode, the reference group file must directly contains the coordinates in a special format. The first line of such a file should start by a "#" and contains at least the tag "type=" followed by one of the 6 "coordX" where X is the number of {{{reference_points}reference points}} contained in this file. Any other line starting by "#" are considered as comments. Because it could contains up to 6 reference points, the first column of the other lines must contains the chromosome, the second column the strand, and X columns containing the coordinates. An additional column could optionally contains the name of the region that will be reported in the {{{write_individual_references}"ind_" output file}}. Exceptionally, the {{{https://genome.ucsc.edu/FAQ/FAQformat.html#format1}BED}} format file with 3 to 6 columns is supported when there are exactly 2 reference points.
+   
+   When the first line of a reference group file contains a tag "name=", this string is used as group name, otherwise the file name is used as group name in the output files.
+
+      * Path : full or relative path, cannot be empty.
+
+    <usage: refgroup_path=[alias:=:]myPathData/refGroupFile>
+
+~~@refgroup_path=R1:=:Group_AllLongGenes_TxSorted.txt
+
+
+
+** {annotations_path} [ path ]
+
+   This parameter contains the path of the annotations file which must be in {{{https://genome.ucsc.edu/FAQ/FAQformat.html#format9}GenePred}} tab-delimited format and contains at least 10 columns. When a 11th column is present, it is considered to be the alias and this information is used as the second column in the {{{write_individual_references}"ind_" output file}} while other columns (12th and +) are copied at the end of the lines.
+
+      * Path : full or relative path, can be empty when reference features are {{{analysis_mode}coordinates}}.
+
+   <usage: annotations_path=myPathData/genomeAnnotationFile>
+   
+~~@annotations_path=sgdGeneAndOthers_UTR_TIF-seq_sacCer3_july_2018.txt
+
+
+
+** {selection_path} [ path ]
+
+   This parameter contains the path of the file containing a list of annotations to select (positive filter).
+
+   If not empty, only annotations part of this file are selected from the {{{refgroup_path}reference group(s)}}. Only the first column is used (others are ignored).
+
+      * Path : full or relative path, can be empty if no positive filtering is required, or when reference features are {{{analysis_mode}coordinates}}.
+
+   <usage: selection_path=myPathData/selectedAnnotationFile>
+   
+~~@selection_path=
+
+
+
+** {exclusion_path} [ path ]
+
+   This parameter contains the path of the file containing a list of annotations to exclude (negative filter).
+
+   Annotations part of this file are excluded from the {{{refgroup_path}reference group(s)}}. Only the first column is used (others are ignored).
+
+      * Path : full or relative path, can be empty if no negative filtering is required, or when reference features are {{{analysis_mode}coordinates}}.
+
+   <usage: exclusion_path=myPathData/excludedAnnotationFile>
+   
+~~@exclusion_path=
+
+
+
+* Parameters selection
+
+** {analysis_method} [ A, R ]
+
+   This parameter indicates how to process the data by segmenting each block (representing the feature or inter feature regions) either by windows of constant {{{window_size}size}} (absolute mode) (meaning that longer feature contains more windows), or in a constant number of windows (relative mode) (meaning that longer feature contains longer windows). The number of {{{windows_per_block}windows per block}} represented in the final graph has to be determined for each block individually.
+
+   WARNING: In relative mode, a signal appearing at a certain absolute distance from a point of reference is not represented in the same window for short vs long feature (e.g. a signal 600 bp dowstream of the TSS is contained in the 6th window of a 1kb gene divided in 10 windows, but in the 2nd window of a 3kb gene also divided in 10 windows).
+   
+      * (A)bsolute: each block is divided in windows of constant {{{window_size}size}}.
+
+      * (R)elative: each block is divided in a constant number of {{{windows_per_block}windows}}.
+
+   <usage: analysis_method=A>
+   
+~~@analysis_method=A
+
+
+
+** {annotation_coordinates_type} [ T, C, N ]
+
+   This parameter indicates to use either the transcription (tx) or coding (cds) coordinate columns (start and end) from the {{{annotations_path}annotations file}} when reference features are {{{analysis_mode}annotations}}.
+
+      * (T)ranscription: corresponds to the txStart and txEnd.
+
+      * (C)oding sequence: corresponds to the cdsStart and cdsEnd.
+
+      * (N)ot Applicable: when reference features are different than {{{analysis_mode}annotations}}.
+
+   <usage: annotation_coordinates_type=T>
+   
+~~@annotation_coordinates_type=C
+
+
+
+** {reference_points} [ integer ]
+
+   This parameter indicates the number of reference points (and by extension the number of blocks being the number of reference_points + 1) desired).
+
+      * Integer: a value between 1 and 6.
+
+   <usage: reference_points=2>
+   
+~~@reference_points=2
+
+
+
+** {1pt_boundary} [ 5, 3, N ]
+
+   This parameter indicates which boundary of the annotation (5' or 3') to use when only one {{{reference_points}reference point}} of {{{analysis_mode}annotation}} is selected.
+
+      * 5: use the 5 prime coordinate of the reference feature (based on the strand info).
+
+      * 3: use the 3 prime coordinate of the reference feature (based on the strand info).
+      
+      * (N)ot Applicable: when the number of {{{reference_points}reference point}} is different than 1.
+
+   <usage: 1pt_boundary=5>
+   
+~~@1pt_boundary=N
+
+
+
+** {window_size} [ integer ] 
+
+   This parameter indicates the size of the window used to segment each feature in the {{{analysis_method}absolute}} mode.
+
+   This parameter is also used for the upstream and downstream blocks in the {{{analysis_method}relative}} mode.
+
+      * Integer: value between 0 and 500,000,000.
+
+   <usage: window_size=50>
+   
+~~@window_size=10000
+
+
+
+** {windows_per_block} [ integer ]
+
+   This parameter indicates the number of windows to use in the representation of each block individually.
+
+   There are {{{reference_points}reference_points}}+1 values, each value must be delimited by a semi-colon (;).
+
+      * Integer: value between 1 and 10,000.
+
+   <usage: windows_per_block=20;60;20>
+   
+~~@windows_per_block=1;1;1;
+
+
+
+** {block_alignment} [ L, R, S ]
+
+   This parameter indicates the alignment desired for each block individually. A gap is introduced at the split point inside a block or between consecutive blocks. See the manual for more details about gap. 
+   
+   This parameter is not used in the {{{analysis_method}relative}} representation mode.
+
+   There are {{{reference_points}reference_points}}+1 values, each value must be delimited by a semi-colon (;).
+
+      * (L)eft: the content of the block is aligned to the left.
+
+      * (R)ight: the content of the block is aligned to the left.
+
+      * (S)plit: the content of the block is split and aligned at both boundaries based on the {{{block_split_type}block_split_type}}, {{{block_split_value}block_split_value}} and {{{block_split_alignment}block_split_alignment}} parameters.
+
+   <usage: block_alignment=R;S;L>
+   
+~~@block_alignment=R;S;L
+
+
+
+** {block_split_type} [ A, P, N ]
+
+   This parameter indicates the type of split desired for each relevant block individually.
+
+   This parameter is not used in the {{{analysis_method}relative}} representation mode.
+
+   There are {{{reference_points}reference_points}}+1 values, each value must be delimited by a semi-colon (;).
+
+      * (A)bsolute: indicates that the {{{block_split_value}block_split_value}} represent an absolute number of windows before the {{{block_alignment}split}} of the block.
+
+      * (P)ercentage: indicates that the {{{block_split_value}block_split_value}} represent a percentage of the feature before the {{{block_alignment}split}} of the block.
+
+      * (N)ot Applicable: when {{{block_alignment}block_alignment}} is not split.
+
+   <usage: block_split_type=N;P;N>
+   
+~~@block_split_type=N;P;N
+
+
+
+** {block_split_value} [ integer ]
+
+   This parameter indicates the value (absolute number of windows or percentage of the feature length based on {{{block_split_type}block_split_type}}) desired for each relevant block individually.
+
+   This parameter is not used in the {{{analysis_method}relative}} representation mode.
+
+   There are {{{reference_points}reference_points}}+1 values, each value must be delimited by a semi-colon (;).
+
+      * Integer: a value between 0 and 100 when {{{block_split_type}block_split_type}} is set to percentage, or a value between 0 and the {{{windows_per_block}number of window in a block}} when {{{block_split_type}block_split_type}} is set to absolute (set to 100 when {{{block_alignment}block_alignment}} is not split).
+
+   <usage: block_split_value=100;50;100>
+   
+~~@block_split_value=0;50;0
+
+
+
+** {block_split_alignment} [ L, R, N ]
+
+   This parameter indicates on which side of the block (left or rigth) the {{{block_split_value}number of windows before the split}} should be aligned.
+
+   This parameter is not used in the {{{analysis_method}relative}} representation mode.
+
+   There are {{{reference_points}reference_points}}+1 values, each value must be delimited by a semi-colon (;).
+
+      * (L)eft: the desired number of windows is aligned to the left side of the block, the remaining number of windows being aligned to the rigth side.
+
+      * (R)ight: the desired number of windows is aligned to the right side of the block, the remaining number of windows being aligned to the left side.
+
+      * (N)ot Applicable: when {{{block_alignment}block_alignment}} is not split.
+
+   <usage: block_split_alignment=N;L;N>
+   
+~~@block_split_alignment=N;L;N
+
+
+
+** {merge_mid_introns} [ F, L, N ]
+
+   This parameter indicates to merge (or not) the signal of the middle introns to one of the existing intron block.
+   
+   This parameter is only used in {{{analysis_mode}exon}} mode.
+
+      * (F)irst: merge the signal of the middle introns with the signal of the first intron.
+
+      * (L)ast: merge the signal of the middle introns with the signal of the last intron.
+
+      * (N)one: ignore the signal of the middle introns (default in a non-exon mode).
+
+   <usage: merge_mid_introns=N>
+   
+~~@merge_mid_introns=N
+
+
+
+** {aggregate_data_type} [ E, D, A, I ]
+
+   This parameter indicates to report in the aggregate output files either the mean, the median, the max or the min of the {{{dataset_path}data}} values across corresponding windows of the reference features of a given {{{refgroup_path}group}}.
+
+      * m(E)an: the aggregate value reported is the mean of the values across corresponding windows.
+
+      * me(D)ian: the aggregate value reported is the median of the values across corresponding windows.
+
+      * m(A)x: the aggregate value reported is the max of the values across corresponding windows.
+
+      * m(I)n: the aggregate value reported is the min of the values across corresponding windows.
+
+   <usage: aggregate_data_type=E>
+   
+~~@aggregate_data_type=E
+
+
+
+** {smoothing_windows} [ integer ]
+
+   This parameter indicates the number of consecutive windows to average in order to smooth the data.
+
+   This value must be an even integer because the average is calculated using smoothing_windows/2 window(s) each side of a particular window, therefore creating a gap of smoothing_windows/2 window(s) at a split point or between consecutive block not necessarily contiguous in the genome based on the {{{block_alignment}block alignment}}.
+
+      * Integer: an even value between 0 and the sum of the {{{windows_per_block}windows in all blocks}}.
+
+   <usage: smoothing_windows=6>
+   
+~~@smoothing_windows=6
+
+
+
+** {mean_dispersion_value} [ E, D ]
+
+   This parameter indicates to report the dispersion of the aggregate data in each window, either as standard error of the mean (SEM) or as standard deviation (SD).
+
+      * E: report the SEM.
+
+      * D: report the SD.
+
+   <usage: mean_dispersion_value=E>
+   
+~~@mean_dispersion_value=E
+
+
+
+** {process_missing_data} [ 1, 0 ]
+
+   This parameter indicates to process the missing data of the datasets as ranges containing the value zero. It is recommended to use this parameter for datasets coming from sequencing files, unless mappable positions with zero signal are present and unmappable positions are represented as missing data (e.g. using Wiggler, https://sites.google.com/site/anshulkundaje/projects/wiggler).
+
+      * 1: True means to process the missing data as ranges with the value zero.
+
+      * 0: False means to ignore missing data and only use ranges and values from the dataset file.
+
+   <usage: process_missing_data=1>
+
+~~@process_missing_data=1
+
+
+** {process_data_by_chunk} [ 1, 0 ]
+
+   This parameter allows to activate or disable the {{{dataset_chunk_size}dataset_chunk_size}} parameter.
+
+      * 1: True means to activate the dataset_chunk_size parameter.
+
+      * 0: False means to disable the dataset_chunk_size parameter.
+
+   <usage: process_data_by_chunk=0>
+   
+~~@process_data_by_chunk=0
+
+
+
+** {dataset_chunk_size} [ integer ]
+
+   This parameter allows to limit the number of lines of a dataset processed at a time in order to control the memory footprint (and the swapping). The value 0 means no limit.
+
+      * Integer: a value between 0 and 50 billion.
+
+   <usage: dataset_chunk_size=0>
+   
+~~@dataset_chunk_size=10000000
+
+
+
+* Output selection
+
+** {output_directory} [ path ]
+
+   This parameter contains the path of the output directory where all the output and related files are centralized.
+   
+   *** Prerequisites : Directory must exist with read and write permissions.
+
+      * Path : full or relative path, cannot be empty.
+
+   <usage: output_directory=myPathResults>
+   
+~~@output_directory=test
+
+
+
+** {prefix_filename} [ string ]
+
+   This parameter contains a prefix to add to ALL the files copied/created in the {{{output_directory}output directory}}.
+
+      * String: can contain any {{{http://en.wikipedia.org/wiki/Filename}OS-dependent valid character}} (can be empty).
+
+   <usage: prefix_filename=2refPt_abs_split50pc>
+   
+~~@prefix_filename=AnalysisM3_run100-110
+
+
+
+** {write_individual_references} [ 1, 0 ]
+
+   This parameter indicates to output (or not) one file per {{{refgroup_path}group of reference features}} and {{{dataset_path}dataset}}. The lines of the files mainly contain the individual features, and the columns mainly contain the signal of individual windows. This file is used for heatmap representation, and can be useful to obtain the average value of each reference feature (using only 1 very large window for this block).
+
+      * 1: True means to generate this output file.
+
+      * 0: False means to NOT generate this output file.
+
+   <usage: write_individual_references=1>
+   
+~~@write_individual_references=1
+
+
+
+** {generate_heatmaps} [ 1, 0 ]
+
+   This parameter indicates to the interface to generate (or not) one heatmap file per {{{write_individual_references}individual reference features}}.
+
+      * 1: True means to generate a heatmap representation.
+
+      * 0: False means to NOT generate this output file.
+
+   <usage: generate_heatmaps=1>
+
+~~@generate_heatmaps=0
+
+
+
+** {display_dispersion_values} [ 1, 0 ]
+
+   This parameter indicates to display (or not) the {{{mean_dispersion_value}dispersion values}} of the aggregate data on the graph.
+
+      * 1: True means to display the dispersion values of the aggregate data.
+
+      * 0: False means to NOT display the dispersion values of the aggregate data.
+
+   <usage: display_dispersion_values=0>
+   
+~~@display_dispersion_values=0
+
+
+
+** {generate_aggregate_graphs} [ 1, 0 ]
+
+   This parameter indicates to create (or not) the aggregate graphs.
+
+      * 1: True means to create the graphs.
+
+      * 0: False means to NOT create the graphs.
+
+   <usage: generate_aggregate_graphs=0>
+   
+~~@generate_aggregate_graphs=0
+
+
+
+** {one_graph_per_dataset} [ 1, 0 ]
+
+   This parameter indicates to combine (or not) all the datasets in one graph through a map file (VAP always process one dataset at a time).
+
+      * 1: True means to create one graph for each dataset (the name of file contains the dataset name).
+
+      * 0: False means to combine all the dataset as different curves of the same graph.
+
+   <usage: one_graph_per_dataset=1>
+   
+~~@one_graph_per_dataset=1
+
+
+
+** {one_graph_per_group} [ 1, 0 ]
+
+   This parameter indicates to combine (or not) all the group of reference features in one graph.
+
+      * 1: True means to create one graph for each group of reference features (the file name contains the group name).
+
+      * 0: False means to combine all the groups of reference features as different curves of the same graph.
+
+   <usage: one_graph_per_group=0>
+   
+~~@one_graph_per_group=1
+
+
+
+** {orientation_subgroups} [ 1, 0 ]
+
+   This parameter indicates which subgroup(s) of a group of reference features to use, based on the orientation of the flanking annotations.
+
+   This parameter is relevant only in {{{analysis_mode}annotation}} mode and could be really important to correctly interpret signal in proximal regions that could be affected by the orientation of the flanking genes in compact genomes.
+
+   There are always nine values representing one of the orientation subgroups named AA;AC;DA;AT;TA;TT;TC;DT;DC where A stands for Any, C stands for Convergent (tail-tail), D stands for Divergent (head-head), and T stands for Tandem (tail-head); each value must be delimited by a semi-colon (;). Since all the reference features are represented from left to right (5' to 3') in an aggregate (and individual) profile, those standing on the negative strand are virtually flipped (along with their flanking annotations) such that it is impossible to get an upstream orientation Convergent. In other words, the reference features are always represented on the positive (P) strand, while the upstream and downstream annotations can be on the positive or negative (N) strand.
+
+      * The biological meaning of each subgroup is:
+
+         * AA: all reference features (no subgroup) (their flanking annotations can be in Any orientation) (TT+TC+DT+DC)
+
+         * AC: the subgroup of reference features where the upstream annotation is on Any strand, and the downstream annotation is on the opposite strand (Convergent orientation) (tail to tail) (TC+DC)
+
+         * DA: the subgroup of reference features where the upstream annotation is on the opposite strand (Divergent orientation) (head to head), and the downstream annotation is on Any strand (DT+DC)
+
+         * AT: the subgroup of reference features where the upstream annotation is on Any strand, and the downstream annotation is on the same strand (Tandem orientation) (tail to head) (TT+DT)
+
+         * TA: the subgroup of reference features where the upstream annotation is on the same strand (Tandem orientation) (tail to head), and the downstream annotation is on Any strand (TT+TC)
+
+         * TT: the subgroup of reference features in Tandem with their flanking annotations (the three annotations are on the same strand)
+
+         * TC: the subgroup of reference features in Tandem with the upstream annotation (same strand) and Convergent with the downstream annotation (opposite strand)
+
+         * DT: the subgroup of reference features Divergent with the upstream annotation (opposite strand) and in Tandem with the downstream annotation (same strand) 
+
+         * DC: the subgroup of reference features Divergent with the upstream annotation (opposite strand) and Convergent with the downstream annotation (opposite strand)
+
+      * 1: True means to generate the aggregate profile of this subgroup of reference features.
+
+      * 0: False means to NOT generate the aggregate profile of this subgroup of reference features.
+
+   <usage: orientation_subgroups=1;1;1;1;1;1;1;1;1>
+   
+~~@orientation_subgroups=1;0;0;0;0;0;0;0;0
+
+
+
+** {one_graph_per_orientation} [ 1, 0 ]
+
+   This parameter indicates to combine (or not) all the selected {{{orientation_subgroups}subgroups of orientation}} in one graph through a map file (VAP always process one subgroup at a time).
+
+      * 1: True means to create one graph for each selected subgroup of orientation (the name of file contains the orientation_subgroup).
+
+      * 0: False means to combine all the selected subgroup of orientation as different curves of the same graph.
+
+   <usage: one_graph_per_orientation=1>
+   
+~~@one_graph_per_orientation=1
+
+
+
+** {Y_axis_scale} [ values ]
+
+   This parameter allows to manually (or automatically) select the visible portion of the Y axis of the graph(s).
+
+   There are up to two values separated by a semi-colon (;) where the value in front and after the semi-colon are respectively the minimum and the maximum of the Y axis. An absence of value is interpreted as an automatic selection for each graph independently.
+
+      * Values: any values (including decimals).
+
+   <usage: Y_axis_scale=-2.5;5>
+   
+~~@Y_axis_scale=;
+
+
+
+~~http://maven.apache.org/doxia/references/apt-format.html
+
+
+   {{{top}Go to top}}
