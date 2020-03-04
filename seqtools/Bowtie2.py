@@ -18,17 +18,17 @@ from seqtools.seq import Fastq
 @click.option('--index', type=int, default=None,
               help='Index of sample to process in samples file.')
 @click.argument('bowtie_args', nargs=-1, type=click.UNPROCESSED)
-def main(samples, threads, index, bowtie_args):
+def bowtie2(samples, threads, index, bowtie_args):
     '''Align samples using bowtie2 program.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        bowtie(sample, threads, bowtie_args)
+        bowtie_sample(sample, threads, bowtie_args)
 
 
-def bowtie(sample, threads=None, bowtie_args=None):
+def bowtie_sample(sample, threads=None, bowtie_args=None):
     '''Align one sample using bowtie2 program.'''
     print ('Running bowtie2 on sample {}'.format(sample))
     fastq1 = Fastq.fastq(sample, 1)
@@ -63,4 +63,4 @@ def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=None):
 
 
 if __name__ == '__main__':
-    main()
+    bowtie2()

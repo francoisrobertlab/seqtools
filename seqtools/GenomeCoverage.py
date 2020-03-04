@@ -27,7 +27,7 @@ BASE_SCALE = 1000000
               help='Calculate coverage of intervals from a specific strand.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, sizes, five, three, scale, strand, index):
+def genomecov(samples, sizes, five, three, scale, strand, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
@@ -93,4 +93,4 @@ def coverage(bed_input, bed_output, sizes, sample, five=False, three=False, scal
 
 
 if __name__ == '__main__':
-    main()
+    genomecov()

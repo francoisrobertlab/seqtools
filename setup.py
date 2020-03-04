@@ -20,20 +20,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'bam2bed = seqtools.Bam2Bed:main',
-            'download = seqtools.DownloadSample:main',
-            'filterbam = seqtools.FilterBam:main',
-            'genomecov = seqtools.GenomeCoverage:main',
-            'intersect = seqtools.IntersectBed:main',
-            'merge = seqtools.MergeBed:main',
-            'mergebw = seqtools.MergeBigwigs:main',
-            'plot2do = seqtools.Plot2do:main',
-            'bowtie2 = seqtools.Bowtie2:main',
-            'bwa = seqtools.Bwa:main',
-            'vap = seqtools.Vap:main',
-            'split = seqtools.SplitBed:main',
-            'slowsplit = seqtools.SlowSplitBed:main',
-            'statistics = seqtools.StatisticsFile:main',
+            'seqtools = seqtools.seqtools:seqtools'
         ]
     }
 )

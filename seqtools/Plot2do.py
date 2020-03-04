@@ -53,7 +53,7 @@ import pandas as pd
               ' [options: on, off (default)]')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index):
+def plot2do(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index):
     '''Run plot2DO on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     file_parent = Path(file).parent
@@ -61,10 +61,10 @@ def main(file, type, genome, reference, sites, align, sitelabel, minlength, maxl
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        plot2do(file_parent / sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+        plot2do_sample(file_parent / sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
 
 
-def plot2do(sample, type=None, genome=None, reference=None, sites=None, align=None, sitelabel=None, minlength=None, maxlength=None, upstream=None, downstream=None, colorscalemax=None, simplifyplot=None, squeezeplot=None):
+def plot2do_sample(sample, type=None, genome=None, reference=None, sites=None, align=None, sitelabel=None, minlength=None, maxlength=None, upstream=None, downstream=None, colorscalemax=None, simplifyplot=None, squeezeplot=None):
     '''Run plot2DO on a single sample.'''
     print ('Running plot2DO on sample {}'.format(sample))
     cmd = ['Rscript', 'plot2DO.R']
@@ -103,4 +103,4 @@ def plot2do(sample, type=None, genome=None, reference=None, sites=None, align=No
 
 
 if __name__ == '__main__':
-    main()
+    plot2do()

@@ -20,17 +20,17 @@ from seqtools.bed import Bed
               help='First bin minimum length.')
 @click.option('--binMaxLength', '-L', type=int, default=500, show_default=True,
               help='Last bin maximum length.')
-def main(samples, index, binlength, binminlength, binmaxlength):
+def split(samples, index, binlength, binminlength, binmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        split_bed(sample, binlength, binminlength, binmaxlength)
+        split_sample(sample, binlength, binminlength, binmaxlength)
 
 
-def split_bed(sample, binlength, binminlength, binmaxlength):
+def split_sample(sample, binlength, binminlength, binmaxlength):
     '''Split BED file from a single sample based on lenght of annotations.'''
     print ('Split BED file of sample {}'.format(sample))
     if binlength is not None:
@@ -79,4 +79,4 @@ def splitkey(split):
 
 
 if __name__ == '__main__':
-    main()
+    split()

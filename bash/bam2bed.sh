@@ -19,4 +19,4 @@ then
   args+=("-t" "$SLURM_CPUS_PER_TASK")
 fi
 
-bam2bed "${args[@]}"
+seqtools bam2bed "${args[@]}"

@@ -16,7 +16,7 @@ from seqtools.bed import Bed
               help='Size of chromosomes.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(merge, sizes, index):
+def mergebw(merge, sizes, index):
     '''Merge bigWig files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
@@ -64,4 +64,4 @@ def merge_samples(name, samples, sizes):
 
 
 if __name__ == '__main__':
-    main()
+    mergebw()

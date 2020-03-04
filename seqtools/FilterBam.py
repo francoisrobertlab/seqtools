@@ -16,17 +16,17 @@ import pandas as pd
               help='Number of threads used to process data per sample.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, paired, threads, index):
+def filterbam(samples, paired, threads, index):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        filter_bam(sample, paired, threads)
+        filterbam_sample(sample, paired, threads)
 
 
-def filter_bam(sample, paired, threads=None):
+def filterbam_sample(sample, paired, threads=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     print ('Filtering BAM for sample {}'.format(sample))
     bam_raw = sample + '-raw.bam'
@@ -95,4 +95,4 @@ def sort(bam_input, bam_output, threads=None):
 
 
 if __name__ == '__main__':
-    main()
+    filterbam()

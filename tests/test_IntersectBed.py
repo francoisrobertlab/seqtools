@@ -16,10 +16,10 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     annotations_length = ib.annotations_length
-    intersect = ib.intersect
-    yield annotations_length, intersect
+    intersect_sample = ib.intersect_sample
+    yield
     ib.annotations_length = annotations_length
-    ib.intersect = intersect
+    ib.intersect_sample = intersect_sample
     
     
 def create_file(*args, **kwargs):
@@ -40,32 +40,32 @@ def create_intersectbed(*args, **kwargs):
            outfile.write(line)     
 
 
-def test_main(testdir, mock_testclass):
+def test_intersect(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('intersect.txt')
     annotations = Path(__file__).parent.joinpath('annotations.bed')
     annotations_length = 6
     ib.annotations_length = MagicMock(return_value=annotations_length)
-    ib.intersect = MagicMock()
+    ib.intersect_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ib.main, ['-s', samples, '-a' , annotations])
+    result = runner.invoke(ib.intersect, ['-s', samples, '-a' , annotations])
     assert result.exit_code == 0
     ib.annotations_length.assert_called_once_with(annotations)
-    ib.intersect.assert_any_call('POLR2A', 'POLR2A-inter', annotations, annotations_length)
-    ib.intersect.assert_any_call('ASDURF', 'ASDURF-inter', annotations, annotations_length)
-    ib.intersect.assert_any_call('POLR1C', 'POLR1C-inter', annotations, annotations_length)
+    ib.intersect_sample.assert_any_call('POLR2A', 'POLR2A-inter', annotations, annotations_length)
+    ib.intersect_sample.assert_any_call('ASDURF', 'ASDURF-inter', annotations, annotations_length)
+    ib.intersect_sample.assert_any_call('POLR1C', 'POLR1C-inter', annotations, annotations_length)
 
 
-def test_main_second(testdir, mock_testclass):
+def test_intersect_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('intersect.txt')
     annotations = Path(__file__).parent.joinpath('annotations.bed')
     annotations_length = 6
     ib.annotations_length = MagicMock(return_value=annotations_length)
-    ib.intersect = MagicMock()
+    ib.intersect_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ib.main, ['-s', samples, '-a' , annotations, '-i', '1'])
+    result = runner.invoke(ib.intersect, ['-s', samples, '-a' , annotations, '-i', '1'])
     assert result.exit_code == 0
     ib.annotations_length.assert_called_once_with(annotations)
-    ib.intersect.assert_called_once_with('ASDURF', 'ASDURF-inter', annotations, annotations_length)
+    ib.intersect_sample.assert_called_once_with('ASDURF', 'ASDURF-inter', annotations, annotations_length)
 
 
 def test_annotations_length():
@@ -80,7 +80,7 @@ def test_annotations_length_smaller():
     assert annotations_length == 6
 
 
-def test_intersect(testdir):
+def test_intersect_sample(testdir):
     sample = 'POLR2A'
     tag = sample + '-intersect'
     annotations = 'annotations.bed'
@@ -92,7 +92,7 @@ def test_intersect(testdir):
     subprocess.run = MagicMock(side_effect=create_intersectbed)
     Bed.sort = MagicMock(side_effect=create_file(['-o', tag_bed]))
     os.remove = MagicMock()
-    ib.intersect(sample, tag, annotations, annotation_length)
+    ib.intersect_sample(sample, tag, annotations, annotation_length)
     subprocess.run.assert_called_once_with(['bedtools', 'intersect', '-a', annotations, '-b', bed, '-wb'], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(stripping_output, tag_bed)
     os.remove.assert_any_call(intersect_output)

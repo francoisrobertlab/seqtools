@@ -20,7 +20,7 @@ from seqtools.seq import Fastq
 @click.option('--index', type=int, default=None,
               help='Index of sample to process in samples file.')
 @click.argument('bwa_args', nargs=-1, type=click.UNPROCESSED)
-def main(samples, fasta, threads, index, bwa_args):
+def bwa(samples, fasta, threads, index, bwa_args):
     '''Align samples using bwa program.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     if index == None:
@@ -29,10 +29,10 @@ def main(samples, fasta, threads, index, bwa_args):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        bwa(sample, fasta, threads, bwa_args)
+        bwa_sample(sample, fasta, threads, bwa_args)
 
 
-def bwa(sample, fasta, threads=None, bwa_args=None):
+def bwa_sample(sample, fasta, threads=None, bwa_args=None):
     '''Align one sample using bwa program.'''
     print ('Running BWA on sample {}'.format(sample))
     fastq1 = Fastq.fastq(sample, 1)
@@ -73,4 +73,4 @@ def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=None):
 
 
 if __name__ == '__main__':
-    main()
+    bwa()

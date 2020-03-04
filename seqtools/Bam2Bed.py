@@ -17,17 +17,17 @@ from seqtools.bed import Bed
               help='Number of threads used to process data per sample.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, paired, threads, index):
+def bam2bed(samples, paired, threads, index):
     '''Converts BAM file to BED for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        bam2bed(sample, paired, threads)
+        bam2bed_sample(sample, paired, threads)
 
 
-def bam2bed(sample, paired, threads=None):
+def bam2bed_sample(sample, paired, threads=None):
     '''Converts BAM file to BED for a single sample.'''
     print ('Converting BAM to BED for sample {}'.format(sample))
     bam = sample + '.bam'
@@ -103,4 +103,4 @@ def bedpe2bed(bedpe, bed):
 
 
 if __name__ == '__main__':
-    main()
+    bam2bed()

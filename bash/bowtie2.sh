@@ -24,4 +24,4 @@ fi
 #
 # Recommended parameters for bowtie2
 # -x sacCer3.fa.index -X 1000
-runbowtie2 "${args[@]}"
+seqtools bowtie2 "${args[@]}"

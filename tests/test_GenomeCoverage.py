@@ -21,7 +21,7 @@ def mock_testclass():
     coverage = gc.coverage
     genome_coverage = gc.genome_coverage
     sample_splits_genome_coverage = gc.sample_splits_genome_coverage
-    yield coverage, genome_coverage, sample_splits_genome_coverage
+    yield
     gc.coverage = coverage
     gc.genome_coverage = genome_coverage
     gc.sample_splits_genome_coverage = sample_splits_genome_coverage
@@ -37,135 +37,135 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
-def test_main(testdir, mock_testclass):
+def test_genomecov(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = 'sacCer3.chrom.sizes'
     copyfile(Path(__file__).parent.joinpath('sizes.txt'), sizes)
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples ])
+    result = runner.invoke(gc.genomecov, ['-s', samples ])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, None, None)
 
 
-def test_main_all_five(testdir, mock_testclass):
+def test_genomecov_all_five(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--five' ])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--five' ])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, True, False, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, True, False, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, True, False, None, None)
 
 
-def test_main_second_five(testdir, mock_testclass):
+def test_genomecov_second_five(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--five' , '-i', 1])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--five' , '-i', 1])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, True, False, None, None)
 
 
-def test_main_all_three(testdir, mock_testclass):
+def test_genomecov_all_three(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--three' ])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--three' ])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, True, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, True, None, None)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, True, None, None)
 
 
-def test_main_second_three(testdir, mock_testclass):
+def test_genomecov_second_three(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--three' , '-i', 1])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--three' , '-i', 1])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, True, None, None)
 
 
-def test_main_all_scale(testdir, mock_testclass):
+def test_genomecov_all_scale(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, None)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, None)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, None)
 
 
-def test_main_second_scale(testdir, mock_testclass):
+def test_genomecov_second_scale(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale, '-i', 1])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '-i', 1])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, None)
 
 
-def test_main_all_scale_negativestrand(testdir, mock_testclass):
+def test_genomecov_all_scale_negativestrand(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '-'
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, strand)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, strand)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, strand)
 
 
-def test_main_second_scale_negativestrand(testdir, mock_testclass):
+def test_genomecov_second_scale_negativestrand(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '-'
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand, '-i', 1])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand, '-i', 1])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, strand)
 
 
-def test_main_all_scale_positivestrand(testdir, mock_testclass):
+def test_genomecov_all_scale_positivestrand(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '+'
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, strand)
     gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, strand)
     gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, strand)
 
 
-def test_main_second_scale_positivestrand(testdir, mock_testclass):
+def test_genomecov_second_scale_positivestrand(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '+'
     gc.sample_splits_genome_coverage = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.main, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand, '-i', 1])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand, '-i', 1])
     assert result.exit_code == 0
     gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, strand)
 

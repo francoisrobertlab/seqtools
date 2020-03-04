@@ -15,34 +15,34 @@ from seqtools import Plot2do as p
 
 @pytest.fixture
 def mock_testclass():
-    plot2do = p.plot2do
-    yield plot2do
-    p.plot2do = plot2do
+    plot2do_sample = p.plot2do_sample
+    yield
+    p.plot2do_sample = plot2do_sample
     
 
-def test_main(testdir, mock_testclass):
+def test_plot2do(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
-    p.plot2do = MagicMock()
+    p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.main, ['-f', samples])
+    result = runner.invoke(p.plot2do, ['-f', samples])
     assert result.exit_code == 0
-    p.plot2do.assert_any_call(samples_parent / 'POLR2A', None, None, None, None, None, None, None, None, None, None, None, None, None)
-    p.plot2do.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
-    p.plot2do.assert_any_call(samples_parent / 'POLR1C', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', None, None, None, None, None, None, None, None, None, None, None, None, None)
 
 
-def test_main_second(testdir, mock_testclass):
+def test_plot2do_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
-    p.plot2do = MagicMock()
+    p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.main, ['-f', samples, '-i', '1'])
+    result = runner.invoke(p.plot2do, ['-f', samples, '-i', '1'])
     assert result.exit_code == 0
-    p.plot2do.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
 
 
-def test_main_parameters(testdir, mock_testclass):
+def test_plot2do_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
     type = 'dyads'
@@ -58,34 +58,34 @@ def test_main_parameters(testdir, mock_testclass):
     colorscalemax = '0.05'
     simplifyplot = 'on'
     squeezeplot = 'on'
-    p.plot2do = MagicMock()
+    p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.main, ['-f', samples, '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot])
+    result = runner.invoke(p.plot2do, ['-f', samples, '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot])
     assert result.exit_code == 0
-    p.plot2do.assert_any_call(samples_parent / 'POLR2A', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    p.plot2do.assert_any_call(samples_parent / 'ASDURF', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    p.plot2do.assert_any_call(samples_parent / 'POLR1C', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
 
 
-def test_main_filenotexists(testdir, mock_testclass):
+def test_plot2do_filenotexists(testdir, mock_testclass):
     samples = 'samples.txt'
-    p.plot2do = MagicMock()
+    p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.main, ['-f', samples])
+    result = runner.invoke(p.plot2do, ['-f', samples])
     assert result.exit_code != 0
-    p.plot2do.assert_not_called()
+    p.plot2do_sample.assert_not_called()
 
 
-def test_plot2do(testdir):
+def test_plot2do_sample(testdir):
     sample = 'POLR2A'
     bed = sample + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
     subprocess.run = MagicMock()
-    p.plot2do(sample)
+    p.plot2do_sample(sample)
     subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '-f', bed], check=True)
 
 
-def test_plot2do_parameters(testdir):
+def test_plot2do_sample_parameters(testdir):
     sample = 'POLR2A'
     bed = sample + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
@@ -103,13 +103,13 @@ def test_plot2do_parameters(testdir):
     simplifyplot = 'on'
     squeezeplot = 'on'
     subprocess.run = MagicMock()
-    p.plot2do(sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+    p.plot2do_sample(sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
     subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot, '-f', bed], check=True)
 
 
-def test_plot2do_bednotexists(testdir):
+def test_plot2do_sample_bednotexists(testdir):
     sample = 'POLR2A'
     bed = sample + '.bed'
     subprocess.run = MagicMock()
-    p.plot2do(sample)
+    p.plot2do_sample(sample)
     subprocess.run.assert_not_called()

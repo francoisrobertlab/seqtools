@@ -17,7 +17,7 @@ from seqtools.bed import Bed
               help='Keep reads for which their center is located on specified annotations.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, annotations, index):
+def intersect(samples, annotations, index):
     '''Keep only reads that intersects specified annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     annot_length = annotations_length(annotations)
@@ -27,7 +27,7 @@ def main(samples, annotations, index):
     for index, columns in sample_columns.iterrows():
         tag = columns[0]
         sample = columns[1] if len(columns) > 1 else None
-        intersect(sample, tag, annotations, annot_length)
+        intersect_sample(sample, tag, annotations, annot_length)
 
 
 def annotations_length(annotations):
@@ -38,7 +38,7 @@ def annotations_length(annotations):
                 return len(line.split('\t'))
 
 
-def intersect(sample, tag, annotations, annot_length):
+def intersect_sample(sample, tag, annotations, annot_length):
     '''Keep only reads that intersects specified annotations for a single sample.'''
     print ('Keep only reads that intersects specified annotations for sample {}'.format(sample))
     bed_raw = sample + '.bed'
@@ -66,4 +66,4 @@ def intersect(sample, tag, annotations, annot_length):
 
     
 if __name__ == '__main__':
-    main()
+    intersect()

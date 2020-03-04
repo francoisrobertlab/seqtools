@@ -30,44 +30,44 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
-def test_main(testdir, mock_testclass):
+def test_mergebw(testdir, mock_testclass):
     merge = Path(__file__).parent.joinpath('merge.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.main, ['-m', merge, '--sizes', sizes])
+    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes])
     assert result.exit_code == 0
     mb.merge_samples.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], sizes)
     mb.merge_samples.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
     mb.merge_samples.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], sizes)
 
 
-def test_main_second(testdir, mock_testclass):
+def test_mergebw_second(testdir, mock_testclass):
     merge = Path(__file__).parent.joinpath('merge.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.main, ['-m', merge, '--sizes', sizes, '-i', '1'])
+    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes, '-i', '1'])
     assert result.exit_code == 0
     mb.merge_samples.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
 
 
-def test_main_mergenotexists(testdir, mock_testclass):
+def test_mergebw_mergenotexists(testdir, mock_testclass):
     merge = 'merge.txt'
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.main, ['-m', merge, '--sizes', sizes])
+    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes])
     assert result.exit_code != 0
     mb.merge_samples.assert_not_called()
 
 
-def test_main_sizesnotexists(testdir, mock_testclass):
+def test_mergebw_sizesnotexists(testdir, mock_testclass):
     merge = Path(__file__).parent.joinpath('merge.txt')
     sizes = 'sizes.txt'
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.main, ['-m', merge, '--sizes', sizes])
+    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes])
     assert result.exit_code != 0
     mb.merge_samples.assert_not_called()
 

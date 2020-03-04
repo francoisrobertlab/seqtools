@@ -13,7 +13,7 @@ from seqtools.bed import Bed
               help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(merge, index):
+def merge(merge, index):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
@@ -41,4 +41,4 @@ def merge_samples(name, samples):
 
 
 if __name__ == '__main__':
-    main()
+    merge()

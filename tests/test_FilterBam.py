@@ -1,24 +1,24 @@
 import logging
 import os
 from pathlib import Path
-import pytest
 import subprocess
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
+import pytest
 
 from seqtools import FilterBam as fb
 
 
 @pytest.fixture
 def mock_testclass():
-    filter_bam = fb.filter_bam
+    filterbam_sample = fb.filterbam_sample
     filter_mapped = fb.filter_mapped
     remove_duplicates = fb.remove_duplicates
     sort = fb.sort
-    yield filter_bam, filter_mapped, remove_duplicates, sort
-    fb.filter_bam = filter_bam
+    yield
+    fb.filterbam_sample = filterbam_sample
     fb.filter_mapped = filter_mapped
     fb.remove_duplicates = remove_duplicates
     fb.sort = sort
@@ -34,63 +34,63 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
-def test_main(testdir, mock_testclass):
+def test_filterbam(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 1
-    fb.filter_bam = MagicMock()
+    fb.filterbam_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(fb.main, ['-s', samples ])
+    result = runner.invoke(fb.filterbam, ['-s', samples ])
     assert result.exit_code == 0
-    fb.filter_bam.assert_any_call('POLR2A', True, threads)
-    fb.filter_bam.assert_any_call('ASDURF', True, threads)
-    fb.filter_bam.assert_any_call('POLR1C', True, threads)
+    fb.filterbam_sample.assert_any_call('POLR2A', True, threads)
+    fb.filterbam_sample.assert_any_call('ASDURF', True, threads)
+    fb.filterbam_sample.assert_any_call('POLR1C', True, threads)
 
 
-def test_main_all_single_threads(testdir, mock_testclass):
+def test_filterbam_all_single_threads(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 2
-    fb.filter_bam = MagicMock()
+    fb.filterbam_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(fb.main, ['-s', samples, '--unpaired', '--threads', threads ])
+    result = runner.invoke(fb.filterbam, ['-s', samples, '--unpaired', '--threads', threads ])
     assert result.exit_code == 0
-    fb.filter_bam.assert_any_call('POLR2A', False, threads)
-    fb.filter_bam.assert_any_call('ASDURF', False, threads)
-    fb.filter_bam.assert_any_call('POLR1C', False, threads)
+    fb.filterbam_sample.assert_any_call('POLR2A', False, threads)
+    fb.filterbam_sample.assert_any_call('ASDURF', False, threads)
+    fb.filterbam_sample.assert_any_call('POLR1C', False, threads)
 
 
-def test_main_second_single_threads(testdir, mock_testclass):
+def test_filterbam_second_single_threads(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 2
-    fb.filter_bam = MagicMock()
+    fb.filterbam_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(fb.main, ['-s', samples, '--unpaired', '--threads', threads, '-i', 1 ])
+    result = runner.invoke(fb.filterbam, ['-s', samples, '--unpaired', '--threads', threads, '-i', 1 ])
     assert result.exit_code == 0
-    fb.filter_bam.assert_called_once_with('ASDURF', False, threads)
+    fb.filterbam_sample.assert_called_once_with('ASDURF', False, threads)
 
 
-def test_main_all_paired_threads(testdir, mock_testclass):
+def test_filterbam_all_paired_threads(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 2
-    fb.filter_bam = MagicMock()
+    fb.filterbam_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(fb.main, ['-s', samples, '--paired', '--threads', threads ])
+    result = runner.invoke(fb.filterbam, ['-s', samples, '--paired', '--threads', threads ])
     assert result.exit_code == 0
-    fb.filter_bam.assert_any_call('POLR2A', True, threads)
-    fb.filter_bam.assert_any_call('ASDURF', True, threads)
-    fb.filter_bam.assert_any_call('POLR1C', True, threads)
+    fb.filterbam_sample.assert_any_call('POLR2A', True, threads)
+    fb.filterbam_sample.assert_any_call('ASDURF', True, threads)
+    fb.filterbam_sample.assert_any_call('POLR1C', True, threads)
 
 
-def test_main_second_paired_threads(testdir, mock_testclass):
+def test_filterbam_second_paired_threads(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 2
-    fb.filter_bam = MagicMock()
+    fb.filterbam_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(fb.main, ['-s', samples, '--paired', '--threads', threads, '-i', 1 ])
+    result = runner.invoke(fb.filterbam, ['-s', samples, '--paired', '--threads', threads, '-i', 1 ])
     assert result.exit_code == 0
-    fb.filter_bam.assert_called_once_with('ASDURF', True, threads)
+    fb.filterbam_sample.assert_called_once_with('ASDURF', True, threads)
 
 
-def test_filter_bam_single(testdir, mock_testclass):
+def test_filterbam_sample_single(testdir, mock_testclass):
     sample = 'POLR2A'
     bam_raw = sample + '-raw.bam'
     bam_filtered = sample + '-filtered.bam'
@@ -98,7 +98,7 @@ def test_filter_bam_single(testdir, mock_testclass):
     fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
     fb.remove_duplicates = MagicMock()
     fb.sort = MagicMock(create_file(['-o', bam]))
-    fb.filter_bam(sample, False)
+    fb.filterbam_sample(sample, False)
     fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, False, None)
     fb.remove_duplicates.assert_not_called()
     fb.sort.assert_called_with(bam_filtered, bam, None)
@@ -106,7 +106,7 @@ def test_filter_bam_single(testdir, mock_testclass):
     assert os.path.exists(bam)
 
 
-def test_filter_bam_single_threads(testdir, mock_testclass):
+def test_filterbam_sample_single_threads(testdir, mock_testclass):
     sample = 'POLR2A'
     bam_raw = sample + '-raw.bam'
     bam_filtered = sample + '-filtered.bam'
@@ -115,7 +115,7 @@ def test_filter_bam_single_threads(testdir, mock_testclass):
     fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
     fb.remove_duplicates = MagicMock()
     fb.sort = MagicMock(create_file(['-o', bam]))
-    fb.filter_bam(sample, False, threads)
+    fb.filterbam_sample(sample, False, threads)
     fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, False, threads)
     fb.remove_duplicates.assert_not_called()
     fb.sort.assert_called_with(bam_filtered, bam, threads)
@@ -123,7 +123,7 @@ def test_filter_bam_single_threads(testdir, mock_testclass):
     assert os.path.exists(bam)
 
 
-def test_filter_bam_paired(testdir, mock_testclass):
+def test_filterbam_sample_paired(testdir, mock_testclass):
     sample = 'POLR2A'
     bam_raw = sample + '-raw.bam'
     bam_filtered = sample + '-filtered.bam'
@@ -132,7 +132,7 @@ def test_filter_bam_paired(testdir, mock_testclass):
     fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
     fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup]))
     fb.sort = MagicMock(create_file(['-o', bam]))
-    fb.filter_bam(sample, True)
+    fb.filterbam_sample(sample, True)
     fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, True, None)
     fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup, None)
     fb.sort.assert_called_with(bam_dedup, bam, None)
@@ -141,7 +141,7 @@ def test_filter_bam_paired(testdir, mock_testclass):
     assert os.path.exists(bam)
 
 
-def test_filter_bam_paired_threads(testdir, mock_testclass):
+def test_filterbam_sample_paired_threads(testdir, mock_testclass):
     sample = 'POLR2A'
     bam_raw = sample + '-raw.bam'
     bam_filtered = sample + '-filtered.bam'
@@ -151,7 +151,7 @@ def test_filter_bam_paired_threads(testdir, mock_testclass):
     fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
     fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup]))
     fb.sort = MagicMock(create_file(['-o', bam]))
-    fb.filter_bam(sample, True, threads)
+    fb.filterbam_sample(sample, True, threads)
     fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, True, threads)
     fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup, threads)
     fb.sort.assert_called_with(bam_dedup, bam, threads)

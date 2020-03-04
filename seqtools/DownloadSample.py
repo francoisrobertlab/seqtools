@@ -20,7 +20,7 @@ from seqtools.seq import Fastq
               help='Memory allocated for sorting download.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, fast, threads, mem, index):
+def download(samples, fast, threads, mem, index):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
@@ -29,10 +29,10 @@ def main(samples, fast, threads, mem, index):
     for index, columns in sample_columns.iterrows():
         sample = columns[0]
         srr = columns[1] if len(columns) > 1 else None
-        download(sample, srr, fast, threads, mem)
+        download_sample(sample, srr, fast, threads, mem)
 
 
-def download(sample, srr, fast, threads, mem):
+def download_sample(sample, srr, fast, threads, mem):
     '''Download reads of a sample.'''
     fastq = sample
     fastq_exists = Fastq.fastq(fastq, 1)
@@ -53,4 +53,4 @@ def download(sample, srr, fast, threads, mem):
 
 
 if __name__ == '__main__':
-    main()
+    download()

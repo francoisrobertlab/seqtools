@@ -13,9 +13,9 @@ from seqtools import DownloadSample as ds
 
 @pytest.fixture
 def mock_testclass():
-    download = ds.download
-    yield download
-    ds.download = download
+    download_sample = ds.download_sample
+    yield
+    ds.download_sample = download_sample
     
     
 def create_file(*args):
@@ -24,105 +24,105 @@ def create_file(*args):
             outfile.write('test')
 
 
-def test_main(testdir, mock_testclass):
+def test_download(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '100MB'
     threads = 6
-    ds.download = MagicMock()
+    ds.download_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ds.main, ['-s', samples ])
+    result = runner.invoke(ds.download, ['-s', samples ])
     assert result.exit_code == 0
-    ds.download.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
-    ds.download.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
-    ds.download.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
+    ds.download_sample.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
+    ds.download_sample.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
+    ds.download_sample.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
 
 
-def test_main_allfast(testdir, mock_testclass):
+def test_download_allfast(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '200MB'
     threads = 2
-    ds.download = MagicMock()
+    ds.download_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ds.main, ['-s', samples, '--fast', '-e', str(threads), '-m', mem])
+    result = runner.invoke(ds.download, ['-s', samples, '--fast', '-e', str(threads), '-m', mem])
     assert result.exit_code == 0
-    ds.download.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
-    ds.download.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
-    ds.download.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
+    ds.download_sample.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
+    ds.download_sample.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
+    ds.download_sample.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
 
 
-def test_main_allslow(testdir, mock_testclass):
+def test_download_allslow(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '200MB'
     threads = 2
-    ds.download = MagicMock()
+    ds.download_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ds.main, ['-s', samples, '--slow', '-e', str(threads), '-m', mem])
+    result = runner.invoke(ds.download, ['-s', samples, '--slow', '-e', str(threads), '-m', mem])
     assert result.exit_code == 0
-    ds.download.assert_any_call('POLR2A', 'SRR8518913', False, threads, mem)
-    ds.download.assert_any_call('ASDURF', 'SRX5322424', False, threads, mem)
-    ds.download.assert_any_call('POLR1C', 'SRR8518915', False, threads, mem)
+    ds.download_sample.assert_any_call('POLR2A', 'SRR8518913', False, threads, mem)
+    ds.download_sample.assert_any_call('ASDURF', 'SRX5322424', False, threads, mem)
+    ds.download_sample.assert_any_call('POLR1C', 'SRR8518915', False, threads, mem)
 
 
-def test_main_second(testdir, mock_testclass):
+def test_download_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '100MB'
     threads = 6
-    ds.download = MagicMock()
+    ds.download_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(ds.main, ['-s', samples, '-i', 1])
+    result = runner.invoke(ds.download, ['-s', samples, '-i', 1])
     assert result.exit_code == 0
-    ds.download.assert_called_once_with('ASDURF', 'SRX5322424', True, threads, mem)
+    ds.download_sample.assert_called_once_with('ASDURF', 'SRX5322424', True, threads, mem)
 
 
-def test_download_singleend(testdir):
+def test_download_sample_singleend(testdir):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
     subprocess.run = MagicMock(side_effect=create_file(srr + '_1.fastq'))
-    ds.download('POLR2A', srr, True, threads, mem)
+    ds.download_sample('POLR2A', srr, True, threads, mem)
     subprocess.run.assert_called_with(['fasterq-dump', '--split-files', '--threads', str(threads), '--mem', mem, srr], check=True)
     assert os.path.exists('POLR2A_1.fastq')
 
 
-def test_download_pairedend(testdir):
+def test_download_sample_pairedend(testdir):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
     subprocess.run = MagicMock(side_effect=create_file(srr + '_1.fastq', srr + '_2.fastq'))
-    ds.download('POLR2A', srr, True, threads, mem)
+    ds.download_sample('POLR2A', srr, True, threads, mem)
     subprocess.run.assert_called_with(['fasterq-dump', '--split-files', '--threads', str(threads), '--mem', mem, srr], check=True)
     assert os.path.exists('POLR2A_1.fastq')
     assert os.path.exists('POLR2A_2.fastq')
 
 
-def test_download_slow_singleend(testdir):
+def test_download_sample_slow_singleend(testdir):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
     subprocess.run = MagicMock(side_effect=create_file(srr + '_1.fastq'))
-    ds.download('POLR2A', srr, False, threads, mem)
+    ds.download_sample('POLR2A', srr, False, threads, mem)
     subprocess.run.assert_called_with(['fastq-dump', '--split-files', srr], check=True)
     assert os.path.exists('POLR2A_1.fastq')
 
 
-def test_download_slow_pairedend(testdir):
+def test_download_sample_slow_pairedend(testdir):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
     subprocess.run = MagicMock(side_effect=create_file(srr + '_1.fastq', srr + '_2.fastq'))
-    ds.download('POLR2A', srr, False, threads, mem)
+    ds.download_sample('POLR2A', srr, False, threads, mem)
     subprocess.run.assert_called_with(['fastq-dump', '--split-files', srr], check=True)
     assert os.path.exists('POLR2A_1.fastq')
     assert os.path.exists('POLR2A_2.fastq')
 
 
-def test_download_failed(testdir):
+def test_download_sample_failed(testdir):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
     subprocess.run = MagicMock(side_effect=subprocess.CalledProcessError('Could not download file', ['test']))
     with pytest.raises(subprocess.CalledProcessError):
-        ds.download('POLR2A', srr, True, threads, mem)
+        ds.download_sample('POLR2A', srr, True, threads, mem)
     subprocess.run.assert_called_with(['fasterq-dump', '--split-files', '--threads', str(threads), '--mem', mem, srr], check=True)
     assert not os.path.exists('POLR2A_1.fastq')
     assert not os.path.exists('POLR2A_2.fastq')

@@ -15,4 +15,4 @@ then
   args+=("-i" "$SLURM_ARRAY_TASK_ID")
 fi
 
-runvap "${args[@]}"
+seqtools vap "${args[@]}"

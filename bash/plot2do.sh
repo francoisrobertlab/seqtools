@@ -17,4 +17,4 @@ fi
 
 # Parameters for Martin.
 # -t dyads -r Plus1 -L 400 -m 0.02
-plot2do "${args[@]}"
+seqtools plot2do "${args[@]}"

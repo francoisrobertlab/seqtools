@@ -19,4 +19,4 @@ then
   args+=("--threads" "$SLURM_CPUS_PER_TASK")
 fi
 
-filterbam "${args[@]}"
+seqtools filterbam "${args[@]}"

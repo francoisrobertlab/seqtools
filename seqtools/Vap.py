@@ -17,17 +17,17 @@ from . import SplitBed
               help='VAP parameters file.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def main(samples, parameters, index):
+def vap(samples, parameters, index):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        vap(sample, parameters)
+        vap_sample(sample, parameters)
 
 
-def vap(sample, parameters):
+def vap_sample(sample, parameters):
     '''Run VAP on a single sample.'''
     print ('Running VAP on sample {}'.format(sample))
     output = sample + '-vap-output';
@@ -142,4 +142,4 @@ def create_heatmap(sample, genes, splits, splits_values, output):
 
 
 if __name__ == '__main__':
-    main()
+    vap()
