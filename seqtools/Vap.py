@@ -7,7 +7,7 @@ import subprocess
 
 import click
 import pandas as pd
-from . import SplitBed
+from . import Split
 
 
 @click.command()
@@ -34,7 +34,7 @@ def vap_sample(sample, parameters):
     if not os.path.exists(output):
         os.mkdir(output);
     sample_parameters = output + '/parameters.txt';
-    splits = SplitBed.splits(sample)
+    splits = Split.splits(sample)
     beds = [split + '-cov.bed' for split in splits]
     genes = parse_genes(parameters)
     create_parameters(beds, output, parameters, sample_parameters);

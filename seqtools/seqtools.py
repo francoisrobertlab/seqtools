@@ -1,6 +1,6 @@
 import click
 
-from seqtools import Bam2Bed, Bowtie2, Bwa, DownloadSample, FilterBam, GenomeCoverage, IntersectBed, MergeBed, MergeBigwigs, Plot2do, SlowSplitBed, SplitBed, StatisticsFile, Vap
+from seqtools import Bam2Bed, Bowtie2, Bwa, DownloadSample, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, SlowSplit, Split, Statistics, Vap
 
 
 @click.group()
@@ -14,13 +14,13 @@ seqtools.add_command(Bwa.bwa)
 seqtools.add_command(DownloadSample.download)
 seqtools.add_command(FilterBam.filterbam)
 seqtools.add_command(GenomeCoverage.genomecov)
-seqtools.add_command(IntersectBed.intersect)
-seqtools.add_command(MergeBed.merge)
+seqtools.add_command(Intersect.intersect)
+seqtools.add_command(Merge.merge)
 seqtools.add_command(MergeBigwigs.mergebw)
 seqtools.add_command(Plot2do.plot2do)
-seqtools.add_command(SlowSplitBed.slowsplit)
-seqtools.add_command(SplitBed.split)
-seqtools.add_command(StatisticsFile.statistics)
+seqtools.add_command(SlowSplit.slowsplit)
+seqtools.add_command(Split.split)
+seqtools.add_command(Statistics.statistics)
 seqtools.add_command(Vap.vap)
 
 if __name__ == '__main__':

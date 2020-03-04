@@ -9,7 +9,7 @@ import click
 from click.testing import CliRunner
 import pytest
 
-from seqtools import IntersectBed as ib
+from seqtools import Intersect as ib
 from seqtools.bed import Bed
 
 

@@ -7,7 +7,7 @@ import click
 import pandas as pd
 from seqtools.bed import Bed
 
-from . import SplitBed
+from . import Split
 
 
 @click.command()
@@ -51,12 +51,12 @@ def headers(samples, merges):
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
     splits_headers = set()
     for sample in samples:
-        splits_headers.update([split[len(sample) + 1:] for split in SplitBed.splits(sample)])
+        splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
     if not merges.empty:
         for merge in merges:
-            splits_headers.update([split[len(sample) + 1:] for split in SplitBed.splits(sample)])
+            splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
     splits_headers = [header for header in splits_headers]
-    splits_headers.sort(key=SplitBed.splitkey)
+    splits_headers.sort(key=Split.splitkey)
     headers.extend(splits_headers)
     return (headers, splits_headers)
     

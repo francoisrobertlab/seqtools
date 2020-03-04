@@ -7,7 +7,7 @@ import click
 import pandas as pd
 from seqtools.bed import Bed
 
-from . import SplitBed
+from . import Split
 
 BASE_SCALE = 1000000
 
@@ -41,7 +41,7 @@ def sample_splits_genome_coverage(sample, sizes, five=False, three=False, scale=
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
     genome_coverage(sample, sizes, five, three, scale, strand)
-    splits = SplitBed.splits(sample)
+    splits = Split.splits(sample)
     for split in splits:
         genome_coverage(split, sizes, five, three, scale, strand)
 

@@ -10,7 +10,7 @@ from click.testing import CliRunner
 import pytest
 
 from seqtools import GenomeCoverage as gc
-from seqtools import SplitBed as sb
+from seqtools import Split as sb
 from seqtools.bed import Bed
 
 BASE_SCALE = 1000000

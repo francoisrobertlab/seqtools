@@ -8,7 +8,7 @@ import click
 from click.testing import CliRunner
 import pytest
 
-from seqtools import MergeBed as mb
+from seqtools import Merge as mb
 from seqtools.bed import Bed
 
 
