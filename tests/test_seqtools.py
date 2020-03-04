@@ -7,7 +7,7 @@ from click.testing import CliRunner
 import pytest
 
 import pandas as pd
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, DownloadSample, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -57,12 +57,12 @@ def test_seqtools_download(testdir):
     mem = '200MB'
     threads = 3
     index = 2
-    DownloadSample.download_sample = MagicMock()
+    Download.download_sample = MagicMock()
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['download', '--samples', samples, '--slow', '--threads', threads, '--mem', mem, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    DownloadSample.download_sample.assert_called_once_with('POLR1C', 'SRR8518915', False, threads, mem)
+    Download.download_sample.assert_called_once_with('POLR1C', 'SRR8518915', False, threads, mem)
 
 
 def test_seqtools_filterbam(testdir):
