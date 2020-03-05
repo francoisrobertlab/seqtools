@@ -37,6 +37,8 @@ always_load("plot2do")
 
 local venv = "~/seqtools-robertf-venv"
 local call_nucleosomes = "~/projects/def-robertf/CallNucleosomes"
+local installation = "~/projects/def-robertf/seqtools"
+prepend_path("PATH", installation)
 prepend_path("PATH", pathJoin(venv,"bash"))
 prepend_path("PATH", pathJoin(venv,"bin"))
 prepend_path("PERL5LIB", pathJoin(call_nucleosomes,"perl_library"))
