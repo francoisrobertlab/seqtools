@@ -29,6 +29,11 @@ NEGATIVE_STRAND = '-'
 def dyadcov(samples, genes, minp, maxp, smoothing, index):
     '''Finds the distribution of ditances between fragments and dyad.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    dyad_coverage(samples, genes, minp, maxp, smoothing, index)
+
+
+def dyad_coverage(samples, genes, minp, maxp, smoothing, index):
+    '''Finds the distribution of ditances between fragments and dyad.'''
     genes_info = pd.read_csv(genes, sep='\t', comment='#')
     genes_info = genes_info.loc[genes_info[genes_info.columns[6]] != -1]
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]

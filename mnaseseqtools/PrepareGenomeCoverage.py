@@ -15,6 +15,11 @@ import seqtools.Split as sb
 def prepgenomecov(samples, index):
     '''Prepare BED file used for genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    prep_genomecov(samples, index)
+
+
+def prep_genomecov(samples, index):
+    '''Prepare BED file used for genome coverage on samples.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

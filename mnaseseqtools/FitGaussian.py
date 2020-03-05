@@ -36,17 +36,22 @@ import seqtools.Split as sb
 def fitgaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
     '''Fits gaussian curve to dyad coverage.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index)
+
+
+def fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
+    '''Fits gaussian curve to dyad coverage.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        fitgaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+        fit_gaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
         splits = sb.splits(sample)
         for split in splits:
-            fitgaussian_sample(split, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+            fit_gaussian_sample(split, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
 
 
-def fitgaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin):
+def fit_gaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin):
     '''Fits gaussian curve to dyad coverage for a single sample.'''
     print ('Fits gaussian curve to dyad coverage of sample {}'.format(sample))
     input = sample + '-dyad.txt'

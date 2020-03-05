@@ -21,6 +21,11 @@ NEGATIVE_STRAND = '-'
               help='Output file.')
 def firstdyadposition(genes, signal, mind, maxd, output):
     '''Finds the most plausible position of first dyad for genes.'''
+    first_dyad_position(genes, signal, mind, maxd, output)
+
+
+def first_dyad_position(genes, signal, mind, maxd, output):
+    '''Finds the most plausible position of first dyad for genes.'''
     logging.basicConfig(filename='FirstDyadPositionFinder.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     genes_info = pd.read_csv(genes, sep='\t', comment='#')
     tracks = read_tracks(signal)

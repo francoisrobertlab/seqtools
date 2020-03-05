@@ -9,8 +9,8 @@ def mnasetools():
 
 
 mnasetools.add_command(DyadCoverage.dyadcov)
-mnasetools.add_command(FitGaussian.fitgaussian)
 mnasetools.add_command(FitDoubleGaussian.fitdoublegaussian)
+mnasetools.add_command(FitGaussian.fitgaussian)
 mnasetools.add_command(FirstDyadPosition.firstdyadposition)
 mnasetools.add_command(PrepareGenomeCoverage.prepgenomecov)
 
