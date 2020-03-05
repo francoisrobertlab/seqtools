@@ -165,3 +165,4 @@ def test_bedpe2bed(testdir):
         assert infile.readline() == 'chr6\t300\t450\ttest6\t2\t-\t5\ttest5\n'
         assert infile.readline() == 'chr7\t500\t650\ttest7\t3\t-\t6\ttest6\n'
         assert infile.readline() == 'chr8\t700\t850\ttest8\t4\t-\t7\ttest7\n'
+        assert infile.readline() == ''

@@ -140,3 +140,4 @@ def test_merge_samples(testdir):
         assert line.startswith('chrI\t13\t14\t'), line
         assert math.isclose(float(line.split('\t')[3]), 0.6, abs_tol=0.001), line.split('\t')[3]
         assert infile.readline() == 'chrI\t14\t15\t0\n'
+        assert infile.readline() == ''

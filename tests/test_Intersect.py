@@ -106,3 +106,4 @@ def test_intersect_sample(testdir):
         assert infile.readline() == 'chr6\t415\t425\ttest2\t2\t-\n'
         assert infile.readline() == 'chr7\t520\t530\ttest3\t3\t-\n'
         assert infile.readline() == 'chr8\t820\t830\ttest4\t4\t-\n'
+        assert infile.readline() == ''

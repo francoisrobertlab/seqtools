@@ -91,3 +91,4 @@ def test_merge_samples(testdir):
         assert infile.readline() == 'chr6\t300\t350\ttest6\t2\t-\n'
         assert infile.readline() == 'chr7\t600\t550\ttest7\t3\t-\n'
         assert infile.readline() == 'chr8\t700\t850\ttest8\t4\t-\n'
+        assert infile.readline() == ''
