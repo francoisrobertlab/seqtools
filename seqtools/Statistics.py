@@ -82,7 +82,7 @@ def flagstat_total(bam):
     cmd = ['samtools', 'flagstat', bam]
     logging.debug('Running {}'.format(cmd))
     output = subprocess.run(cmd, capture_output=True, check=True)
-    return re.search('^\d+', output.stdout.decode('utf-8')).group()
+    return re.search('^\\d+', output.stdout.decode('utf-8')).group()
 
 
 if __name__ == '__main__':
