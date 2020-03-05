@@ -16,11 +16,15 @@ setup(
     install_requires=[
         'click>=7.0',
         'pandas>=0.25.0',
-        'pyBigWig>=0.3.17'
+        'pyBigWig>=0.3.17',
+        'matplotlib>=3.1.1',
+        'scipy>=1.3.2',
+        'lmfit>=1.0.0'
     ],
     entry_points={
         'console_scripts': [
-            'seqtools = seqtools.seqtools:seqtools'
+            'seqtools = seqtools.seqtools:seqtools',
+            'mnasetools = mnaseseqtools.mnasetools:mnasetools'
         ]
     }
 )
