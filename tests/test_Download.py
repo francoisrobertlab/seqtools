@@ -14,8 +14,10 @@ from seqtools import Download as d
 @pytest.fixture
 def mock_testclass():
     download_sample = d.download_sample
+    run = subprocess.run
     yield
     d.download_sample = download_sample
+    subprocess.run = run
     
     
 def create_file(*args):
@@ -74,7 +76,7 @@ def test_download_second(testdir, mock_testclass):
     d.download_sample.assert_called_once_with('ASDURF', 'SRX5322424', True, threads, mem)
 
 
-def test_download_sample_singleend(testdir):
+def test_download_sample_singleend(testdir, mock_testclass):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
@@ -84,7 +86,7 @@ def test_download_sample_singleend(testdir):
     assert os.path.exists('POLR2A_1.fastq')
 
 
-def test_download_sample_pairedend(testdir):
+def test_download_sample_pairedend(testdir, mock_testclass):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
@@ -95,7 +97,7 @@ def test_download_sample_pairedend(testdir):
     assert os.path.exists('POLR2A_2.fastq')
 
 
-def test_download_sample_slow_singleend(testdir):
+def test_download_sample_slow_singleend(testdir, mock_testclass):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
@@ -105,7 +107,7 @@ def test_download_sample_slow_singleend(testdir):
     assert os.path.exists('POLR2A_1.fastq')
 
 
-def test_download_sample_slow_pairedend(testdir):
+def test_download_sample_slow_pairedend(testdir, mock_testclass):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1
@@ -116,7 +118,7 @@ def test_download_sample_slow_pairedend(testdir):
     assert os.path.exists('POLR2A_2.fastq')
 
 
-def test_download_sample_failed(testdir):
+def test_download_sample_failed(testdir, mock_testclass):
     srr = 'SRR8518913'
     mem = '100MB'
     threads = 1

@@ -15,8 +15,12 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     merge_samples = mb.merge_samples
+    sort = Bed.sort
+    remove = os.remove
     yield merge_samples
     mb.merge_samples = merge_samples
+    Bed.sort = sort
+    os.remove = remove
     
 
 def create_file(*args, **kwargs):
@@ -58,7 +62,7 @@ def test_merge_mergenotexists(testdir, mock_testclass):
     mb.merge_samples.assert_not_called()
 
 
-def test_merge_samples(testdir):
+def test_merge_samples(testdir, mock_testclass):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merge_bed = merge + '.bed'

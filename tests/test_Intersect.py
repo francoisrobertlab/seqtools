@@ -17,9 +17,15 @@ from seqtools.bed import Bed
 def mock_testclass():
     annotations_length = ib.annotations_length
     intersect_sample = ib.intersect_sample
+    sort = Bed.sort
+    run = subprocess.run
+    remove = os.remove
     yield
     ib.annotations_length = annotations_length
     ib.intersect_sample = intersect_sample
+    Bed.sort = sort
+    subprocess.run = run
+    os.remove = remove
     
     
 def create_file(*args, **kwargs):
@@ -80,7 +86,7 @@ def test_annotations_length_smaller():
     assert annotations_length == 6
 
 
-def test_intersect_sample(testdir):
+def test_intersect_sample(testdir, mock_testclass):
     sample = 'POLR2A'
     tag = sample + '-intersect'
     annotations = 'annotations.bed'

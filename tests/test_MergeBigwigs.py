@@ -16,8 +16,14 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     merge_samples = mb.merge_samples
+    sort = Bed.sort
+    bedgraph_to_bigwig = Bed.bedgraph_to_bigwig
+    remove = os.remove
     yield merge_samples
     mb.merge_samples = merge_samples
+    Bed.sort = sort
+    Bed.bedgraph_to_bigwig = bedgraph_to_bigwig
+    os.remove = remove
     
 
 def create_file(*args, **kwargs):
@@ -72,7 +78,7 @@ def test_mergebw_sizesnotexists(testdir, mock_testclass):
     mb.merge_samples.assert_not_called()
 
 
-def test_merge_samples(testdir):
+def test_merge_samples(testdir, mock_testclass):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merged_bed_sort_tmp = merge + '-tmp-sort.bed'

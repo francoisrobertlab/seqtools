@@ -19,11 +19,15 @@ def mock_testclass():
     bam2bed_unpaired = bb.bam2bed_unpaired
     bam2bedpe = bb.bam2bedpe
     bedpe2bed = bb.bedpe2bed
+    sort = Bed.sort
+    run = subprocess.run
     yield 
     bb.bam2bed_sample = bam2bed_sample
     bb.bam2bed_unpaired = bam2bed_unpaired
     bb.bam2bedpe = bam2bedpe
     bb.bedpe2bed = bedpe2bed
+    Bed.sort = sort
+    subprocess.run = run
     
     
 def create_file(*args, **kwargs):
@@ -119,7 +123,7 @@ def test_bam2bed_sample_unpaired(testdir, mock_testclass):
     assert os.path.exists(bed)
 
     
-def test_bam2bedpe(testdir):
+def test_bam2bedpe(testdir, mock_testclass):
     bam = 'POLR2A.bam'
     bam_sort = bam + '.sort'
     bedpe = 'POLR2A.bedpe'
@@ -132,7 +136,7 @@ def test_bam2bedpe(testdir):
     assert os.path.exists(bedpe)
 
 
-def test_bam2bedpe_singlethread(testdir):
+def test_bam2bedpe_singlethread(testdir, mock_testclass):
     bam = 'POLR2A.bam'
     bam_sort = bam + '.sort'
     bedpe = 'POLR2A.bedpe'
@@ -145,7 +149,7 @@ def test_bam2bedpe_singlethread(testdir):
     assert os.path.exists(bedpe)
 
 
-def test_bedpe2bed(testdir):
+def test_bedpe2bed(testdir, mock_testclass):
     bedpe = 'POLR2A.bedpe'
     sample_bedpe = Path(__file__).parent.joinpath('sample.bedpe')
     copyfile(sample_bedpe, bedpe)

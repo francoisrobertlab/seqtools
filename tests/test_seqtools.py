@@ -12,12 +12,42 @@ from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, Genom
 
 @pytest.fixture
 def mock_testclass():
+    bam2bed_sample = Bam2Bed.bam2bed_sample
+    bowtie_sample = Bowtie2.bowtie_sample
+    bwa_sample = Bwa.bwa_sample
+    download_sample = Download.download_sample
+    filterbam_sample = FilterBam.filterbam_sample
+    sample_splits_genome_coverage = GenomeCoverage.sample_splits_genome_coverage
+    annotations_length = Intersect.annotations_length
+    intersect_sample = Intersect.intersect_sample
+    merge_samples = Merge.merge_samples
+    merge_samples_bw = MergeBigwigs.merge_samples
+    plot2do_sample = Plot2do.plot2do_sample
+    slow_split_sample = SlowSplit.split_sample
+    split_sample = Split.split_sample
+    all_statistics = Statistics.all_statistics
+    vap_sample = Vap.vap_sample
     read_csv = pd.read_csv
     yield
+    Bam2Bed.bam2bed_sample = bam2bed_sample
+    Bowtie2.bowtie_sample = bowtie_sample
+    Bwa.bwa_sample = bwa_sample
+    Download.download_sample = download_sample
+    FilterBam.filterbam_sample = filterbam_sample
+    GenomeCoverage.sample_splits_genome_coverage = sample_splits_genome_coverage
+    Intersect.annotations_length = annotations_length
+    Intersect.intersect_sample = intersect_sample
+    Merge.merge_samples = merge_samples
+    MergeBigwigs.merge_samples = merge_samples_bw
+    Plot2do.plot2do_sample = plot2do_sample
+    SlowSplit.split_sample = slow_split_sample
+    Split.split_sample = split_sample
+    Statistics.all_statistics = all_statistics
+    Vap.vap_sample = vap_sample
     pd.read_csv = read_csv 
 
 
-def test_seqtools_bam2bed(testdir):
+def test_seqtools_bam2bed(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 3
     index = 2
@@ -28,7 +58,7 @@ def test_seqtools_bam2bed(testdir):
     Bam2Bed.bam2bed_sample.assert_called_once_with('POLR1C', False, threads)
 
 
-def test_seqtools_bowtie2(testdir):
+def test_seqtools_bowtie2(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 3
     index = 2
@@ -39,7 +69,7 @@ def test_seqtools_bowtie2(testdir):
     Bowtie2.bowtie_sample.assert_called_once_with('POLR1C', threads, ())
 
 
-def test_seqtools_bwa(testdir):
+def test_seqtools_bwa(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     fasta = Path(__file__).parent.joinpath('sacCer3.fa')
     threads = 3
@@ -51,7 +81,7 @@ def test_seqtools_bwa(testdir):
     Bwa.bwa_sample.assert_called_once_with('POLR1C', fasta, threads, ())
 
 
-def test_seqtools_download(testdir):
+def test_seqtools_download(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     fasta = Path(__file__).parent.joinpath('sacCer3.fa')
     mem = '200MB'
@@ -65,7 +95,7 @@ def test_seqtools_download(testdir):
     Download.download_sample.assert_called_once_with('POLR1C', 'SRR8518915', False, threads, mem)
 
 
-def test_seqtools_filterbam(testdir):
+def test_seqtools_filterbam(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 3
     index = 2
@@ -76,7 +106,7 @@ def test_seqtools_filterbam(testdir):
     FilterBam.filterbam_sample.assert_called_once_with('POLR1C', False, threads)
 
 
-def test_seqtools_genomecov(testdir):
+def test_seqtools_genomecov(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
@@ -89,7 +119,7 @@ def test_seqtools_genomecov(testdir):
     GenomeCoverage.sample_splits_genome_coverage.assert_called_once_with('POLR1C', sizes, False, False, scale, strand)
 
 
-def test_seqtools_intersect(testdir):
+def test_seqtools_intersect(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('intersect.txt')
     annotations = Path(__file__).parent.joinpath('annotations.bed')
     annotations_length = 4
@@ -102,7 +132,7 @@ def test_seqtools_intersect(testdir):
     Intersect.intersect_sample.assert_called_once_with('POLR1C', 'POLR1C-inter', annotations, annotations_length)
 
 
-def test_seqtools_merge(testdir):
+def test_seqtools_merge(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('merge.txt')
     index = 2
     Merge.merge_samples = MagicMock()
@@ -113,7 +143,7 @@ def test_seqtools_merge(testdir):
     Merge.merge_samples.assert_called_once_with('POLR1C', ['POLR1C_1', 'POLR1C_2'])
 
 
-def test_seqtools_mergebw(testdir):
+def test_seqtools_mergebw(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('merge.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     index = 2
@@ -125,7 +155,7 @@ def test_seqtools_mergebw(testdir):
     MergeBigwigs.merge_samples.assert_called_once_with('POLR1C', ['POLR1C_1', 'POLR1C_2'], sizes)
 
  
-def test_seqtools_plot2do(testdir):
+def test_seqtools_plot2do(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 2
     Plot2do.plot2do_sample = MagicMock()
@@ -136,7 +166,7 @@ def test_seqtools_plot2do(testdir):
     Plot2do.plot2do_sample.assert_called_once_with(Path(__file__).parent.joinpath('POLR1C'), None, None, None, None, None, None, None, None, None, None, None, None, None)
 
 
-def test_seqtools_slowsplit(testdir):
+def test_seqtools_slowsplit(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     binlength = 20
     binminlength = 50
@@ -150,7 +180,7 @@ def test_seqtools_slowsplit(testdir):
     SlowSplit.split_sample.assert_called_once_with('POLR1C', binlength, binminlength, binmaxlength)
 
 
-def test_seqtools_split(testdir):
+def test_seqtools_split(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     binlength = 20
     binminlength = 50
@@ -179,7 +209,7 @@ def test_seqtools_statistics(testdir, mock_testclass):
     Statistics.all_statistics.assert_called_once_with(sample_pandas[0], merge_pandas[0], output)
 
 
-def test_seqtools_vap(testdir):
+def test_seqtools_vap(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
     index = 2

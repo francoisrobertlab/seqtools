@@ -16,8 +16,10 @@ from seqtools import Plot2do as p
 @pytest.fixture
 def mock_testclass():
     plot2do_sample = p.plot2do_sample
+    run = subprocess.run
     yield
     p.plot2do_sample = plot2do_sample
+    subprocess.run = run
     
 
 def test_plot2do(testdir, mock_testclass):
@@ -76,7 +78,7 @@ def test_plot2do_filenotexists(testdir, mock_testclass):
     p.plot2do_sample.assert_not_called()
 
 
-def test_plot2do_sample(testdir):
+def test_plot2do_sample(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
@@ -85,7 +87,7 @@ def test_plot2do_sample(testdir):
     subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '-f', bed], check=True)
 
 
-def test_plot2do_sample_parameters(testdir):
+def test_plot2do_sample_parameters(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
@@ -107,7 +109,7 @@ def test_plot2do_sample_parameters(testdir):
     subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot, '-f', bed], check=True)
 
 
-def test_plot2do_sample_bednotexists(testdir):
+def test_plot2do_sample_bednotexists(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     subprocess.run = MagicMock()

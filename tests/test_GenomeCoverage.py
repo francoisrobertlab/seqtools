@@ -21,10 +21,20 @@ def mock_testclass():
     coverage = gc.coverage
     genome_coverage = gc.genome_coverage
     sample_splits_genome_coverage = gc.sample_splits_genome_coverage
+    splits = sb.splits
+    sort = Bed.sort
+    count_bed = Bed.count_bed
+    bedgraph_to_bigwig = Bed.bedgraph_to_bigwig
+    run = subprocess.run
     yield
     gc.coverage = coverage
     gc.genome_coverage = genome_coverage
     gc.sample_splits_genome_coverage = sample_splits_genome_coverage
+    sb.splits = splits
+    Bed.sort = sort
+    Bed.count_bed = count_bed
+    Bed.bedgraph_to_bigwig = bedgraph_to_bigwig
+    subprocess.run = run
     
     
 def create_file(*args, **kwargs):
