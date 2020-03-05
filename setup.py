@@ -23,8 +23,9 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'seqtools = seqtools.seqtools:seqtools',
-            'mnasetools = mnaseseqtools.mnasetools:mnasetools'
+            'chectools = checseqtools.chectools:chectools',
+            'mnasetools = mnaseseqtools.mnasetools:mnasetools',
+            'seqtools = seqtools.seqtools:seqtools'
         ]
     }
 )
