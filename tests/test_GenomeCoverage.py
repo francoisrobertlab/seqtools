@@ -464,7 +464,7 @@ def test_genome_coverage_scale_positivestrand(testdir, mock_testclass):
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
-def test_coverage(testdir):
+def test_coverage(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -482,7 +482,7 @@ def test_coverage(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
 
 
-def test_coverage_five(testdir):
+def test_coverage_five(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -500,7 +500,7 @@ def test_coverage_five(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
 
 
-def test_coverage_three(testdir):
+def test_coverage_three(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -518,7 +518,7 @@ def test_coverage_three(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
 
 
-def test_coverage_scale(testdir):
+def test_coverage_scale(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -537,7 +537,7 @@ def test_coverage_scale(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
 
 
-def test_coverage_negativestrand(testdir):
+def test_coverage_negativestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -556,7 +556,7 @@ def test_coverage_negativestrand(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Minus"\n'
 
 
-def test_coverage_scale_negativestrand(testdir):
+def test_coverage_scale_negativestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -576,7 +576,7 @@ def test_coverage_scale_negativestrand(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Minus"\n'
 
 
-def test_coverage_positivestrand(testdir):
+def test_coverage_positivestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
@@ -595,7 +595,7 @@ def test_coverage_positivestrand(testdir):
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Plus"\n'
 
 
-def test_coverage_scale_positivestrand(testdir):
+def test_coverage_scale_positivestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     coverage_output = bed + '.cov'
