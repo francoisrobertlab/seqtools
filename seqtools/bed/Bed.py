@@ -32,10 +32,15 @@ def empty_bed(bed_output, sample, strand=None):
 
 def sort(input, output):
     '''Sort BED file by chromosome and start'''
-    cmd = ['bedtools', 'sort', '-i', input]
-    logging.debug('Running {}'.format(cmd))
-    with open(output, 'w') as outfile:
-        subprocess.run(cmd, stdout=outfile, check=True)
+    if os.name == 'posix':
+        cmd = ['sort', '-k', '1,1', '-k', '2,2n', '-k', '3,3n', '-o', output, input]
+        logging.debug('Running {}'.format(cmd))
+        subprocess.run(cmd, check=True)
+    else:
+        cmd = ['bedtools', 'sort', '-i', input]
+        logging.debug('Running {}'.format(cmd))
+        with open(output, 'w') as outfile:
+            subprocess.run(cmd, stdout=outfile, check=True)
 
 
 def sort_bysize(input, output):

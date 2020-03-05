@@ -14,8 +14,10 @@ from seqtools.bed import Bed
 
 @pytest.fixture
 def mock_testclass():
+    os_name = os.name
     run = subprocess.run
     yield
+    os.name = os_name
     subprocess.run = run
 
 
@@ -73,10 +75,22 @@ def test_empty_bed_minusstrand(testdir, mock_testclass):
 
 def test_sort(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
+    os.name = 'nt'
     output = 'test.bed'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort(bed, output)
     subprocess.run.assert_called_with(['bedtools', 'sort', '-i', bed], stdout=ANY, check=True)
+    assert os.path.exists(output)
+
+
+def test_sort_linux(testdir, mock_testclass):
+    bed = Path(__file__).parent.parent.joinpath('sample.bed')
+    os.name = 'posix'
+    output = 'test.bed'
+    subprocess.run = MagicMock(side_effect=create_file)
+    Bed.sort(bed, output)
+    logging.warning(Bed.sort)
+    subprocess.run.assert_called_with(['sort', '-k', '1,1', '-k', '2,2n', '-k', '3,3n', '-o', output, bed], check=True)
     assert os.path.exists(output)
 
 
