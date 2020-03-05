@@ -21,9 +21,10 @@ def count_bed(bed, strand=None):
 
 def empty_bed(bed_output, sample, strand=None):
     '''Create an empty BED file.'''
-    track = 'track type=bedGraph name='' + sample + '''
+    track = 'track type=bedGraph name="' + sample
     if not strand is None:
         track += ' Minus' if strand == '-' else ' Plus'
+    track += '"'
     with open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')
 
