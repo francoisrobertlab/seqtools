@@ -15,7 +15,7 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     run = subprocess.run
-    yield 
+    yield
     subprocess.run = run
 
 
@@ -29,17 +29,17 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
-def test_count_bed(testdir):
+def test_count_bed(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
     assert 8 == Bed.count_bed(bed)
 
 
-def test_count_bed_strand(testdir):
+def test_count_bed_strand(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
     assert 4 == Bed.count_bed(bed, '+')
 
 
-def test_empty_bed(testdir):
+def test_empty_bed(testdir, mock_testclass):
     bed = 'sample.bed'
     sample = 'POLR2A'
     Bed.empty_bed(bed, sample)
@@ -49,7 +49,7 @@ def test_empty_bed(testdir):
         assert infile.readline() == ''
 
 
-def test_empty_bed_plusstrand(testdir):
+def test_empty_bed_plusstrand(testdir, mock_testclass):
     bed = 'sample.bed'
     sample = 'POLR2A'
     strand = '+'
@@ -60,7 +60,7 @@ def test_empty_bed_plusstrand(testdir):
         assert infile.readline() == ''
 
 
-def test_empty_bed_minusstrand(testdir):
+def test_empty_bed_minusstrand(testdir, mock_testclass):
     bed = 'sample.bed'
     sample = 'POLR2A'
     strand = '-'
@@ -71,7 +71,7 @@ def test_empty_bed_minusstrand(testdir):
         assert infile.readline() == ''
 
 
-def test_sort(testdir):
+def test_sort(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
     output = 'test.bed'
     subprocess.run = MagicMock(side_effect=create_file)
@@ -80,7 +80,7 @@ def test_sort(testdir):
     assert os.path.exists(output)
 
 
-def test_sort_bysize(testdir):
+def test_sort_bysize(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
     output = 'test.bed'
     subprocess.run = MagicMock(side_effect=create_file)
@@ -89,7 +89,7 @@ def test_sort_bysize(testdir):
     assert os.path.exists(output)
 
 
-def test_bedgraph_to_bigwig(testdir):
+def test_bedgraph_to_bigwig(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
     sizes = Path(__file__).parent.parent.joinpath('sizes.txt')
     output = 'test.bw'
