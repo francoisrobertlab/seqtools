@@ -25,6 +25,11 @@ NEGATIVE_STRAND = -1
 def dyadposition(genes, signal, dyad, mind, maxd, output):
     '''Finds the most plausible dyad position.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    dyad_position(genes, signal, dyad, mind, maxd, output)
+
+
+def dyad_position(genes, signal, dyad, mind, maxd, output):
+    '''Finds the most plausible dyad position.'''
     if dyad != 2:
         print >> sys.stderr, 'right now, dyad parameter must be 2'
         sys.exit(1)
