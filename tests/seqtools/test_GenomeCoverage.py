@@ -57,7 +57,7 @@ def test_genomecov(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(gc.genomecov, ['-s', samples])
     assert result.exit_code == 0
-    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, False, False, None, None, None)
+    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, None, None, None, ())
 
 
 def test_genomecov_five(testdir, mock_testclass):
@@ -66,9 +66,9 @@ def test_genomecov_five(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sizes.txt'), sizes)
     gc.genome_coverage_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.genomecov, ['-s', samples, '--five'])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '-5'])
     assert result.exit_code == 0
-    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, True, False, None, None, None)
+    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, None, None, None, ('-5',))
 
 
 def test_genomecov_three(testdir, mock_testclass):
@@ -77,23 +77,22 @@ def test_genomecov_three(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sizes.txt'), sizes)
     gc.genome_coverage_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.genomecov, ['-s', samples, '--three'])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '-3'])
     assert result.exit_code == 0
-    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, False, True, None, None, None)
+    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, None, None, None, ('-3',))
 
 
 def test_genomecov_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    sizes = 'sacCer3.chrom.sizes'
-    copyfile(Path(__file__).parent.joinpath('sizes.txt'), sizes)
+    sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '+'
     index = 1
     gc.genome_coverage_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(gc.genomecov, ['-s', samples, '--scale', scale, '--strand', strand, '--index', index])
+    result = runner.invoke(gc.genomecov, ['-s', samples, '--sizes', sizes, '--scale', scale, '--strand', strand, '--index', index])
     assert result.exit_code == 0
-    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, False, False, scale, strand, index)
+    gc.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, index, ())
 
 
 def test_genome_coverage_samples(testdir, mock_testclass):
@@ -102,45 +101,45 @@ def test_genome_coverage_samples(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sizes.txt'), sizes)
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, None, None)
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, None, None, ())
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, None, None, ())
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, None, None, ())
 
 
 def test_genome_coverage_samples_all_five(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
-    gc.genome_coverage_samples(samples, sizes, five=True)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, True, False, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, True, False, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, True, False, None, None)
+    gc.genome_coverage_samples(samples, sizes, genomecov_args=('-5',))
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, None, None, ('-5',))
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, None, None, ('-5',))
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, None, None, ('-5',))
 
 
 def test_genome_coverage_samples_second_five(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
-    gc.genome_coverage_samples(samples, sizes, five=True, index=1)
-    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, True, False, None, None)
+    gc.genome_coverage_samples(samples, sizes, index=1, genomecov_args=('-5',))
+    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, None, None, ('-5',))
 
 
 def test_genome_coverage_samples_all_three(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
-    gc.genome_coverage_samples(samples, sizes, three=True)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, True, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, True, None, None)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, True, None, None)
+    gc.genome_coverage_samples(samples, sizes, genomecov_args=('-3',))
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, None, None, ('-3',))
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, None, None, ('-3',))
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, None, None, ('-3',))
 
 
 def test_genome_coverage_samples_second_three(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     gc.sample_splits_genome_coverage = MagicMock()
-    gc.genome_coverage_samples(samples, sizes, three=True, index=1)
-    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, True, None, None)
+    gc.genome_coverage_samples(samples, sizes, genomecov_args=('-3',), index=1)
+    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, None, None, ('-3',))
 
 
 def test_genome_coverage_samples_all_scale(testdir, mock_testclass):
@@ -149,9 +148,9 @@ def test_genome_coverage_samples_all_scale(testdir, mock_testclass):
     scale = 1.5
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, None)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, None)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, None)
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, scale, None, ())
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, scale, None, ())
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, scale, None, ())
 
 
 def test_genome_coverage_samples_second_scale(testdir, mock_testclass):
@@ -160,7 +159,7 @@ def test_genome_coverage_samples_second_scale(testdir, mock_testclass):
     scale = 1.5
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale, index=1)
-    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, None)
+    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, scale, None, ())
 
 
 def test_genome_coverage_samples_all_scale_negativestrand(testdir, mock_testclass):
@@ -170,9 +169,9 @@ def test_genome_coverage_samples_all_scale_negativestrand(testdir, mock_testclas
     strand = '-'
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale, strand=strand)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, strand)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, strand)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, scale, strand, ())
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, scale, strand, ())
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, scale, strand, ())
 
 
 def test_genome_coverage_samples_second_scale_negativestrand(testdir, mock_testclass):
@@ -182,7 +181,7 @@ def test_genome_coverage_samples_second_scale_negativestrand(testdir, mock_testc
     strand = '-'
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale, strand=strand, index=1)
-    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, scale, strand, ())
 
 
 def test_genome_coverage_samples_all_scale_positivestrand(testdir, mock_testclass):
@@ -192,9 +191,9 @@ def test_genome_coverage_samples_all_scale_positivestrand(testdir, mock_testclas
     strand = '+'
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale, strand=strand)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, False, False, scale, strand)
-    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, False, False, scale, strand)
-    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage.assert_any_call('POLR2A', sizes, scale, strand, ())
+    gc.sample_splits_genome_coverage.assert_any_call('ASDURF', sizes, scale, strand, ())
+    gc.sample_splits_genome_coverage.assert_any_call('POLR1C', sizes, scale, strand, ())
 
 
 def test_genome_coverage_samples_second_scale_positivestrand(testdir, mock_testclass):
@@ -204,7 +203,7 @@ def test_genome_coverage_samples_second_scale_positivestrand(testdir, mock_testc
     strand = '+'
     gc.sample_splits_genome_coverage = MagicMock()
     gc.genome_coverage_samples(samples, sizes, scale=scale, strand=strand, index=1)
-    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage.assert_called_once_with('ASDURF', sizes, scale, strand, ())
 
     
 def test_sample_splits_genome_coverage(testdir, mock_testclass):
@@ -216,9 +215,9 @@ def test_sample_splits_genome_coverage(testdir, mock_testclass):
     gc.genome_coverage = MagicMock()
     gc.sample_splits_genome_coverage(sample, sizes)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, None, None)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, None, None)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, None, None)
+    gc.genome_coverage.assert_any_call(sample, sizes, None, None, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, None, None, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, None, None, ())
 
 
 def test_sample_splits_genome_coverage_five(testdir, mock_testclass):
@@ -228,11 +227,11 @@ def test_sample_splits_genome_coverage_five(testdir, mock_testclass):
     split2 = sample + '-110-120'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, five=True)
+    gc.sample_splits_genome_coverage(sample, sizes, genomecov_args=('-5'))
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, True, False, None, None)
-    gc.genome_coverage.assert_any_call(split1, sizes, True, False, None, None)
-    gc.genome_coverage.assert_any_call(split2, sizes, True, False, None, None)
+    gc.genome_coverage.assert_any_call(sample, sizes, None, None, ('-5'))
+    gc.genome_coverage.assert_any_call(split1, sizes, None, None, ('-5'))
+    gc.genome_coverage.assert_any_call(split2, sizes, None, None, ('-5'))
 
 
 def test_sample_splits_genome_coverage_three(testdir, mock_testclass):
@@ -242,11 +241,11 @@ def test_sample_splits_genome_coverage_three(testdir, mock_testclass):
     split2 = sample + '-110-120'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, three=True)
+    gc.sample_splits_genome_coverage(sample, sizes, genomecov_args=('-3'))
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, True, None, None)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, True, None, None)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, True, None, None)
+    gc.genome_coverage.assert_any_call(sample, sizes, None, None, ('-3'))
+    gc.genome_coverage.assert_any_call(split1, sizes, None, None, ('-3'))
+    gc.genome_coverage.assert_any_call(split2, sizes, None, None, ('-3'))
 
 
 def test_sample_splits_genome_coverage_scale(testdir, mock_testclass):
@@ -257,11 +256,11 @@ def test_sample_splits_genome_coverage_scale(testdir, mock_testclass):
     scale = 1.5
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, False, False, scale)
+    gc.sample_splits_genome_coverage(sample, sizes, scale)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, scale, None)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, scale, None)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, scale, None)
+    gc.genome_coverage.assert_any_call(sample, sizes, scale, None, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, scale, None, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, scale, None, ())
 
 
 def test_sample_splits_genome_coverage_negativestrand(testdir, mock_testclass):
@@ -269,15 +268,14 @@ def test_sample_splits_genome_coverage_negativestrand(testdir, mock_testclass):
     sizes = 'human.sizes'
     split1 = sample + '-100-110'
     split2 = sample + '-110-120'
-    scale = 1.5
     strand = '-'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, False, False, None, strand)
+    gc.sample_splits_genome_coverage(sample, sizes, strand=strand)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, None, strand)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, None, strand)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, None, strand)
+    gc.genome_coverage.assert_any_call(sample, sizes, None, strand, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, None, strand, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, None, strand, ())
 
 
 def test_sample_splits_genome_coverage_scale_negativestrand(testdir, mock_testclass):
@@ -289,11 +287,11 @@ def test_sample_splits_genome_coverage_scale_negativestrand(testdir, mock_testcl
     strand = '-'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage(sample, sizes, scale, strand)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, scale, strand)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, scale, strand)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, scale, strand)
+    gc.genome_coverage.assert_any_call(sample, sizes, scale, strand, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, scale, strand, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, scale, strand, ())
 
 
 def test_sample_splits_genome_coverage_positivestrand(testdir, mock_testclass):
@@ -304,11 +302,11 @@ def test_sample_splits_genome_coverage_positivestrand(testdir, mock_testclass):
     strand = '+'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, False, False, None, strand)
+    gc.sample_splits_genome_coverage(sample, sizes, strand=strand)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, None, strand)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, None, strand)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, None, strand)
+    gc.genome_coverage.assert_any_call(sample, sizes, None, strand, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, None, strand, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, None, strand, ())
 
 
 def test_sample_splits_genome_coverage_scale_positivestrand(testdir, mock_testclass):
@@ -320,13 +318,13 @@ def test_sample_splits_genome_coverage_scale_positivestrand(testdir, mock_testcl
     strand = '+'
     sb.splits = MagicMock(return_value=[split1, split2])
     gc.genome_coverage = MagicMock()
-    gc.sample_splits_genome_coverage(sample, sizes, False, False, scale, strand)
+    gc.sample_splits_genome_coverage(sample, sizes, scale, strand)
     sb.splits.assert_called_once_with(sample)
-    gc.genome_coverage.assert_any_call(sample, sizes, False, False, scale, strand)
-    gc.genome_coverage.assert_any_call(split1, sizes, False, False, scale, strand)
-    gc.genome_coverage.assert_any_call(split2, sizes, False, False, scale, strand)
+    gc.genome_coverage.assert_any_call(sample, sizes, scale, strand, ())
+    gc.genome_coverage.assert_any_call(split1, sizes, scale, strand, ())
+    gc.genome_coverage.assert_any_call(split2, sizes, scale, strand, ())
 
-    
+
 def test_genome_coverage(testdir, mock_testclass):
     sample = 'POLR2A'
     forcov = sample + '-forcov.bed'
@@ -341,7 +339,7 @@ def test_genome_coverage(testdir, mock_testclass):
     Bed.bedgraph_to_bigwig = MagicMock()
     gc.genome_coverage(sample, sizes)
     Bed.count_bed.assert_called_once_with(forcov)
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, BASE_SCALE / count, None)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, BASE_SCALE / count, None, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -357,7 +355,7 @@ def test_genome_coverage_noforcov(testdir, mock_testclass):
     Bed.bedgraph_to_bigwig = MagicMock()
     gc.genome_coverage(sample, sizes)
     Bed.count_bed.assert_called_once_with(bed)
-    gc.coverage.assert_called_once_with(bed, cov, sizes, sample, False, False, BASE_SCALE / count, None)
+    gc.coverage.assert_called_once_with(bed, cov, sizes, sample, BASE_SCALE / count, None, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -373,9 +371,9 @@ def test_genome_coverage_five(testdir, mock_testclass):
     Bed.count_bed = MagicMock(return_value=count)
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, five=True)
+    gc.genome_coverage(sample, sizes, genomecov_args=('-5'))
     Bed.count_bed.assert_called_once_with(forcov)
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, True, False, BASE_SCALE / count, None)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, BASE_SCALE / count, None, ('-5'))
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -391,9 +389,9 @@ def test_genome_coverage_three(testdir, mock_testclass):
     Bed.count_bed = MagicMock(return_value=count)
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, three=True)
+    gc.genome_coverage(sample, sizes, genomecov_args=('-3'))
     Bed.count_bed.assert_called_once_with(forcov)
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, True, BASE_SCALE / count, None)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, BASE_SCALE / count, None, ('-3'))
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -409,9 +407,9 @@ def test_genome_coverage_scale(testdir, mock_testclass):
     Bed.count_bed = MagicMock()
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, False, False, scale)
+    gc.genome_coverage(sample, sizes, scale)
     Bed.count_bed.assert_not_called()
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, scale, None)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, scale, None, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -428,9 +426,9 @@ def test_genome_coverage_negativestrand(testdir, mock_testclass):
     Bed.count_bed = MagicMock(return_value=count)
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, False, False, None, strand)
+    gc.genome_coverage(sample, sizes, None, strand)
     Bed.count_bed.assert_called_once_with(forcov)
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, BASE_SCALE / count, strand)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, BASE_SCALE / count, strand, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -447,9 +445,9 @@ def test_genome_coverage_scale_negativestrand(testdir, mock_testclass):
     Bed.count_bed = MagicMock()
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, False, False, scale, strand)
+    gc.genome_coverage(sample, sizes, scale, strand)
     Bed.count_bed.assert_not_called()
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, scale, strand)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, scale, strand, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -466,9 +464,9 @@ def test_genome_coverage_positivestrand(testdir, mock_testclass):
     Bed.count_bed = MagicMock(return_value=count)
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, False, False, None, strand)
+    gc.genome_coverage(sample, sizes, None, strand)
     Bed.count_bed.assert_called_once_with(forcov)
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, BASE_SCALE / count, strand)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, BASE_SCALE / count, strand, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -485,9 +483,9 @@ def test_genome_coverage_scale_positivestrand(testdir, mock_testclass):
     Bed.count_bed = MagicMock()
     gc.coverage = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock()
-    gc.genome_coverage(sample, sizes, False, False, scale, strand)
+    gc.genome_coverage(sample, sizes, scale, strand)
     Bed.count_bed.assert_not_called()
-    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, False, False, scale, strand)
+    gc.coverage.assert_called_once_with(forcov, cov, sizes, sample, scale, strand, ())
     Bed.bedgraph_to_bigwig.assert_called_once_with(cov, bw, sizes)
 
 
@@ -518,7 +516,7 @@ def test_coverage_five(testdir, mock_testclass):
     sizes = 'human.sizes'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, five=True)
+    gc.coverage(bed, output, sizes, sample, genomecov_args=('-5',))
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-5'], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -536,7 +534,7 @@ def test_coverage_three(testdir, mock_testclass):
     sizes = 'human.sizes'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, three=True)
+    gc.coverage(bed, output, sizes, sample, genomecov_args=('-3',))
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-3'], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -555,7 +553,7 @@ def test_coverage_scale(testdir, mock_testclass):
     scale = 1.5
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, False, False, scale)
+    gc.coverage(bed, output, sizes, sample, scale)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale)], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -574,7 +572,7 @@ def test_coverage_negativestrand(testdir, mock_testclass):
     strand = '-'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, False, False, None, strand)
+    gc.coverage(bed, output, sizes, sample, None, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-strand', strand], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -594,7 +592,7 @@ def test_coverage_scale_negativestrand(testdir, mock_testclass):
     strand = '-'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, False, False, scale, strand)
+    gc.coverage(bed, output, sizes, sample, scale, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale), '-strand', strand], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -613,7 +611,7 @@ def test_coverage_positivestrand(testdir, mock_testclass):
     strand = '+'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, False, False, None, strand)
+    gc.coverage(bed, output, sizes, sample, None, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-strand', strand], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
@@ -633,7 +631,7 @@ def test_coverage_scale_positivestrand(testdir, mock_testclass):
     strand = '+'
     subprocess.run = MagicMock(side_effect=create_file)
     Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
-    gc.coverage(bed, output, sizes, sample, False, False, scale, strand)
+    gc.coverage(bed, output, sizes, sample, scale, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale), '-strand', strand], stdout=ANY, check=True)
     Bed.sort.assert_called_once_with(coverage_output, sort_output)
     assert not os.path.exists(coverage_output)
