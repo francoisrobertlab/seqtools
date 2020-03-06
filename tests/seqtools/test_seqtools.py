@@ -151,12 +151,13 @@ def test_seqtools_mergebw(testdir, mock_testclass):
 def test_seqtools_plot2do(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 2
+    type = 'dyads'
     Plot2do.plot2do_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['plot2do', '--file', samples, '--index', index])
+    result = runner.invoke(seqtools.seqtools, ['plot2do', '--file', samples, '--type', type, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    Plot2do.plot2do_samples.assert_called_once_with(samples, None, None, None, None, None, None, None, None, None, None, None, None, None, index)
+    Plot2do.plot2do_samples.assert_called_once_with(samples, index, ('--type', type,))
 
 
 def test_seqtools_slowsplit(testdir, mock_testclass):

@@ -30,30 +30,19 @@ def test_plot2do(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(p.plot2do, ['-f', samples])
     assert result.exit_code == 0
-    p.plot2do_samples.assert_called_once_with(samples, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_samples.assert_called_once_with(samples, None, ())
 
 
 def test_plot2do_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     type = 'dyads'
     genome = 'mm9'
-    reference = 'Plus1'
-    sites = 'sites.txt'
-    align = 'fivePrime'
-    sitelabel = 'site-test'
-    minlength = '100'
-    maxlength = '300'
-    upstream = '500'
-    downstream = '600'
-    colorscalemax = '0.05'
-    simplifyplot = 'on'
-    squeezeplot = 'on'
     index = 1
     p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.plot2do, ['-f', samples, '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot, '--index', index])
+    result = runner.invoke(p.plot2do, ['-f', samples, '--type', type, '--genome', genome, '--index', index])
     assert result.exit_code == 0
-    p.plot2do_samples.assert_called_once_with(samples, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index)
+    p.plot2do_samples.assert_called_once_with(samples, index, ('--type', type, '--genome', genome,))
 
 
 def test_plot2do_filenotexists(testdir, mock_testclass):
@@ -70,9 +59,9 @@ def test_plot2do_samples(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', None, None, None, None, None, None, None, None, None, None, None, None, None)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', ())
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', ())
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', ())
 
 
 def test_plot2do_samples_second(testdir, mock_testclass):
@@ -80,30 +69,18 @@ def test_plot2do_samples_second(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples, index=1)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', None, None, None, None, None, None, None, None, None, None, None, None, None)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', ())
 
 
 def test_plot2do_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
-    type = 'dyads'
-    genome = 'mm9'
-    reference = 'Plus1'
-    sites = 'sites.txt'
-    align = 'fivePrime'
-    sitelabel = 'site-test'
-    minlength = '100'
-    maxlength = '300'
-    upstream = '500'
-    downstream = '600'
-    colorscalemax = '0.05'
-    simplifyplot = 'on'
-    squeezeplot = 'on'
+    plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     p.plot2do_sample = MagicMock()
-    p.plot2do_samples(samples, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
+    p.plot2do_samples(samples, plot2do_args=plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', plot2do_args)
 
 
 def test_plot2do_sample(testdir, mock_testclass):
@@ -119,22 +96,10 @@ def test_plot2do_sample_parameters(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
-    type = 'dyads'
-    genome = 'mm9'
-    reference = 'Plus1'
-    sites = 'sites.txt'
-    align = 'fivePrime'
-    sitelabel = 'site-test'
-    minlength = '100'
-    maxlength = '300'
-    upstream = '500'
-    downstream = '600'
-    colorscalemax = '0.05'
-    simplifyplot = 'on'
-    squeezeplot = 'on'
+    plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     subprocess.run = MagicMock()
-    p.plot2do_sample(sample, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot)
-    subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '--type', type, '--genome', genome, '--reference', reference, '--sites', sites, '--align', align, '--siteLabel', sitelabel, '--minLength', minlength, '--maxLength', maxlength, '--upstream', upstream, '--downstream', downstream, '--colorScaleMax', colorscalemax, '--simplifyPlot', simplifyplot, '--squeezePlot', squeezeplot, '-f', bed], check=True)
+    p.plot2do_sample(sample, plot2do_args)
+    subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '--type', 'dyads', '--genome', 'mm9', '-f', bed], check=True)
 
 
 def test_plot2do_sample_bednotexists(testdir, mock_testclass):
