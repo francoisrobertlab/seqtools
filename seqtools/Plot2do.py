@@ -56,6 +56,11 @@ import pandas as pd
 def plot2do(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index):
     '''Run plot2DO on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    plot2do_samples(file, type, genome, reference, sites, align, sitelabel, minlength, maxlength, upstream, downstream, colorscalemax, simplifyplot, squeezeplot, index)
+
+
+def plot2do_samples(file, type=None, genome=None, reference=None, sites=None, align=None, sitelabel=None, minlength=None, maxlength=None, upstream=None, downstream=None, colorscalemax=None, simplifyplot=None, squeezeplot=None, index=None):
+    '''Run plot2DO on samples.'''
     file_parent = Path(file).parent
     sample_names = pd.read_csv(file, header=None, sep='\t', comment='#')[0]
     if index != None:

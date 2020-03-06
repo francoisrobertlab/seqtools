@@ -20,6 +20,11 @@ from seqtools.bed import Bed
 def bam2bed(samples, paired, threads, index):
     '''Converts BAM file to BED for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    bam2bed_samples(samples, paired, threads, index)
+
+
+def bam2bed_samples(samples='samples.txt', paired=True, threads=None, index=None):
+    '''Converts BAM file to BED for samples.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

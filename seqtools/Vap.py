@@ -20,6 +20,11 @@ from . import Split
 def vap(samples, parameters, index):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    vap_samples(samples, parameters, index)
+
+
+def vap_samples(samples='samples.txt', parameters='parameters.txt', index=None):
+    '''Run VAP on samples.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

@@ -20,6 +20,11 @@ import pandas as pd
 def slowsplit(samples, index, binlength, binminlength, binmaxlength):
     '''Split BED files from samples based on lenght of annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    split_samples(samples, index, binlength, binminlength, binmaxlength)
+
+
+def split_samples(samples='samples.txt', index=None, binlength=10, binminlength=100, binmaxlength=500):
+    '''Split BED files from samples based on lenght of annotations.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

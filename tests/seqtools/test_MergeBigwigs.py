@@ -16,11 +16,13 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     merge_samples = mb.merge_samples
+    merge_sample = mb.merge_sample
     sort = Bed.sort
     bedgraph_to_bigwig = Bed.bedgraph_to_bigwig
     remove = os.remove
     yield merge_samples
     mb.merge_samples = merge_samples
+    mb.merge_sample = merge_sample
     Bed.sort = sort
     Bed.bedgraph_to_bigwig = bedgraph_to_bigwig
     os.remove = remove
@@ -43,19 +45,18 @@ def test_mergebw(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes])
     assert result.exit_code == 0
-    mb.merge_samples.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], sizes)
-    mb.merge_samples.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
-    mb.merge_samples.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], sizes)
+    mb.merge_samples.assert_called_once_with(merge, sizes, None)
 
 
-def test_mergebw_second(testdir, mock_testclass):
+def test_mergebw_parameters(testdir, mock_testclass):
     merge = Path(__file__).parent.joinpath('merge.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
+    index = 1
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes, '-i', '1'])
+    result = runner.invoke(mb.mergebw, ['-m', merge, '--sizes', sizes, '--index', index])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
+    mb.merge_samples.assert_called_once_with(merge, sizes, index)
 
 
 def test_mergebw_mergenotexists(testdir, mock_testclass):
@@ -78,7 +79,25 @@ def test_mergebw_sizesnotexists(testdir, mock_testclass):
     mb.merge_samples.assert_not_called()
 
 
-def test_merge_samples(testdir, mock_testclass):
+def test_mergebw(testdir, mock_testclass):
+    merge = Path(__file__).parent.joinpath('merge.txt')
+    sizes = Path(__file__).parent.joinpath('sizes.txt')
+    mb.merge_sample = MagicMock()
+    mb.merge_samples(merge, sizes)
+    mb.merge_sample.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], sizes)
+    mb.merge_sample.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
+    mb.merge_sample.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], sizes)
+
+
+def test_mergebw_second(testdir, mock_testclass):
+    merge = Path(__file__).parent.joinpath('merge.txt')
+    sizes = Path(__file__).parent.joinpath('sizes.txt')
+    mb.merge_sample = MagicMock()
+    mb.merge_samples(merge, sizes, 1)
+    mb.merge_sample.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'], sizes)
+
+
+def test_merge_sample(testdir, mock_testclass):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merged_bed_sort_tmp = merge + '-tmp-sort.bed'
@@ -93,7 +112,7 @@ def test_merge_samples(testdir, mock_testclass):
     Bed.sort = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock(side_effect=create_file(['-o', merge_bw]))
     os.remove = MagicMock()
-    mb.merge_samples(merge, [sample1, sample2], sizes)
+    mb.merge_sample(merge, [sample1, sample2], sizes)
     Bed.sort.assert_called_once_with(merge_bed_tmp, merged_bed_sort_tmp)
     Bed.bedgraph_to_bigwig.assert_called_once_with(merged_bed_sort_tmp, merge_bw, sizes)
     os.remove.assert_any_call(merge_bed_tmp)

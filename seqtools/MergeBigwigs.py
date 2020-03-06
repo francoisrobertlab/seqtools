@@ -19,16 +19,21 @@ from seqtools.bed import Bed
 def mergebw(merge, sizes, index):
     '''Merge bigWig files related to samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    merge_samples(merge, sizes, index)
+
+
+def merge_samples(merge='merge.txt', sizes='sacCer3.chrom.sizes', index=None):
+    '''Merge bigWig files related to samples.'''
     merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
     if index != None:
         merge_columns = merge_columns.iloc[index:index + 1]
     for index, columns in merge_columns.iterrows():
         name = columns[0]
         samples = [sample for sample in columns[1:]]
-        merge_samples(name, samples, sizes)
+        merge_sample(name, samples, sizes)
 
     
-def merge_samples(name, samples, sizes):
+def merge_sample(name, samples, sizes):
     '''Merge bigWig files related to samples.'''
     print ('Merging samples {} into a single sample {}'.format(samples, name))
     sizes_columns = pd.read_csv(sizes, header=None, sep='\t', comment='#')

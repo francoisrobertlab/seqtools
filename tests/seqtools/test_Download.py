@@ -13,9 +13,11 @@ from seqtools import Download as d
 
 @pytest.fixture
 def mock_testclass():
+    download_samples = d.download_samples
     download_sample = d.download_sample
     run = subprocess.run
     yield
+    d.download_samples = download_samples
     d.download_sample = download_sample
     subprocess.run = run
     
@@ -30,50 +32,63 @@ def test_download(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '100MB'
     threads = 6
-    d.download_sample = MagicMock()
+    d.download_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(d.download, ['-s', samples ])
+    result = runner.invoke(d.download, ['-s', samples])
     assert result.exit_code == 0
+    d.download_samples.assert_called_once_with(samples, True, threads, mem, None)
+
+
+def test_download_parameters(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    mem = '200MB'
+    threads = 8
+    index = 1
+    d.download_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(d.download, ['-s', samples, '--slow', '--threads', threads, '--mem', mem, '--index', index])
+    assert result.exit_code == 0
+    d.download_samples.assert_called_once_with(samples, False, threads, mem, 1)
+
+
+def test_download_samples(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    mem = '100MB'
+    d.download_sample = MagicMock()
+    d.download_samples(samples)
+    d.download_sample.assert_any_call('POLR2A', 'SRR8518913', True, None, mem)
+    d.download_sample.assert_any_call('ASDURF', 'SRX5322424', True, None, mem)
+    d.download_sample.assert_any_call('POLR1C', 'SRR8518915', True, None, mem)
+
+
+def test_download_samples_allfast(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    mem = '200MB'
+    threads = 2
+    d.download_sample = MagicMock()
+    d.download_samples(samples, True, threads, mem)
     d.download_sample.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
     d.download_sample.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
     d.download_sample.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
 
 
-def test_download_allfast(testdir, mock_testclass):
+def test_download_samples_allslow(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '200MB'
     threads = 2
     d.download_sample = MagicMock()
-    runner = CliRunner()
-    result = runner.invoke(d.download, ['-s', samples, '--fast', '-e', str(threads), '-m', mem])
-    assert result.exit_code == 0
-    d.download_sample.assert_any_call('POLR2A', 'SRR8518913', True, threads, mem)
-    d.download_sample.assert_any_call('ASDURF', 'SRX5322424', True, threads, mem)
-    d.download_sample.assert_any_call('POLR1C', 'SRR8518915', True, threads, mem)
-
-
-def test_download_allslow(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('samples.txt')
-    mem = '200MB'
-    threads = 2
-    d.download_sample = MagicMock()
-    runner = CliRunner()
-    result = runner.invoke(d.download, ['-s', samples, '--slow', '-e', str(threads), '-m', mem])
-    assert result.exit_code == 0
+    d.download_samples(samples, False, threads, mem)
     d.download_sample.assert_any_call('POLR2A', 'SRR8518913', False, threads, mem)
     d.download_sample.assert_any_call('ASDURF', 'SRX5322424', False, threads, mem)
     d.download_sample.assert_any_call('POLR1C', 'SRR8518915', False, threads, mem)
 
 
-def test_download_second(testdir, mock_testclass):
+def test_download_samples_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     mem = '100MB'
-    threads = 6
     d.download_sample = MagicMock()
-    runner = CliRunner()
-    result = runner.invoke(d.download, ['-s', samples, '-i', 1])
-    assert result.exit_code == 0
-    d.download_sample.assert_called_once_with('ASDURF', 'SRX5322424', True, threads, mem)
+    d.download_samples(samples, index=1)
+    d.download_sample.assert_called_once_with('ASDURF', 'SRX5322424', True, None, mem)
 
 
 def test_download_sample_singleend(testdir, mock_testclass):

@@ -30,6 +30,11 @@ BASE_SCALE = 1000000
 def genomecov(samples, sizes, five, three, scale, strand, index):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    genome_coverage_samples(samples, sizes, five, three, scale, strand, index)
+
+
+def genome_coverage_samples(samples='samples.txt', sizes='sacCer3.chrom.sizes', five=False, three=False, scale=None, strand=None, index=None):
+    '''Compute genome coverage on samples.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

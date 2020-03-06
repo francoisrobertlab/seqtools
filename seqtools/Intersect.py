@@ -20,6 +20,11 @@ from seqtools.bed import Bed
 def intersect(samples, annotations, index):
     '''Keep only reads that intersects specified annotations.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    intersect_samples(samples, annotations, index)
+
+
+def intersect_samples(samples='samples-filter.txt', annotations='annotations.bed', index=None):
+    '''Keep only reads that intersects specified annotations.'''
     annot_length = annotations_length(annotations)
     sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
     if index != None:

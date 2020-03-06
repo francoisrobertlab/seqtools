@@ -20,14 +20,19 @@ from . import Split
 def statistics(samples, merge, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    statistics_samples(samples, merge, output)
+
+
+def statistics_samples(samples='samples.txt', merge='merge.txt', output='statistics.txt'):
+    '''Creates statistics file for samples.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     merge_names = pd.DataFrame()
     if os.path.exists(merge):
         merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
-    all_statistics(sample_names, merge_names, output)
+    compute_statistics(sample_names, merge_names, output)
 
 
-def all_statistics(samples, merges, output):
+def compute_statistics(samples, merges, output):
     all_headers = headers(samples, merges)
     splits = all_headers[1]
     samples_stats = []

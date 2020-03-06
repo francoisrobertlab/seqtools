@@ -15,10 +15,12 @@ from seqtools.bed import Bed
 @pytest.fixture
 def mock_testclass():
     merge_samples = mb.merge_samples
+    merge_sample = mb.merge_sample
     sort = Bed.sort
     remove = os.remove
-    yield merge_samples
+    yield
     mb.merge_samples = merge_samples
+    mb.merge_sample = merge_sample
     Bed.sort = sort
     os.remove = remove
     
@@ -39,18 +41,17 @@ def test_merge(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(mb.merge, ['-m', merge])
     assert result.exit_code == 0
-    mb.merge_samples.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'])
-    mb.merge_samples.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'])
-    mb.merge_samples.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'])
+    mb.merge_samples.assert_called_once_with(merge, None)
 
 
-def test_merge_second(testdir, mock_testclass):
+def test_merge_parameters(testdir, mock_testclass):
     merge = Path(__file__).parent.joinpath('merge.txt')
+    index = 1
     mb.merge_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.merge, ['-m', merge, '-i', '1'])
+    result = runner.invoke(mb.merge, ['-m', merge, '--index', index])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'])
+    mb.merge_samples.assert_called_once_with(merge, index)
 
 
 def test_merge_mergenotexists(testdir, mock_testclass):
@@ -63,6 +64,22 @@ def test_merge_mergenotexists(testdir, mock_testclass):
 
 
 def test_merge_samples(testdir, mock_testclass):
+    merge = Path(__file__).parent.joinpath('merge.txt')
+    mb.merge_sample = MagicMock()
+    mb.merge_samples(merge)
+    mb.merge_sample.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'])
+    mb.merge_sample.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'])
+    mb.merge_sample.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'])
+
+
+def test_merge_samples_second(testdir, mock_testclass):
+    merge = Path(__file__).parent.joinpath('merge.txt')
+    mb.merge_sample = MagicMock()
+    mb.merge_samples(merge, 1)
+    mb.merge_sample.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'])
+
+
+def test_merge_sample(testdir, mock_testclass):
     merge = 'POLR2A'
     merge_bed_tmp = merge + '-tmp.bed'
     merge_bed = merge + '.bed'
@@ -74,7 +91,7 @@ def test_merge_samples(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sample2.bed'), sample2_bed)
     Bed.sort = MagicMock(side_effect=create_file(['-o', merge_bed]))
     os.remove = MagicMock()
-    mb.merge_samples(merge, [sample1, sample2])
+    mb.merge_sample(merge, [sample1, sample2])
     Bed.sort.assert_called_once_with(merge_bed_tmp, merge_bed)
     os.remove.assert_called_once_with(merge_bed_tmp)
     assert os.path.exists(merge_bed)

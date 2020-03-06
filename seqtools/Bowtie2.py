@@ -21,6 +21,11 @@ from seqtools.seq import Fastq
 def bowtie2(samples, threads, index, bowtie_args):
     '''Align samples using bowtie2 program.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    bowtie_samples(samples, threads, index, bowtie_args)
+
+
+def bowtie_samples(samples='samples.txt', threads=None, index=None, bowtie_args=None):
+    '''Align samples using bowtie2 program.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]

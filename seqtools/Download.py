@@ -23,6 +23,11 @@ from seqtools.seq import Fastq
 def download(samples, fast, threads, mem, index):
     '''Download reads of all samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    download_samples(samples, fast, threads, mem, index)
+
+
+def download_samples(samples='samples.txt', fast=True, threads=None, mem='100MB', index=None):
+    '''Download reads of all samples.'''
     sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
     if index != None:
         sample_columns = sample_columns.iloc[index:index + 1]

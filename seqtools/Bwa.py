@@ -23,6 +23,11 @@ from seqtools.seq import Fastq
 def bwa(samples, fasta, threads, index, bwa_args):
     '''Align samples using bwa program.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    bwa_samples(samples, fasta, threads, index, bwa_args)
+
+
+def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=None):
+    '''Align samples using bwa program.'''
     if index == None:
         bwa_index(fasta)
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
