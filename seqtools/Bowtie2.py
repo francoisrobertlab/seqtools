@@ -24,7 +24,7 @@ def bowtie2(samples, threads, index, bowtie_args):
     bowtie_samples(samples, threads, index, bowtie_args)
 
 
-def bowtie_samples(samples='samples.txt', threads=None, index=None, bowtie_args=None):
+def bowtie_samples(samples='samples.txt', threads=None, index=None, bowtie_args=()):
     '''Align samples using bowtie2 program.'''
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
@@ -33,7 +33,7 @@ def bowtie_samples(samples='samples.txt', threads=None, index=None, bowtie_args=
         bowtie_sample(sample, threads, bowtie_args)
 
 
-def bowtie_sample(sample, threads=None, bowtie_args=None):
+def bowtie_sample(sample, threads=None, bowtie_args=()):
     '''Align one sample using bowtie2 program.'''
     print ('Running bowtie2 on sample {}'.format(sample))
     fastq1 = Fastq.fastq(sample, 1)
@@ -45,7 +45,7 @@ def bowtie_sample(sample, threads=None, bowtie_args=None):
     run_bowtie(fastq1, fastq2, bam_raw, threads, bowtie_args)
 
 
-def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=None):
+def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=()):
     '''Run bowtie2 on FASTQ files.'''
     sam_output = bam_output + '.sam'
     cmd = ['bowtie2'] + list(bowtie_args)

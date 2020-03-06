@@ -26,7 +26,7 @@ def bwa(samples, fasta, threads, index, bwa_args):
     bwa_samples(samples, fasta, threads, index, bwa_args)
 
 
-def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=None):
+def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=()):
     '''Align samples using bwa program.'''
     if index == None:
         bwa_index(fasta)
@@ -37,7 +37,7 @@ def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=N
         bwa_sample(sample, fasta, threads, bwa_args)
 
 
-def bwa_sample(sample, fasta, threads=None, bwa_args=None):
+def bwa_sample(sample, fasta, threads=None, bwa_args=()):
     '''Align one sample using bwa program.'''
     print ('Running BWA on sample {}'.format(sample))
     fastq1 = Fastq.fastq(sample, 1)
@@ -57,7 +57,7 @@ def bwa_index(fasta):
     subprocess.run(bwa_index_cmd, check=True)
 
 
-def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=None):
+def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=()):
     '''Run BWA on FASTQ files.'''
     sam_output = bam_output + '.sam'
     cmd = ['bwa', 'mem'] + list(bwa_args)
