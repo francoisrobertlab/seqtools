@@ -28,8 +28,6 @@ def bwa(samples, fasta, threads, index, bwa_args):
 
 def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=()):
     '''Align samples using bwa program.'''
-    if index == None:
-        bwa_index(fasta)
     sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
     if index != None:
         sample_names = [sample_names[index]]
@@ -52,7 +50,6 @@ def bwa_sample(sample, fasta, threads=None, bwa_args=()):
 def bwa_index(fasta):
     '''Run BWA on FASTQ files.'''
     bwa_index_cmd = ['bwa', 'index', fasta]
-    fasta_indexed = fasta + '.bwt';
     logging.debug('Running {}'.format(bwa_index_cmd))
     subprocess.run(bwa_index_cmd, check=True)
 
@@ -61,7 +58,7 @@ def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=()):
     '''Run BWA on FASTQ files.'''
     sam_output = bam_output + '.sam'
     cmd = ['bwa', 'mem'] + list(bwa_args)
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['-t', str(threads)])
     cmd.extend(['-o', sam_output, fasta, fastq1])
     if fastq2 is not None and os.path.isfile(fastq2):
@@ -69,7 +66,7 @@ def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=()):
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     cmd = ['samtools', 'view', '-b']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
