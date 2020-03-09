@@ -33,7 +33,7 @@ def test_plot2do(testdir, mock_testclass):
     p.plot2do_samples.assert_called_once_with(samples, None, ())
 
 
-def test_plot2do_parameters(testdir, mock_testclass):
+def test_plot2do_sample_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     type = 'dyads'
     genome = 'mm9'
@@ -69,10 +69,10 @@ def test_plot2do_samples_second(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples, index=1)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', ())
+    p.plot2do_sample.assert_called_once_with(samples_parent / 'ASDURF', ())
 
 
-def test_plot2do_parameters(testdir, mock_testclass):
+def test_plot2do_samples_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
     plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
@@ -89,7 +89,7 @@ def test_plot2do_sample(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
     subprocess.run = MagicMock()
     p.plot2do_sample(sample)
-    subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '-f', bed], check=True)
+    subprocess.run.assert_called_once_with(['Rscript', 'plot2DO.R', '-f', bed], check=True)
 
 
 def test_plot2do_sample_parameters(testdir, mock_testclass):
@@ -99,7 +99,7 @@ def test_plot2do_sample_parameters(testdir, mock_testclass):
     plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     subprocess.run = MagicMock()
     p.plot2do_sample(sample, plot2do_args)
-    subprocess.run.assert_any_call(['Rscript', 'plot2DO.R', '--type', 'dyads', '--genome', 'mm9', '-f', bed], check=True)
+    subprocess.run.assert_called_once_with(['Rscript', 'plot2DO.R', '--type', 'dyads', '--genome', 'mm9', '-f', bed], check=True)
 
 
 def test_plot2do_sample_bednotexists(testdir, mock_testclass):
