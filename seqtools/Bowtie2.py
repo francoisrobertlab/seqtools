@@ -49,7 +49,7 @@ def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=()):
     '''Run bowtie2 on FASTQ files.'''
     sam_output = bam_output + '.sam'
     cmd = ['bowtie2'] + list(bowtie_args)
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['-p', str(threads)])
     cmd.extend(['-S', sam_output])
     if fastq2 is not None and os.path.isfile(fastq2):
@@ -59,7 +59,7 @@ def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=()):
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     cmd = ['samtools', 'view', '-b']
-    if not threads is None:
+    if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', bam_output, sam_output])
     logging.debug('Running {}'.format(cmd))
