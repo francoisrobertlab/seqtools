@@ -138,3 +138,72 @@ def test_split_sample(testdir, mock_testclass):
         assert infile.readline() == 'chr5\t100\t220\ttest5\t1\t-\n'
         assert infile.readline() == 'chr1\t100\t229\ttest1\t1\t+\n'
         assert infile.readline() == ''
+
+
+def test_annotation_length(testdir, mock_testclass):
+    annotation_length = s.annotation_length('chr1\t100\t250\ttest1')
+    assert annotation_length == 150
+
+
+def test_annotation_length_2(testdir, mock_testclass):
+    annotation_length = s.annotation_length('chr1\t300\t680\ttest1')
+    assert annotation_length == 380
+
+
+def test_annotation_length_invalid(testdir, mock_testclass):
+    annotation_length = s.annotation_length('chr1\t300')
+    assert annotation_length == -1
+
+
+def test_splits(testdir, mock_testclass):
+    sample = 'POLR2A'
+    Path(sample + '-100-110.bed').touch()
+    Path(sample + '-110-120.bed').touch()
+    Path(sample + '-120-130.bed').touch()
+    Path(sample + '-130-140.bed').touch()
+    splits = s.splits(sample)
+    assert splits[0] == sample + '-100-110'
+    assert splits[1] == sample + '-110-120'
+    assert splits[2] == sample + '-120-130'
+    assert splits[3] == sample + '-130-140'
+    assert len(splits) == 4
+
+
+def test_splits_2(testdir, mock_testclass):
+    sample = 'POLR2A'
+    Path(sample + '-100-150.bed').touch()
+    Path(sample + '-200-250.bed').touch()
+    Path(sample + '-300-350.bed').touch()
+    Path(sample + '-400-450.bed').touch()
+    splits = s.splits(sample)
+    assert splits[0] == sample + '-100-150'
+    assert splits[1] == sample + '-200-250'
+    assert splits[2] == sample + '-300-350'
+    assert splits[3] == sample + '-400-450'
+    assert len(splits) == 4
+
+
+def test_splits_none(testdir, mock_testclass):
+    sample = 'POLR2A'
+    splits = s.splits(sample)
+    assert len(splits) == 0
+
+
+def test_splitkey(testdir, mock_testclass):
+    splitkey = s.splitkey('POLR2A-120-150')
+    assert splitkey == 120
+
+
+def test_splitkey_2(testdir, mock_testclass):
+    splitkey = s.splitkey('POLR2A-350-680')
+    assert splitkey == 350
+
+
+def test_splitkey_noend(testdir, mock_testclass):
+    with pytest.raises(AttributeError):
+        s.splitkey('POLR2A-350')
+
+
+def test_splitkey_invalid(testdir, mock_testclass):
+    with pytest.raises(AttributeError):
+        s.splitkey('POLR2A')
