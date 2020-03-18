@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pyBigWig as pbw
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 POSITIVE_STRAND = '+'
 NEGATIVE_STRAND = '-'
@@ -36,7 +37,7 @@ def dyad_coverage(samples, genes, minp, maxp, smoothing, index):
     '''Finds the distribution of ditances between fragments and dyad.'''
     genes_info = pd.read_csv(genes, sep='\t', comment='#')
     genes_info = genes_info.loc[genes_info[genes_info.columns[6]] != -1]
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

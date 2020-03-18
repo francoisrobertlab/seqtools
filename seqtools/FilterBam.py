@@ -4,7 +4,7 @@ import os
 import subprocess
 
 import click
-import pandas as pd
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -24,7 +24,7 @@ def filterbam(samples, paired, threads, index):
 
 def filter_bam(samples='samples.txt', paired=True, threads=None, index=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

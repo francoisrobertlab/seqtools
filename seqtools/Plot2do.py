@@ -6,7 +6,7 @@ import subprocess
 
 import click
 
-import pandas as pd
+from seqtools.txt import Parser
 
 
 @click.command(context_settings=dict(
@@ -26,7 +26,7 @@ def plot2do(file, index, plot2do_args):
 def plot2do_samples(file, index=None, plot2do_args=()):
     '''Run plot2DO on samples.'''
     file_parent = Path(file).parent
-    sample_names = pd.read_csv(file, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(file)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

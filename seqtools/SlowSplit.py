@@ -3,7 +3,7 @@ import os
 import re
 
 import click
-import pandas as pd
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -25,7 +25,7 @@ def slowsplit(samples, index, binlength, binminlength, binmaxlength):
 
 def split_samples(samples='samples.txt', index=None, binlength=10, binminlength=100, binmaxlength=500):
     '''Split BED files from samples based on lenght of annotations.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

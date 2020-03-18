@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.bed import Bed
+from seqtools.txt import Parser
 
 from . import Split
 
@@ -34,7 +34,7 @@ def genomecov(samples, sizes, scale, strand, index, genomecov_args):
 
 def genome_coverage_samples(samples='samples.txt', sizes='sacCer3.chrom.sizes', scale=None, strand=None, index=None, genomecov_args=()):
     '''Compute genome coverage on samples.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

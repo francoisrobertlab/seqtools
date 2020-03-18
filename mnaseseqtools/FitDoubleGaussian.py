@@ -4,8 +4,8 @@ import click
 from lmfit.models import GaussianModel, ConstantModel
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -57,7 +57,7 @@ def fitdoublegaussian(samples, components, gaussian, svg, verbose, center1, cmin
 
 def fit_double_gaussian(samples, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index):
     '''Fits double gaussian curve to dyad coverage.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

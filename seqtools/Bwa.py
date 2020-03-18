@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.seq import Fastq
+from seqtools.txt import Parser
 
 
 @click.command(context_settings=dict(
@@ -28,7 +28,7 @@ def bwa(samples, fasta, threads, index, bwa_args):
 
 def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=()):
     '''Align samples using bwa program.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

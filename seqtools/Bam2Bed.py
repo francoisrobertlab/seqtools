@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.bed import Bed
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -25,7 +25,7 @@ def bam2bed(samples, paired, threads, index):
 
 def bam2bed_samples(samples='samples.txt', paired=True, threads=None, index=None):
     '''Converts BAM file to BED for samples.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

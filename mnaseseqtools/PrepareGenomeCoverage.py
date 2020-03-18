@@ -3,8 +3,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -20,7 +20,7 @@ def prepgenomecov(samples, index):
 
 def prep_genomecov(samples, index):
     '''Prepare BED file used for genome coverage on samples.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

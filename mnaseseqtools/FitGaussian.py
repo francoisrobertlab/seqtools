@@ -4,8 +4,8 @@ import click
 from lmfit.models import GaussianModel, ConstantModel
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -41,7 +41,7 @@ def fitgaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin
 
 def fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
     '''Fits gaussian curve to dyad coverage.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:

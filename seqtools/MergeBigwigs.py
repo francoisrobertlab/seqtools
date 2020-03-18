@@ -4,9 +4,9 @@ import os
 
 import click
 
-import pandas as pd
 import pyBigWig as pbw
 from seqtools.bed import Bed
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -24,10 +24,10 @@ def mergebw(merge, sizes, index):
 
 def merge_samples(merge='merge.txt', sizes='sacCer3.chrom.sizes', index=None):
     '''Merge bigWig files related to samples.'''
-    merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
+    merge_columns = Parser.columns(merge)
     if index != None:
-        merge_columns = merge_columns.iloc[index:index + 1]
-    for index, columns in merge_columns.iterrows():
+        merge_columns = [merge_columns[index]]
+    for columns in merge_columns:
         name = columns[0]
         samples = [sample for sample in columns[1:]]
         merge_sample(name, samples, sizes)
@@ -36,12 +36,12 @@ def merge_samples(merge='merge.txt', sizes='sacCer3.chrom.sizes', index=None):
 def merge_sample(name, samples, sizes):
     '''Merge bigWig files related to samples.'''
     print ('Merging samples {} into a single sample {}'.format(samples, name))
-    sizes_columns = pd.read_csv(sizes, header=None, sep='\t', comment='#')
+    sizes_columns = Parser.columns(sizes)
     bws = [pbw.open(sample + '.bw') for sample in samples]
     merged_bed_tmp = name + '-tmp.bed'
     with open(merged_bed_tmp, 'w') as output:
         output.write('track type=bedGraph name="' + name + '"\n')
-        for index, size_columns in sizes_columns.iterrows():
+        for size_columns in sizes_columns:
             chromosome = size_columns[0]
             size = size_columns[1]
             sums = [0] * size

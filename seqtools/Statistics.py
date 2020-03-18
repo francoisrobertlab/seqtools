@@ -4,8 +4,8 @@ import re
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.bed import Bed
+from seqtools.txt import Parser
 
 from . import Split
 
@@ -25,10 +25,10 @@ def statistics(samples, merge, output):
 
 def statistics_samples(samples='samples.txt', merge='merge.txt', output='statistics.txt'):
     '''Creates statistics file for samples.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
-    merge_names = pd.DataFrame()
+    sample_names = Parser.first(samples)
+    merge_names = []
     if os.path.exists(merge):
-        merge_names = pd.read_csv(merge, header=None, sep='\t', comment='#')[0]
+        merge_names = Parser.first(merge)
     compute_statistics(sample_names, merge_names, output)
 
 

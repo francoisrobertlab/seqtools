@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.bed import Bed
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -21,10 +21,10 @@ def merge(merge, index):
 
 def merge_samples(merge='merge.txt', index=None):
     '''Merge BED files related to samples.'''
-    merge_columns = pd.read_csv(merge, header=None, sep='\t', comment='#')
+    merge_columns = Parser.columns(merge)
     if index != None:
-        merge_columns = merge_columns.iloc[index:index + 1]
-    for index, columns in merge_columns.iterrows():
+        merge_columns = [merge_columns[index]]
+    for columns in merge_columns:
         name = columns[0]
         samples = [sample for sample in columns[1:]]
         merge_sample(name, samples)

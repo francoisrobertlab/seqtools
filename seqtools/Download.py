@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.seq import Fastq
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -28,10 +28,10 @@ def download(samples, fast, threads, mem, index):
 
 def download_samples(samples='samples.txt', fast=True, threads=None, mem='100MB', index=None):
     '''Download reads of all samples.'''
-    sample_columns = pd.read_csv(samples, header=None, sep='\t', comment='#')
+    sample_columns = Parser.columns(samples)
     if index != None:
-        sample_columns = sample_columns.iloc[index:index + 1]
-    for index, columns in sample_columns.iterrows():
+        sample_columns = [sample_columns[index]]
+    for columns in sample_columns:
         sample = columns[0]
         srr = columns[1] if len(columns) > 1 else None
         download_sample(sample, srr, fast, threads, mem)

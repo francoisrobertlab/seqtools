@@ -4,8 +4,8 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.seq import Fastq
+from seqtools.txt import Parser
 
 
 @click.command(context_settings=dict(
@@ -26,7 +26,7 @@ def bowtie2(samples, threads, index, bowtie_args):
 
 def bowtie_samples(samples='samples.txt', threads=None, index=None, bowtie_args=()):
     '''Align samples using bowtie2 program.'''
-    sample_names = pd.read_csv(samples, header=None, sep='\t', comment='#')[0]
+    sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
