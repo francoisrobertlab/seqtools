@@ -4,10 +4,10 @@ import re
 import subprocess
 
 import click
+
+from seqtools import Split
 from seqtools.bed import Bed
 from seqtools.txt import Parser
-
-from . import Split
 
 
 @click.command()
@@ -39,7 +39,7 @@ def compute_statistics(samples, merges, output):
     for sample in samples:
         sample_stats = sample_statistics(sample, splits)
         samples_stats.append(sample_stats)
-    if not merges.empty:
+    if merges:
         for merge in merges:
             sample_stats = sample_statistics(merge, splits)
             samples_stats.append(sample_stats)
@@ -57,7 +57,7 @@ def headers(samples, merges):
     splits_headers = set()
     for sample in samples:
         splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
-    if not merges.empty:
+    if merges:
         for merge in merges:
             splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
     splits_headers = [header for header in splits_headers]
@@ -78,7 +78,7 @@ def sample_statistics(sample, splits):
     sample_stats.extend([Bed.count_bed(bed_raw) * 2 if os.path.isfile(bed_raw) else ''])
     if splits:
         beds = [sample + '-' + split + '.bed' for split in splits]
-        counts = [Bed.count_bed(bed) if os.path.isfile(bed) else '0' for bed in beds]
+        counts = [Bed.count_bed(bed) if os.path.isfile(bed) else '' for bed in beds]
         sample_stats.extend(counts)
     return sample_stats
 
