@@ -18,7 +18,7 @@ def prepgenomecov(samples, index):
     prep_genomecov(samples, index)
 
 
-def prep_genomecov(samples, index):
+def prep_genomecov(samples='samples.txt', index=None):
     '''Prepare BED file used for genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
@@ -30,13 +30,13 @@ def prep_genomecov(samples, index):
 def sample_splits_prepgenomecov(sample):
     '''Prepare BED file used for genome coverage on a single sample.'''
     print ('Compute genome coverage on sample {}'.format(sample))
-    prepare_genome_coverage_sample(sample)
+    prepgenomecov_sample(sample)
     splits = sb.splits(sample)
     for split in splits:
-        prepare_genome_coverage_sample(split)
+        prepgenomecov_sample(split)
 
 
-def prepare_genome_coverage_sample(sample):
+def prepgenomecov_sample(sample):
     bed_raw = sample + '.bed'
     bed_forcoverage = sample + '-forcov.bed'
     ignore_strand(bed_raw, bed_forcoverage)
