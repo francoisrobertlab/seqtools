@@ -36,14 +36,14 @@ def vap_samples(samples='samples.txt', parameters='parameters.txt', index=None):
 def vap_sample(sample, parameters):
     '''Run VAP on a single sample.'''
     print ('Running VAP on sample {}'.format(sample))
-    output = sample + '-vap-output';
+    output = sample + '-vap-output'
     if not os.path.exists(output):
-        os.mkdir(output);
-    sample_parameters = output + '/parameters.txt';
+        os.mkdir(output)
+    sample_parameters = output + '/parameters.txt'
     splits = Split.splits(sample)
     beds = [split + '-cov.bed' for split in splits]
     genes = parse_genes(parameters)
-    create_parameters(beds, output, parameters, sample_parameters);
+    create_parameters(beds, output, parameters, sample_parameters)
     cmd = ['vap']
     if os.name == 'nt':
         cmd = ['vap.exe']
@@ -54,7 +54,7 @@ def vap_sample(sample, parameters):
         splits_values = parse_heatmap_values(splits, output)
     except AssertionError as exception:
         raise AssertionError('Error when running VAP with parameters ' + sample_parameters, exception)
-    merged_heatmap = sample + '-heatmap.txt';
+    merged_heatmap = sample + '-heatmap.txt'
     create_heatmap(sample, genes, splits, splits_values, merged_heatmap)
     shutil.rmtree(output)
 
@@ -97,7 +97,7 @@ def parse_heatmap_values(sample_splits, output_folder):
     splits_values = {}
     for split in sample_splits:
         splits_values[split] = {}
-        split_glob = output_folder + '/ind_data_' + split + '*.txt';
+        split_glob = output_folder + '/ind_data_' + split + '*.txt'
         split_data = glob.glob(split_glob)
         if not split_data:
             error_count += 1
@@ -107,7 +107,7 @@ def parse_heatmap_values(sample_splits, output_folder):
             index = None
             for line in infile:
                 if not line.startswith('#'):
-                    columns = line.rstrip('\r\n').split('\t');
+                    columns = line.rstrip('\r\n').split('\t')
                     if index is None:
                         index = columns.index('W0_0')
                     else:

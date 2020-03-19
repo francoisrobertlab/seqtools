@@ -36,11 +36,11 @@ def first_dyad_position(genes, signal, mind, maxd, output):
         gene = columns[2]
         negative = columns[4] == NEGATIVE_STRAND
         start = int(columns[5] if negative else columns[3]) + (-mind if negative else mind)
-        end = start - diffd if negative else start + diffd;
+        end = start - diffd if negative else start + diffd
         if gene not in tracks:
             logging.warning('no track for gene {}'.format(gene))
             nucleosomes.append(-1)
-            continue;
+            continue
         track = tracks[gene]
         if negative:
             track.reverse()

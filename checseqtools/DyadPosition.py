@@ -42,7 +42,7 @@ def dyad_position(genes, signal, dyad, mind, maxd, output):
         strand = columns[4] == NEGATIVE_STRAND
         first_nucleosome = int(columns[7])
         start = first_nucleosome + (-(mind - 1) if strand else mind)
-        end = start - diffd if strand else start + diffd;
+        end = start - diffd if strand else start + diffd
         next_nucleosome = highest_signal(bw, chromosome, min(start, end), max(start, end))
         next_nucleosomes.append(next_nucleosome[0])
     genes_info['+' + str(dyad) + ' nucleosome'] = next_nucleosomes
