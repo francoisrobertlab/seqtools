@@ -18,7 +18,7 @@ def prepgenomecov(samples, index):
     prep_genomecov(samples, index)
 
 
-def prep_genomecov(samples, index):
+def prep_genomecov(samples='samples.txt', index=None):
     '''Prepare BED file used for genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
