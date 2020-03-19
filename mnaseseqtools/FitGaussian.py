@@ -18,19 +18,19 @@ from seqtools.txt import Parser
 @click.option('--verbose', '-v', is_flag=True,
               help='Shows fit report.')
 @click.option('--center', type=float, default=None,
-              help='Center of first gaussian. Defaults to 0')
+              help='Center of gaussian. Defaults to 0')
 @click.option('--cmin', '-cm', type=float, default=None,
-              help='Minimum value for center of first gaussian. Defaults to unbounded')
+              help='Minimum value for center of gaussian. Defaults to unbounded')
 @click.option('--cmax', '-cM', type=float, default=None,
-              help='Maximum value for center of first gaussian. Defaults to unbounded')
+              help='Maximum value for center of gaussian. Defaults to unbounded')
 @click.option('--amp', type=float, default=None,
-              help='Amplitude of first gaussian. Defaults to maximum relative frequency, approximately')
+              help='Amplitude of gaussian. Defaults to maximum relative frequency, approximately')
 @click.option('--amin', '-am', type=float, default=None,
-              help='Minimum amplitude of first gaussian. Defaults to unbounded')
+              help='Minimum amplitude of gaussian. Defaults to unbounded')
 @click.option('--sigma', type=float, default=None,
-              help='Width (sigma) of first gaussian. Defaults to half of maximum index')
+              help='Width (sigma) of gaussian. Defaults to half of maximum index')
 @click.option('--smin', '-sm', type=float, default=None,
-              help='Minimum width (sigma) of first gaussian. Defaults unbounded')
+              help='Minimum width (sigma) of gaussian. Defaults unbounded')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 def fitgaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
@@ -39,7 +39,7 @@ def fitgaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin
     fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index)
 
 
-def fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
+def fit_gaussian(samples='samples.txt', components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, index=None):
     '''Fits gaussian curve to dyad coverage.'''
     sample_names = Parser.first(samples)
     if index != None:
@@ -51,7 +51,7 @@ def fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, ami
             fit_gaussian_sample(split, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
 
 
-def fit_gaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin):
+def fit_gaussian_sample(sample, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None):
     '''Fits gaussian curve to dyad coverage for a single sample.'''
     print ('Fits gaussian curve to dyad coverage of sample {}'.format(sample))
     input = sample + '-dyad.txt'
