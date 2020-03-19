@@ -55,7 +55,7 @@ def fitdoublegaussian(samples, components, gaussian, svg, verbose, center1, cmin
     fit_double_gaussian(samples, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index)
 
 
-def fit_double_gaussian(samples, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index):
+def fit_double_gaussian(samples='samples.txt', components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None, index=None):
     '''Fits double gaussian curve to dyad coverage.'''
     sample_names = Parser.first(samples)
     if index != None:
@@ -67,7 +67,7 @@ def fit_double_gaussian(samples, components, gaussian, svg, verbose, center1, cm
             fit_double_gaussian_sample(split, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
            
 
-def fit_double_gaussian_sample(sample, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2):
+def fit_double_gaussian_sample(sample, components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None):
     '''Fits double gaussian curve to dyad coverage for a single sample.'''
     print ('Fits double gaussian curve to dyad coverage of sample {}'.format(sample))
     input = sample + '-dyad.txt'
