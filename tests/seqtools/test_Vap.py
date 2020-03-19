@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 import random
+from shutil import copyfile
 import shutil
 import subprocess
 from unittest.mock import MagicMock, ANY
@@ -83,39 +84,47 @@ def test_vap_parametersnotexists(testdir, mock_testclass):
 
 
 def test_vap_samples(testdir, mock_testclass):
+    samples_file = Path(__file__).parent.joinpath('samples.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples)
+    v.vap_samples(samples_file)
     for sample in samples:
         v.vap_sample.assert_any_call(sample, 'parameters.txt')
+    Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_samples_parameters(testdir, mock_testclass):
-    samples = ['POLR2A', 'ASDURF', 'POLR1C']
+    samples_file = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples, parameters)
+    v.vap_samples(samples_file, parameters)
     for sample in samples:
         v.vap_sample.assert_any_call(sample, parameters)
+    Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_samples_second(testdir, mock_testclass):
+    samples_file = Path(__file__).parent.joinpath('samples.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples, index=1)
+    v.vap_samples(samples_file, index=1)
     v.vap_sample.assert_any_call(samples[1], 'parameters.txt')
+    Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_samples_second_parameters(testdir, mock_testclass):
-    samples = ['POLR2A', 'ASDURF', 'POLR1C']
+    samples_file = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples, parameters, 1)
+    v.vap_samples(samples_file, parameters, 1)
     v.vap_sample.assert_any_call(samples[1], parameters)
+    Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_sample(testdir, mock_testclass):
@@ -193,8 +202,10 @@ def test_create_parameters(testdir, mock_testclass):
         assert actualfile.readline() == ''
 
 
-def test_parse_genes(mock_testclass):
-    parameters = Path(__file__).parent.joinpath('parameters.txt')
+def test_parse_genes(testdir, mock_testclass):
+    parameters = 'parameters.txt'
+    copyfile(Path(__file__).parent.joinpath('parameters.txt'), parameters)
+    copyfile(Path(__file__).parent.joinpath('genes.txt'), 'genes.txt')
     genes = v.parse_genes(parameters)
     assert genes[0] == 'YDR524W-C'
     assert genes[1] == 'YLR355C'
@@ -204,9 +215,11 @@ def test_parse_genes(mock_testclass):
     assert genes[5] == 'YKL060C'
 
 
-def test_parse_heatmap_values(mock_testclass):
+def test_parse_heatmap_values(testdir, mock_testclass):
     sample_splits = ['POLR2A-100-110', 'POLR2A-120-130']
-    output_folder = str(os.curdir)
+    output_folder = str(testdir)
+    copyfile(Path(__file__).parent.joinpath('ind_data_POLR2A-100-110.txt'), 'ind_data_POLR2A-100-110.txt')
+    copyfile(Path(__file__).parent.joinpath('ind_data_POLR2A-120-130.txt'), 'ind_data_POLR2A-120-130.txt')
     heatmap = v.parse_heatmap_values(sample_splits, output_folder)
     for split in sample_splits:
         assert split in heatmap
