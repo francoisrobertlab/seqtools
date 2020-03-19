@@ -58,7 +58,7 @@ Versatile Aggregate Profiler (VAP) v1.1.0-SNAPSHOT parameters
 
     <usage: refgroup_path=[alias:=:]myPathData/refGroupFile>
 
-~~@refgroup_path=R1:=:Group_AllLongGenes_TxSorted.txt
+~~@refgroup_path=R1:=:genes.txt
 
 
 
