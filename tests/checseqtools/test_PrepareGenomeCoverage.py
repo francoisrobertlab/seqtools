@@ -1,8 +1,5 @@
 import logging
-import os
 from pathlib import Path
-from shutil import copyfile
-import subprocess
 from unittest.mock import MagicMock, ANY
 
 import click
