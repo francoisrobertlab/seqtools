@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'chectools = checseqtools.chectools:chectools',
+            'exotools = exoseqtools.exotools:exotools',
             'mnasetools = mnaseseqtools.mnasetools:mnasetools',
             'seqtools = seqtools.seqtools:seqtools'
         ]
