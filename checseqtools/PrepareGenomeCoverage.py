@@ -29,7 +29,7 @@ def prep_genomecov(samples='samples.txt', index=None):
 
 def sample_splits_prepgenomecov(sample):
     '''Prepare BED file used for genome coverage on a single sample.'''
-    print ('Compute genome coverage on sample {}'.format(sample))
+    print ('Prepare BED file used for genome coverage on sample {}'.format(sample))
     prepgenomecov_sample(sample)
     splits = sb.splits(sample)
     for split in splits:
@@ -59,4 +59,4 @@ def ignore_strand(bed, output):
 
 
 if __name__ == '__main__':
-    main()
+    prepgenomecov()
