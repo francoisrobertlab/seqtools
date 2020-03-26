@@ -17,7 +17,7 @@ from seqtools.txt import Parser
 def removesecondmate(samples, threads, index):
     '''Removes second mate from BAM.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    prep_genomecov(samples, threads, index)
+    removesecondmate_samples(samples, threads, index)
 
 
 def removesecondmate_samples(samples='samples.txt', threads=None, index=None):
@@ -26,7 +26,7 @@ def removesecondmate_samples(samples='samples.txt', threads=None, index=None):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        sample_splits_prepgenomecov(sample, threads)
+        removesecondmate_sample(sample, threads)
 
 
 def removesecondmate_sample(sample, threads=None):
