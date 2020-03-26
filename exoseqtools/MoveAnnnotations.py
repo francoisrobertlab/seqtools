@@ -7,7 +7,9 @@ import seqtools.Split as sb
 from seqtools.txt import Parser
 
 
-@click.command()
+@click.command(context_settings=dict(
+    ignore_unknown_options=True,
+))
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
 @click.option('--index', '-i', type=int, default=None,
