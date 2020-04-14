@@ -4,8 +4,7 @@ import os
 import subprocess
 
 import click
-# from seqtools.txt import Parser
-from txt import Parser
+from seqtools.txt import Parser
 
 
 @click.command()
