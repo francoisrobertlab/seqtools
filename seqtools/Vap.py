@@ -92,9 +92,13 @@ def parse_genes(parameters):
             if parameters_line.startswith('~~@refgroup_path='):
                 index = parameters_line.index(':=:') + 3
                 genes_file = parameters_line.rstrip('\r\n')[index:]
-    with open(genes_file, 'r') as infile:
-        genes = [line.rstrip('\r\n') for line in infile]
-        genes = [line for line in genes if not line.startswith('#')]
+            elif parameters_line.startswith('~~@selection_path='):
+                index = parameters_line.index('=') + 1
+                selection_file = parameters_line.rstrip('\r\n')[index:]
+    genes = Parser.first(genes_file)
+    if selection_file:
+       selection = Parser.first(selection_file)
+       genes = [gene for gene in genes if gene in selection]
     return genes
 
 

@@ -258,6 +258,16 @@ def test_parse_genes(testdir, mock_testclass):
     assert genes[5] == 'YKL060C'
 
 
+def test_parse_genes_selection(testdir, mock_testclass):
+    parameters = 'parameters_selection.txt'
+    copyfile(Path(__file__).parent.joinpath('parameters_selection.txt'), parameters)
+    copyfile(Path(__file__).parent.joinpath('genes.txt'), 'genes.txt')
+    copyfile(Path(__file__).parent.joinpath('selection.txt'), 'selection.txt')
+    genes = v.parse_genes(parameters)
+    assert genes[0] == 'YLR110C'
+    assert genes[1] == 'YGL008C'
+
+
 def test_parse_heatmap_values(testdir, mock_testclass):
     sample_splits = ['POLR2A-100-110', 'POLR2A-120-130']
     output_folder = str(testdir)

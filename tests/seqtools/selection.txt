@@ -1,0 +1,3 @@
+#name=selection
+YLR110C
+YGL008C
