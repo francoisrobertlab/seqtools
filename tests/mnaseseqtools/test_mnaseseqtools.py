@@ -57,7 +57,16 @@ def test_fitdoublegaussian(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(mnasetools.mnasetools, ['fitdoublegaussian', '--samples', samples])
     assert result.exit_code == 0
-    FitDoubleGaussian.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+    FitDoubleGaussian.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+
+
+def test_fitgaussian(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    FitGaussian.fit_gaussian = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(mnasetools.mnasetools, ['fitgaussian', '--samples', samples])
+    assert result.exit_code == 0
+    FitGaussian.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None)
 
 
 def test_prepgenomecov(testdir, mock_testclass):

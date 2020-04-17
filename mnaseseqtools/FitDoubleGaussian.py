@@ -13,6 +13,8 @@ from seqtools.txt import Parser
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
+@click.option('--absolute/--relative', '-a/-r', default=False, show_default=True,
+              help='Use absolute or relative number of reads')
 @click.option('--components', '-c', is_flag=True,
               help='Shows fit components and initial fit in plot.')
 @click.option('--gaussian', '-g', is_flag=True,
@@ -51,39 +53,40 @@ from seqtools.txt import Parser
               help='Minimum width (sigma) of second gaussian. Defaults to unbounded')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def fitdoublegaussian(samples, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index):
+def fitdoublegaussian(samples, absolute, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index):
     '''Fits double gaussian curve to dyad coverage.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    fit_double_gaussian(samples, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index)
+    fit_double_gaussian(samples, absolute, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, index)
 
 
-def fit_double_gaussian(samples='samples.txt', components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None, index=None):
+def fit_double_gaussian(samples='samples.txt', absolute=False, components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None, index=None):
     '''Fits double gaussian curve to dyad coverage.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        fit_double_gaussian_sample(sample, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+        fit_double_gaussian_sample(sample, absolute, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
         splits = sb.splits(sample)
         for split in splits:
-            fit_double_gaussian_sample(split, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+            fit_double_gaussian_sample(split, absolute, components, gaussian, svg, verbose, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
            
 
-def fit_double_gaussian_sample(sample, components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None):
+def fit_double_gaussian_sample(sample, absolute=False, components=False, gaussian=False, svg=False, verbose=False, center1=None, cmin1=None, cmax1=None, amp1=None, amin1=None, sigma1=None, smin1=None, center2=None, cmin2=None, cmax2=None, amp2=None, amin2=None, sigma2=None, smin2=None):
     '''Fits double gaussian curve to dyad coverage for a single sample.'''
     print ('Fits double gaussian curve to dyad coverage of sample {}'.format(sample))
     input = sample + '-dyad.txt'
     dyads = pd.read_csv(input, sep='\t', index_col=0, comment='#')
     x = dyads.index.values
-    y = dyads['Relative Frequency'].values
+    yheader = 'Frequency' if absolute else 'Relative Frequency'
+    y = dyads[yheader].values
     if not amp1:
-        amp1 = dyads['Relative Frequency'].max() * 50
+        amp1 = dyads[yheader].max() * 50
     if not center1:
         center1 = -dyads.index.max() / 4
     if not sigma1:
         sigma1 = dyads.index.max() / 5
     if not amp2:
-        amp2 = dyads['Relative Frequency'].max() * 50
+        amp2 = dyads[yheader].max() * 50
     if not center2:
         center2 = dyads.index.max() / 4
     if not sigma2:
@@ -91,15 +94,15 @@ def fit_double_gaussian_sample(sample, components=False, gaussian=False, svg=Fal
     plt.figure()
     plt.title(sample)
     plt.xlabel('Position relative to dyad (bp)')
-    plt.ylabel('Relative Frequency')
+    plt.ylabel('Frequency' if absolute else 'Relative Frequency')
     plt.xlim(x[0], x[len(x) - 1])
     plt.xticks(list(range(x[0], x[len(x) - 1] + 1, 25)))
-    plt.plot(dyads.index.values, dyads['Relative Frequency'].values, color='red')
+    plt.plot(x, y, color='red')
     plot_output = sample + '-dyad-double-gaussian.png'
     try:
         constant = ConstantModel(prefix='c_')
         pars = constant.make_params()
-        pars['c_c'].set(value=dyads['Relative Frequency'].min(), min=0.0, max=dyads['Relative Frequency'].max())
+        pars['c_c'].set(value=dyads[yheader].min(), min=0.0, max=dyads[yheader].max())
         gauss1 = GaussianModel(prefix='g1_')
         pars.update(gauss1.make_params())
         pars['g1_center'].set(value=center1, min=cmin1, max=cmax1)

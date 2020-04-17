@@ -13,6 +13,8 @@ from seqtools.txt import Parser
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
+@click.option('--absolute/--relative', '-a/-r', default=False, show_default=True,
+              help='Use absolute or relative number of reads')
 @click.option('--components', '-c', is_flag=True,
               help='Shows fit components and initial fit in plot.')
 @click.option('--svg', is_flag=True,
@@ -35,33 +37,34 @@ from seqtools.txt import Parser
               help='Minimum width (sigma) of gaussian. Defaults unbounded')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def fitgaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
+def fitgaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
     '''Fits gaussian curve to dyad coverage.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    fit_gaussian(samples, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index)
+    fit_gaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index)
 
 
-def fit_gaussian(samples='samples.txt', components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, index=None):
+def fit_gaussian(samples='samples.txt', absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, index=None):
     '''Fits gaussian curve to dyad coverage.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        fit_gaussian_sample(sample, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+        fit_gaussian_sample(sample, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
         splits = sb.splits(sample)
         for split in splits:
-            fit_gaussian_sample(split, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+            fit_gaussian_sample(split, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
 
 
-def fit_gaussian_sample(sample, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None):
+def fit_gaussian_sample(sample, absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None):
     '''Fits gaussian curve to dyad coverage for a single sample.'''
     print ('Fits gaussian curve to dyad coverage of sample {}'.format(sample))
     input = sample + '-dyad.txt'
     dyads = pd.read_csv(input, sep='\t', index_col=0, comment='#')
     x = dyads.index.values
-    y = dyads['Relative Frequency'].values
+    yheader = 'Frequency' if absolute else 'Relative Frequency'
+    y = dyads[yheader].values
     if not amp:
-        amp = dyads['Relative Frequency'].max() * 100
+        amp = dyads[yheader].max() * 100
     if not center:
         center = 0.0
     if not sigma:
@@ -69,15 +72,15 @@ def fit_gaussian_sample(sample, components=False, svg=False, verbose=False, cent
     plt.figure()
     plt.title(sample)
     plt.xlabel('Position relative to dyad (bp)')
-    plt.ylabel('Relative Frequency')
+    plt.ylabel('Frequency' if absolute else 'Relative Frequency')
     plt.xlim(x[0], x[len(x) - 1])
     plt.xticks(list(range(x[0], x[len(x) - 1] + 1, 25)))
-    plt.plot(dyads.index.values, dyads['Relative Frequency'].values, color='red')
+    plt.plot(x, y, color='red')
     plot_output = sample + '-dyad-gaussian.png'
     try:
         constant = ConstantModel(prefix='c_')
         pars = constant.make_params()
-        pars['c_c'].set(value=dyads['Relative Frequency'].min(), min=0.0, max=dyads['Relative Frequency'].max())
+        pars['c_c'].set(value=dyads[yheader].min(), min=0.0, max=dyads[yheader].max())
         gauss = GaussianModel(prefix='g_')
         pars.update(gauss.make_params())
         pars['g_center'].set(value=center, min=cmin, max=cmax)
