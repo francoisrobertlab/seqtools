@@ -49,18 +49,19 @@ def test_vap(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(v.vap, ['-s', samples, '-p', parameters])
     assert result.exit_code == 0
-    v.vap_samples.assert_called_once_with(samples, parameters, None)
+    v.vap_samples.assert_called_once_with(samples, parameters, None, None)
 
 
 def test_vap_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
     index = 1
     v.vap_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(v.vap, ['-s', samples, '-p', parameters, '-i', index])
+    result = runner.invoke(v.vap, ['-s', samples, '-p', parameters, '--selection', selection, '-i', index])
     assert result.exit_code == 0
-    v.vap_samples.assert_called_once_with(samples, parameters, index)
+    v.vap_samples.assert_called_once_with(samples, parameters, selection, index)
 
 
 def test_vap_samplesnotexists(testdir, mock_testclass):
@@ -83,6 +84,17 @@ def test_vap_parametersnotexists(testdir, mock_testclass):
     v.vap_samples.assert_not_called()
 
 
+def test_vap_selectionnotexists(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = 'genes.txt'
+    v.vap_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(v.vap, ['-s', samples, '-p', parameters, '--selection', selection])
+    assert result.exit_code != 0
+    v.vap_samples.assert_not_called()
+
+
 def test_vap_samples(testdir, mock_testclass):
     samples_file = Path(__file__).parent.joinpath('samples.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
@@ -90,19 +102,20 @@ def test_vap_samples(testdir, mock_testclass):
     v.vap_sample = MagicMock()
     v.vap_samples(samples_file)
     for sample in samples:
-        v.vap_sample.assert_any_call(sample, 'parameters.txt')
+        v.vap_sample.assert_any_call(sample, 'parameters.txt', None)
     Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_samples_parameters(testdir, mock_testclass):
     samples_file = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples_file, parameters)
+    v.vap_samples(samples_file, parameters, selection)
     for sample in samples:
-        v.vap_sample.assert_any_call(sample, parameters)
+        v.vap_sample.assert_any_call(sample, parameters, selection)
     Parser.first.assert_called_once_with(samples_file)
 
 
@@ -112,24 +125,26 @@ def test_vap_samples_second(testdir, mock_testclass):
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
     v.vap_samples(samples_file, index=1)
-    v.vap_sample.assert_any_call(samples[1], 'parameters.txt')
+    v.vap_sample.assert_any_call(samples[1], 'parameters.txt', None)
     Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_samples_second_parameters(testdir, mock_testclass):
     samples_file = Path(__file__).parent.joinpath('samples.txt')
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     v.vap_sample = MagicMock()
-    v.vap_samples(samples_file, parameters, 1)
-    v.vap_sample.assert_any_call(samples[1], parameters)
+    v.vap_samples(samples_file, parameters, selection, 1)
+    v.vap_sample.assert_any_call(samples[1], parameters, selection)
     Parser.first.assert_called_once_with(samples_file)
 
 
 def test_vap_sample(testdir, mock_testclass):
     sample = 'POLR2A'
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
     splits = ['POLR2A-100-110', 'POLR2A-120-130']
     genes = ['YDR524W-C', 'YLR355C', 'YLR110C', 'YGR192C', 'YGL008C', 'YKL060C']
     beds = [split + '-cov.bed' for split in splits]
@@ -148,10 +163,10 @@ def test_vap_sample(testdir, mock_testclass):
     v.parse_heatmap_values = MagicMock(return_value=splits_values)
     v.create_heatmap = MagicMock()
     shutil.rmtree = MagicMock()
-    v.vap_sample(sample, parameters)
+    v.vap_sample(sample, parameters, selection)
     Split.splits.assert_called_once_with(sample)
     v.parse_genes.assert_called_once_with(parameters)
-    v.create_parameters.assert_called_once_with(beds, output, parameters, sample_parameters)
+    v.create_parameters.assert_called_once_with(beds, output, selection, parameters, sample_parameters)
     cmd = ['vap']
     if os.name == 'nt':
         cmd = ['vap.exe']
@@ -165,6 +180,7 @@ def test_vap_sample(testdir, mock_testclass):
 def test_vap_sample_parseheatmaperror(testdir, mock_testclass):
     sample = 'POLR2A'
     parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
     splits = ['POLR2A-100-110', 'POLR2A-120-130']
     genes = ['YDR524W-C', 'YLR355C', 'YLR110C', 'YGR192C', 'YGL008C', 'YKL060C']
     beds = [split + '-cov.bed' for split in splits]
@@ -177,7 +193,7 @@ def test_vap_sample_parseheatmaperror(testdir, mock_testclass):
     v.parse_heatmap_values = MagicMock(side_effect=AssertionError)
     v.create_heatmap = MagicMock()
     with pytest.raises(AssertionError):
-        v.vap_sample(sample, parameters)
+        v.vap_sample(sample, parameters, selection)
 
 
 def test_create_parameters(testdir, mock_testclass):
@@ -185,7 +201,7 @@ def test_create_parameters(testdir, mock_testclass):
     beds = ['POLR2A-100-110.bed', 'POLR2A-120-130.bed']
     output_folder = 'output'
     parameters_output = 'params-out.txt'
-    v.create_parameters(beds, output_folder, parameters, parameters_output)
+    v.create_parameters(beds, output_folder, None, parameters, parameters_output)
     with open(parameters, 'r') as expectedfile, open(parameters_output, 'r') as actualfile:
         expected = expectedfile.readline()
         while expected != '':
@@ -196,6 +212,33 @@ def test_create_parameters(testdir, mock_testclass):
                 assert '~~@output_directory=' + output_folder + '\n' == actualfile.readline()
             elif expected.startswith('~~@prefix_filename='):
                 assert '~~@prefix_filename=\n' == actualfile.readline()
+            elif expected.startswith('~~@selection_path='):
+                assert '~~@selection_path=\n' == actualfile.readline()
+            else:
+                assert expected == actualfile.readline()
+            expected = expectedfile.readline()
+        assert actualfile.readline() == ''
+
+
+def test_create_parameters_selection(testdir, mock_testclass):
+    parameters = Path(__file__).parent.joinpath('parameters.txt')
+    selection = Path(__file__).parent.joinpath('genes.txt')
+    beds = ['POLR2A-100-110.bed', 'POLR2A-120-130.bed']
+    output_folder = 'output'
+    parameters_output = 'params-out.txt'
+    v.create_parameters(beds, output_folder, selection, parameters, parameters_output)
+    with open(parameters, 'r') as expectedfile, open(parameters_output, 'r') as actualfile:
+        expected = expectedfile.readline()
+        while expected != '':
+            if expected.startswith('~~@dataset_path='):
+                for bed in beds:
+                    assert '~~@dataset_path=R1:=:' + bed + '\n' == actualfile.readline()
+            elif expected.startswith('~~@output_directory='):
+                assert '~~@output_directory=' + output_folder + '\n' == actualfile.readline()
+            elif expected.startswith('~~@prefix_filename='):
+                assert '~~@prefix_filename=\n' == actualfile.readline()
+            elif expected.startswith('~~@selection_path='):
+                assert '~~@selection_path=' + str(selection) + '\n' == actualfile.readline()
             else:
                 assert expected == actualfile.readline()
             expected = expectedfile.readline()

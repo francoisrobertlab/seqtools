@@ -16,24 +16,26 @@ from seqtools.txt import Parser
               help='Sample names listed one sample name by line.')
 @click.option('--parameters', '-p', type=click.Path(exists=True), default='parameters.txt', show_default=True,
               help='VAP parameters file.')
+@click.option('--selection', type=click.Path(exists=True), default=None, show_default=True,
+              help='VAP selection_path file.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def vap(samples, parameters, index):
+def vap(samples, parameters, selection, index):
     '''Run VAP on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    vap_samples(samples, parameters, index)
+    vap_samples(samples, parameters, selection, index)
 
 
-def vap_samples(samples='samples.txt', parameters='parameters.txt', index=None):
+def vap_samples(samples='samples.txt', parameters='parameters.txt', selection=None, index=None):
     '''Run VAP on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        vap_sample(sample, parameters)
+        vap_sample(sample, parameters, selection)
 
 
-def vap_sample(sample, parameters):
+def vap_sample(sample, parameters, selection):
     '''Run VAP on a single sample.'''
     print ('Running VAP on sample {}'.format(sample))
     output = sample + '-vap-output'
@@ -43,7 +45,7 @@ def vap_sample(sample, parameters):
     splits = Split.splits(sample)
     beds = [split + '-cov.bed' for split in splits]
     genes = parse_genes(parameters)
-    create_parameters(beds, output, parameters, sample_parameters)
+    create_parameters(beds, output, selection, parameters, sample_parameters)
     cmd = ['vap']
     if os.name == 'nt':
         cmd = ['vap.exe']
@@ -59,7 +61,7 @@ def vap_sample(sample, parameters):
     shutil.rmtree(output)
 
 
-def create_parameters(datasets, output_folder, parameters_input, parameters_output):
+def create_parameters(datasets, output_folder, selection, parameters_input, parameters_output):
     with open(parameters_input, 'r') as infile:
         with open(parameters_output, 'w') as outfile:
             for parameters_line in infile:
@@ -75,6 +77,10 @@ def create_parameters(datasets, output_folder, parameters_input, parameters_outp
                 elif parameters_line.startswith('~~@prefix_filename='):
                     index = parameters_line.index('=')
                     outfile.write(parameters_line[:index + 1])
+                    outfile.write('\n')
+                elif parameters_line.startswith('~~@selection_path='):
+                    parameters_line = '~~@selection_path=' + (str(selection) if selection else '')
+                    outfile.write(parameters_line)
                     outfile.write('\n')
                 else:
                     outfile.write(parameters_line)

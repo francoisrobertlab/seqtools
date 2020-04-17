@@ -209,4 +209,4 @@ def test_seqtools_vap(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['vap', '--samples', samples, '--parameters', parameters, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    Vap.vap_samples.assert_called_once_with(samples, parameters, index)
+    Vap.vap_samples.assert_called_once_with(samples, parameters, None, index)
