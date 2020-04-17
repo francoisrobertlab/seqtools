@@ -50,7 +50,7 @@ def test_seqtools_bam2bed(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['bam2bed', '--samples', samples, '--unpaired', '--threads', threads, '--index', index])
     assert result.exit_code == 0
-    Bam2Bed.bam2bed_samples.assert_called_once_with(samples, False, threads, index)
+    Bam2Bed.bam2bed_samples.assert_called_once_with(samples, False, threads, None, index)
 
 
 def test_seqtools_bowtie2(testdir, mock_testclass):
