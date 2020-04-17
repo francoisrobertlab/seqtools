@@ -19,6 +19,8 @@ NEGATIVE_STRAND = '-'
               help='Sample names listed one sample name by line.')
 @click.option('--genes', '-g', type=click.Path(exists=True), default='genes.txt', show_default=True,
               help='Genes information with format <spacer text> <chromosome> <Gene Name> <TSS> <Strand> <TES> <Dyad Position>.')
+@click.option('--selection', type=click.Path(exists=True), default=None, show_default=True,
+              help='VAP selection_path file.')
 @click.option('--absolute/--relative', '-a/-r', default=False, show_default=True,
               help='Use absolute or relative number of reads in plots')
 @click.option('--minp', '-p', type=int, default=-75, show_default=True,
@@ -29,16 +31,20 @@ NEGATIVE_STRAND = '-'
               help='Smooth the signal by averaging on smoothing window.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def dyadcov(samples, genes, absolute, minp, maxp, smoothing, index):
+def dyadcov(samples, genes, selection, absolute, minp, maxp, smoothing, index):
     '''Finds the distribution of ditances between fragments and dyad.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    dyad_coverage(samples, genes, absolute, minp, maxp, smoothing, index)
+    dyad_coverage(samples, genes, selection, absolute, minp, maxp, smoothing, index)
 
 
-def dyad_coverage(samples, genes='genes.txt', absolute=False, minp=-75, maxp=75, smoothing=None, index=None):
+def dyad_coverage(samples, genes='genes.txt', selection=None, absolute=False, minp=-75, maxp=75, smoothing=None, index=None):
     '''Finds the distribution of ditances between fragments and dyad.'''
     genes_info = pd.read_csv(genes, sep='\t', comment='#')
     genes_info = genes_info.loc[genes_info[genes_info.columns[6]] != -1]
+    if selection:
+        selection_genes = Parser.first(selection)
+        genes_info = genes_info[genes_info[genes_info.columns[2]].isin(selection_genes)]
+    print (genes_info)
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]

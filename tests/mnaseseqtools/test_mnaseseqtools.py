@@ -35,7 +35,7 @@ def test_dyadcov(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(mnasetools.mnasetools, ['dyadcov', '--samples', samples, '--genes', genes, '--minp', minp, '--maxp', maxp])
     assert result.exit_code == 0
-    DyadCoverage.dyad_coverage.assert_called_once_with(samples, genes, minp, maxp, None, None)
+    DyadCoverage.dyad_coverage.assert_called_once_with(samples, genes, None, False, minp, maxp, None, None)
 
 
 def test_firstdyadposition(testdir, mock_testclass):
