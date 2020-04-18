@@ -44,7 +44,6 @@ def dyad_coverage(samples, genes='genes.txt', selection=None, absolute=False, mi
     if selection:
         selection_genes = Parser.first(selection)
         genes_info = genes_info[genes_info[genes_info.columns[2]].isin(selection_genes)]
-    print (genes_info)
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
