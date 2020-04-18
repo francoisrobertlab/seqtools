@@ -44,7 +44,7 @@ def vap_sample(sample, parameters, selection):
     sample_parameters = output + '/parameters.txt'
     splits = Split.splits(sample)
     beds = [split + '-cov.bed' for split in splits]
-    genes = parse_genes(parameters)
+    genes = parse_genes(parameters, selection)
     create_parameters(beds, output, selection, parameters, sample_parameters)
     cmd = ['vap']
     if os.name == 'nt':
@@ -86,19 +86,16 @@ def create_parameters(datasets, output_folder, selection, parameters_input, para
                     outfile.write(parameters_line)
 
 
-def parse_genes(parameters):
+def parse_genes(parameters, selection=None):
     with open(parameters, 'r') as infile:
         for parameters_line in infile:
             if parameters_line.startswith('~~@refgroup_path='):
                 index = parameters_line.index(':=:') + 3
                 genes_file = parameters_line.rstrip('\r\n')[index:]
-            elif parameters_line.startswith('~~@selection_path='):
-                index = parameters_line.index('=') + 1
-                selection_file = parameters_line.rstrip('\r\n')[index:]
     genes = Parser.first(genes_file)
-    if selection_file:
-       selection = Parser.first(selection_file)
-       genes = [gene for gene in genes if gene in selection]
+    if selection:
+       selection_genes = Parser.first(selection)
+       genes = [gene for gene in genes if gene in selection_genes]
     return genes
 
 

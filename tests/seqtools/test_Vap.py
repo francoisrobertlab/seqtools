@@ -165,7 +165,7 @@ def test_vap_sample(testdir, mock_testclass):
     shutil.rmtree = MagicMock()
     v.vap_sample(sample, parameters, selection)
     Split.splits.assert_called_once_with(sample)
-    v.parse_genes.assert_called_once_with(parameters)
+    v.parse_genes.assert_called_once_with(parameters, selection)
     v.create_parameters.assert_called_once_with(beds, output, selection, parameters, sample_parameters)
     cmd = ['vap']
     if os.name == 'nt':
@@ -222,7 +222,7 @@ def test_create_parameters(testdir, mock_testclass):
 
 def test_create_parameters_selection(testdir, mock_testclass):
     parameters = Path(__file__).parent.joinpath('parameters.txt')
-    selection = Path(__file__).parent.joinpath('genes.txt')
+    selection = Path(__file__).parent.joinpath('selection.txt')
     beds = ['POLR2A-100-110.bed', 'POLR2A-120-130.bed']
     output_folder = 'output'
     parameters_output = 'params-out.txt'
@@ -262,8 +262,8 @@ def test_parse_genes_selection(testdir, mock_testclass):
     parameters = 'parameters_selection.txt'
     copyfile(Path(__file__).parent.joinpath('parameters_selection.txt'), parameters)
     copyfile(Path(__file__).parent.joinpath('genes.txt'), 'genes.txt')
-    copyfile(Path(__file__).parent.joinpath('selection.txt'), 'selection.txt')
-    genes = v.parse_genes(parameters)
+    selection = Path(__file__).parent.joinpath('selection.txt')
+    genes = v.parse_genes(parameters, selection)
     assert genes[0] == 'YLR110C'
     assert genes[1] == 'YGL008C'
 
