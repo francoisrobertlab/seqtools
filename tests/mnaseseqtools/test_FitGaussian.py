@@ -33,7 +33,7 @@ def test_fitgaussian(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(f.fitgaussian, ['-s', samples])
     assert result.exit_code == 0
-    f.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None)
+    f.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None, None)
 
 
 def test_fitgaussian_parameters(testdir, mock_testclass):
@@ -45,11 +45,12 @@ def test_fitgaussian_parameters(testdir, mock_testclass):
     amin = 2
     sigma = 15
     smin = 1.2
+    suffix = 'test'
     f.fit_gaussian = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(f.fitgaussian, ['-s', samples, '--absolute', '--components', '--svg', '--verbose', '--center', center, '--cmin', cmin, '--cmax', cmax, '--amp', amp, '--amin', amin, '--sigma', sigma, '--smin', smin])
+    result = runner.invoke(f.fitgaussian, ['-s', samples, '--absolute', '--components', '--svg', '--verbose', '--center', center, '--cmin', cmin, '--cmax', cmax, '--amp', amp, '--amin', amin, '--sigma', sigma, '--smin', smin, '--suffix', suffix])
     assert result.exit_code == 0
-    f.fit_gaussian.assert_called_once_with(samples, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, None)
+    f.fit_gaussian.assert_called_once_with(samples, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix, None)
 
 
 def test_fitgaussian_second(testdir, mock_testclass):
@@ -59,7 +60,7 @@ def test_fitgaussian_second(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(f.fitgaussian, ['-s', samples, '-i', index])
     assert result.exit_code == 0
-    f.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, index)
+    f.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None, index)
 
 
 def test_fitgaussian_samplesnotexists(testdir, mock_testclass):
@@ -84,13 +85,13 @@ def test_fit_gaussian(testdir, mock_testclass):
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
         sb.splits.assert_any_call(sample)
-        f.fit_gaussian_sample.assert_any_call(sample, False, False, False, False, None, None, None, None, None, None, None)
+        f.fit_gaussian_sample.assert_any_call(sample, False, False, False, False, None, None, None, None, None, None, None, None)
     for split in splits1:
-        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None)
+        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None, None)
     for split in splits2:
-        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None)
+        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None, None)
     for split in splits3:
-        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None)
+        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None, None)
 
 
 def test_fit_gaussian_parameters(testdir, mock_testclass):
@@ -102,6 +103,7 @@ def test_fit_gaussian_parameters(testdir, mock_testclass):
     amin = 2
     sigma = 15
     smin = 1.2
+    suffix = 'test'
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     splits1 = ['POLR2A-100-110', 'POLR2A-120-130']
     splits2 = ['ASDURF-100-110', 'ASDURF-120-130']
@@ -109,17 +111,17 @@ def test_fit_gaussian_parameters(testdir, mock_testclass):
     Parser.first = MagicMock(return_value=samples)
     sb.splits = MagicMock(side_effect=[splits1, splits2, splits3])
     f.fit_gaussian_sample = MagicMock()
-    f.fit_gaussian(samples_file, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin)
+    f.fit_gaussian(samples_file, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix)
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
         sb.splits.assert_any_call(sample)
-        f.fit_gaussian_sample.assert_any_call(sample, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin)
+        f.fit_gaussian_sample.assert_any_call(sample, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix)
     for split in splits1:
-        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin)
+        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix)
     for split in splits2:
-        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin)
+        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix)
     for split in splits3:
-        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin)
+        f.fit_gaussian_sample.assert_any_call(split, True, True, True, True, center, cmin, cmax, amp, amin, sigma, smin, suffix)
 
 
 def test_fit_gaussian_second(testdir, mock_testclass):
@@ -132,6 +134,6 @@ def test_fit_gaussian_second(testdir, mock_testclass):
     f.fit_gaussian(samples_file, index=1)
     Parser.first.assert_called_once_with(samples_file)
     sb.splits.assert_called_once_with(samples[1])
-    f.fit_gaussian_sample.assert_any_call(samples[1], False, False, False, False, None, None, None, None, None, None, None)
+    f.fit_gaussian_sample.assert_any_call(samples[1], False, False, False, False, None, None, None, None, None, None, None, None)
     for split in splits:
-        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None)
+        f.fit_gaussian_sample.assert_any_call(split, False, False, False, False, None, None, None, None, None, None, None, None)

@@ -35,30 +35,32 @@ from seqtools.txt import Parser
               help='Width (sigma) of gaussian. Defaults to half of maximum index')
 @click.option('--smin', '-sm', type=float, default=None,
               help='Minimum width (sigma) of gaussian. Defaults unbounded')
+@click.option('--suffix', default=None,
+              help='Suffix to append to sample name.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def fitgaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index):
+def fitgaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, suffix, index):
     '''Fits gaussian curve to dyad coverage.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    fit_gaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, index)
+    fit_gaussian(samples, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, suffix, index)
 
 
-def fit_gaussian(samples='samples.txt', absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, index=None):
+def fit_gaussian(samples='samples.txt', absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, suffix=None, index=None):
     '''Fits gaussian curve to dyad coverage.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        fit_gaussian_sample(sample, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+        fit_gaussian_sample(sample, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, suffix)
         splits = sb.splits(sample)
         for split in splits:
-            fit_gaussian_sample(split, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin)
+            fit_gaussian_sample(split, absolute, components, svg, verbose, center, cmin, cmax, amp, amin, sigma, smin, suffix)
 
 
-def fit_gaussian_sample(sample, absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None):
+def fit_gaussian_sample(sample, absolute=False, components=False, svg=False, verbose=False, center=None, cmin=None, cmax=None, amp=None, amin=None, sigma=None, smin=None, suffix=None):
     '''Fits gaussian curve to dyad coverage for a single sample.'''
     print ('Fits gaussian curve to dyad coverage of sample {}'.format(sample))
-    input = sample + '-dyad.txt'
+    input = sample + (suffix if suffix else '') + '-dyad.txt'
     dyads = pd.read_csv(input, sep='\t', index_col=0, comment='#')
     x = dyads.index.values
     yheader = 'Frequency' if absolute else 'Relative Frequency'
@@ -76,7 +78,7 @@ def fit_gaussian_sample(sample, absolute=False, components=False, svg=False, ver
     plt.xlim(x[0], x[len(x) - 1])
     plt.xticks(list(range(x[0], x[len(x) - 1] + 1, 25)))
     plt.plot(x, y, color='red')
-    plot_output = sample + '-dyad-gaussian.png'
+    plot_output = sample + (suffix if suffix else '') + '-dyad-gaussian.png'
     try:
         constant = ConstantModel(prefix='c_')
         pars = constant.make_params()
@@ -104,7 +106,7 @@ def fit_gaussian_sample(sample, absolute=False, components=False, svg=False, ver
         plt.legend(loc='lower right')
     plt.savefig(plot_output)
     if svg:
-        plot_svg_output = sample + '-dyad-gaussian.svg'
+        plot_svg_output = sample + (suffix if suffix else '') + '-dyad-gaussian.svg'
         plt.savefig(plot_svg_output, transparent=True)
     plt.close()
 

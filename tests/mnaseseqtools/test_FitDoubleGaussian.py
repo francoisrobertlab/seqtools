@@ -33,7 +33,7 @@ def test_fitdoublegaussian(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(f.fitdoublegaussian, ['-s', samples])
     assert result.exit_code == 0
-    f.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+    f.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
 
 
 def test_fitdoublegaussian_parameters(testdir, mock_testclass):
@@ -52,11 +52,12 @@ def test_fitdoublegaussian_parameters(testdir, mock_testclass):
     amin2 = 1.4
     sigma2 = 7
     smin2 = 1.1
+    suffix = 'test'
     f.fit_double_gaussian = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(f.fitdoublegaussian, ['-s', samples, '--absolute', '--components', '--gaussian', '--svg', '--verbose', '--center1', center1, '--cmin1', cmin1, '--cmax1', cmax1, '--amp1', amp1, '--amin1', amin1, '--sigma1', sigma1, '--smin1', smin1, '--center2', center2, '--cmin2', cmin2, '--cmax2', cmax2, '--amp2', amp2, '--amin2', amin2, '--sigma2', sigma2, '--smin2', smin2])
+    result = runner.invoke(f.fitdoublegaussian, ['-s', samples, '--absolute', '--components', '--gaussian', '--svg', '--verbose', '--center1', center1, '--cmin1', cmin1, '--cmax1', cmax1, '--amp1', amp1, '--amin1', amin1, '--sigma1', sigma1, '--smin1', smin1, '--center2', center2, '--cmin2', cmin2, '--cmax2', cmax2, '--amp2', amp2, '--amin2', amin2, '--sigma2', sigma2, '--smin2', smin2, '--suffix', suffix])
     assert result.exit_code == 0
-    f.fit_double_gaussian.assert_called_once_with(samples, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, None)
+    f.fit_double_gaussian.assert_called_once_with(samples, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix, None)
 
 
 def test_fitdoublegaussian_second(testdir, mock_testclass):
@@ -66,7 +67,7 @@ def test_fitdoublegaussian_second(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(f.fitdoublegaussian, ['-s', samples, '-i', index])
     assert result.exit_code == 0
-    f.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, index)
+    f.fit_double_gaussian.assert_called_once_with(samples, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, index)
 
 
 def test_fitdoublegaussian_samplesnotexists(testdir, mock_testclass):
@@ -91,13 +92,13 @@ def test_fit_double_gaussian(testdir, mock_testclass):
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
         sb.splits.assert_any_call(sample)
-        f.fit_double_gaussian_sample.assert_any_call(sample, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        f.fit_double_gaussian_sample.assert_any_call(sample, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
     for split in splits1:
-        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
     for split in splits2:
-        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
     for split in splits3:
-        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
 
 
 def test_fit_double_gaussian_parameters(testdir, mock_testclass):
@@ -116,6 +117,7 @@ def test_fit_double_gaussian_parameters(testdir, mock_testclass):
     amin2 = 1.4
     sigma2 = 7
     smin2 = 1.1
+    suffix = 'test'
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     splits1 = ['POLR2A-100-110', 'POLR2A-120-130']
     splits2 = ['ASDURF-100-110', 'ASDURF-120-130']
@@ -123,17 +125,17 @@ def test_fit_double_gaussian_parameters(testdir, mock_testclass):
     Parser.first = MagicMock(return_value=samples)
     sb.splits = MagicMock(side_effect=[splits1, splits2, splits3])
     f.fit_double_gaussian_sample = MagicMock()
-    f.fit_double_gaussian(samples_file, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+    f.fit_double_gaussian(samples_file, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix)
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
         sb.splits.assert_any_call(sample)
-        f.fit_double_gaussian_sample.assert_any_call(sample, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+        f.fit_double_gaussian_sample.assert_any_call(sample, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix)
     for split in splits1:
-        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix)
     for split in splits2:
-        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix)
     for split in splits3:
-        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2)
+        f.fit_double_gaussian_sample.assert_any_call(split, True, True, True, True, True, center1, cmin1, cmax1, amp1, amin1, sigma1, smin1, center2, cmin2, cmax2, amp2, amin2, sigma2, smin2, suffix)
 
 
 def test_fit_double_gaussian_second(testdir, mock_testclass):
@@ -146,6 +148,6 @@ def test_fit_double_gaussian_second(testdir, mock_testclass):
     f.fit_double_gaussian(samples_file, index=1)
     Parser.first.assert_called_once_with(samples_file)
     sb.splits.assert_called_once_with(samples[1])
-    f.fit_double_gaussian_sample.assert_any_call(samples[1], False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+    f.fit_double_gaussian_sample.assert_any_call(samples[1], False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
     for split in splits:
-        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+        f.fit_double_gaussian_sample.assert_any_call(split, False, False, False, False, False, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)

@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 
 import click
 from numpy import mean
@@ -29,15 +30,17 @@ NEGATIVE_STRAND = '-'
               help='Maximum position from dyad.')
 @click.option('--smoothing', '-S', type=int, default=None,
               help='Smooth the signal by averaging on smoothing window.')
+@click.option('--suffix', default=None,
+              help='Suffix to append to sample name. Suffix is ignore for input if file does not exists - suffix is still applied to output.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def dyadcov(samples, genes, selection, absolute, minp, maxp, smoothing, index):
+def dyadcov(samples, genes, selection, absolute, minp, maxp, smoothing, suffix, index):
     '''Finds the distribution of ditances between fragments and dyad.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    dyad_coverage(samples, genes, selection, absolute, minp, maxp, smoothing, index)
+    dyad_coverage(samples, genes, selection, absolute, minp, maxp, smoothing, suffix, index)
 
 
-def dyad_coverage(samples, genes='genes.txt', selection=None, absolute=False, minp=-75, maxp=75, smoothing=None, index=None):
+def dyad_coverage(samples, genes='genes.txt', selection=None, absolute=False, minp=-75, maxp=75, smoothing=None, suffix=None, index=None):
     '''Finds the distribution of ditances between fragments and dyad.'''
     genes_info = pd.read_csv(genes, sep='\t', comment='#')
     genes_info = genes_info.loc[genes_info[genes_info.columns[6]] != -1]
@@ -48,19 +51,22 @@ def dyad_coverage(samples, genes='genes.txt', selection=None, absolute=False, mi
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        dyad_coverage_sample(sample, genes_info, absolute, minp, maxp, smoothing)
+        dyad_coverage_sample(sample, genes_info, absolute, minp, maxp, suffix, smoothing)
         splits = sb.splits(sample)
         for split in splits:
-            dyad_coverage_sample(split, genes_info, absolute, minp, maxp, smoothing)
+            dyad_coverage_sample(split, genes_info, absolute, minp, maxp, suffix, smoothing)
 
 
-def dyad_coverage_sample(sample, genes, absolute, minp, maxp, smoothing=None):
+def dyad_coverage_sample(sample, genes, absolute, minp, maxp, suffix=None, smoothing=None):
     '''Finds the distribution of ditances between fragments and dyad for a single sample.'''
     print ('Finds the distribution of ditances between fragments and dyad of sample {}'.format(sample))
     if not smoothing:
         smoothing = 0
     smoothing = math.ceil(smoothing / 2.0)
-    bw = pbw.open(sample + '-cov.bw')
+    coverage_bw = sample + '-cov.bw'
+    if suffix and os.path.exists(sample + suffix + '-cov.bw'):
+        coverage_bw = sample + suffix + '-cov.bw'
+    bw = pbw.open(coverage_bw)
     distances = [[] for i in range(0, maxp - minp + smoothing * 2 + 1)]
     for index, columns in genes.iterrows():
         chromosome = columns[1]
@@ -80,7 +86,7 @@ def dyad_coverage_sample(sample, genes, absolute, minp, maxp, smoothing=None):
             distances[i].append(value if value and not math.isnan(value) else 0)
     for i in range(0, maxp - minp + smoothing * 2 + 1):
         genes['dyad position ' + str(i + minp - smoothing)] = distances[i]
-    genes_output = sample + '-genes.txt'
+    genes_output = sample + (suffix if suffix else '') + '-genes.txt'
     genes.to_csv(genes_output, sep='\t', index=False)
     sums = pd.DataFrame(index=list(range(minp - smoothing, maxp + smoothing + 1)))
     sums['Frequency'] = [genes['dyad position ' + str(i)].sum() for i in range(minp - smoothing, maxp + smoothing + 1)]
@@ -90,12 +96,12 @@ def dyad_coverage_sample(sample, genes, absolute, minp, maxp, smoothing=None):
     frequency_sum = dyads['Frequency'].sum()
     for i in range(minp, maxp + 1):
         dyads.at[i, 'Relative Frequency'] = dyads.at[i, 'Frequency'] / frequency_sum
-    dyad_output = sample + '-dyad.txt'
+    dyad_output = sample + (suffix if suffix else '') + '-dyad.txt'
     dyads.to_csv(dyad_output, sep='\t')
-    plot_dyad_coverage(sample, dyads, absolute)
+    plot_dyad_coverage(sample, dyads, absolute, suffix)
 
 
-def plot_dyad_coverage(sample, dyads, absolute):
+def plot_dyad_coverage(sample, dyads, absolute, suffix=None):
     x = dyads.index.values
     yheader = 'Frequency' if absolute else 'Relative Frequency'
     plt.figure()
@@ -105,7 +111,7 @@ def plot_dyad_coverage(sample, dyads, absolute):
     plt.xlim(x[0], x[len(x) - 1])
     plt.xticks(list(range(x[0], x[len(x) - 1] + 1, 25)))
     plt.plot(dyads.index.values, dyads[yheader].values, color='red')
-    plot_output = sample + '-dyad.png'
+    plot_output = sample + (suffix if suffix else '') + '-dyad.png'
     plt.savefig(plot_output)
     plt.clf()
 
