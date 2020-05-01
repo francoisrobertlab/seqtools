@@ -92,7 +92,7 @@ def dyad_coverage_sample(sample, genes, absolute, minp, maxp, suffix=None, smoot
     sums['Frequency'] = [genes['dyad position ' + str(i)].sum() for i in range(minp - smoothing, maxp + smoothing + 1)]
     dyads = pd.DataFrame(index=list(range(minp, maxp + 1)), columns=['Frequency', 'Relative Frequency'])
     for i in range(minp, maxp + 1):
-        dyads.at[i, 'Frequency'] = mean([sums.at[j, 'Frequency'] for j in range(i - smoothing, i + smoothing)])
+        dyads.at[i, 'Frequency'] = mean([sums.at[j, 'Frequency'] for j in range(i - smoothing, i + smoothing + 1)])
     frequency_sum = dyads['Frequency'].sum()
     for i in range(minp, maxp + 1):
         dyads.at[i, 'Relative Frequency'] = dyads.at[i, 'Frequency'] / frequency_sum
