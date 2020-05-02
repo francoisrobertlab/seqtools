@@ -1,6 +1,6 @@
 import click
 
-from mnaseseqtools import DyadCoverage, FitDoubleGaussian, FitGaussian, FirstDyadPosition, PrepareGenomeCoverage
+from mnaseseqtools import DyadCoverage, DyadStatistics, FitDoubleGaussian, FitGaussian, FirstDyadPosition, PrepareGenomeCoverage
 
 
 @click.group()
@@ -9,6 +9,7 @@ def mnasetools():
 
 
 mnasetools.add_command(DyadCoverage.dyadcov)
+mnasetools.add_command(DyadStatistics.dyadstatistics)
 mnasetools.add_command(FitDoubleGaussian.fitdoublegaussian)
 mnasetools.add_command(FitGaussian.fitgaussian)
 mnasetools.add_command(FirstDyadPosition.firstdyadposition)

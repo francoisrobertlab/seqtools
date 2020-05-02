@@ -6,18 +6,20 @@ import click
 from click.testing import CliRunner
 import pytest
 
-from mnaseseqtools import mnasetools, DyadCoverage, FirstDyadPosition, FitDoubleGaussian, FitGaussian, PrepareGenomeCoverage
+from mnaseseqtools import mnasetools, DyadCoverage, DyadStatistics, FirstDyadPosition, FitDoubleGaussian, FitGaussian, PrepareGenomeCoverage
 
 
 @pytest.fixture
 def mock_testclass():
     dyad_coverage = DyadCoverage.dyad_coverage
+    dyad_statistics = DyadStatistics.dyad_statistics
     first_dyad_position = FirstDyadPosition.first_dyad_position
     fit_double_gaussian = FitDoubleGaussian.fit_double_gaussian
     fit_gaussian = FitGaussian.fit_gaussian
     prep_genomecov = PrepareGenomeCoverage.prep_genomecov
     yield
     DyadCoverage.dyad_coverage = dyad_coverage
+    DyadStatistics.dyad_statistics = dyad_statistics
     FirstDyadPosition.first_dyad_position = first_dyad_position
     FitDoubleGaussian.fit_double_gaussian = fit_double_gaussian
     FitGaussian.fit_gaussian = fit_gaussian
@@ -36,6 +38,14 @@ def test_dyadcov(testdir, mock_testclass):
     result = runner.invoke(mnasetools.mnasetools, ['dyadcov', '--samples', samples, '--genes', genes, '--minp', minp, '--maxp', maxp])
     assert result.exit_code == 0
     DyadCoverage.dyad_coverage.assert_called_once_with(samples, genes, None, False, minp, maxp, None, None, None)
+
+
+def test_dyadstatistics(testdir, mock_testclass):
+    DyadStatistics.dyad_statistics = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(mnasetools.mnasetools, ['dyadstatistics'])
+    assert result.exit_code == 0
+    DyadStatistics.dyad_statistics.assert_called_once_with('dyad_statistics.txt', False)
 
 
 def test_firstdyadposition(testdir, mock_testclass):
