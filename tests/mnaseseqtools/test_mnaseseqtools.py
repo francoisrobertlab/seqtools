@@ -45,7 +45,7 @@ def test_dyadstatistics(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(mnasetools.mnasetools, ['dyadstatistics'])
     assert result.exit_code == 0
-    DyadStatistics.dyad_statistics.assert_called_once_with('dyad_statistics.txt', False)
+    DyadStatistics.dyad_statistics.assert_called_once_with(-75, 75, 'dyad_statistics.txt', False)
 
 
 def test_firstdyadposition(testdir, mock_testclass):
