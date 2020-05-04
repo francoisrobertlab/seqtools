@@ -8,7 +8,7 @@
 #SBATCH --output=dyadcoverage-%A_%a.out
 #SBATCH --error=dyadcoverage-%A_%a.out
 
-args+=("$@")
+args=("$@")
 if [ ! -z "$SLURM_ARRAY_TASK_ID" ]
 then
   args+=("-i" "$SLURM_ARRAY_TASK_ID")
