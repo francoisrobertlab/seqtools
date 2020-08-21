@@ -19,9 +19,3 @@ sbatch --array=0-3
 ## Email notification
 
 All scripts have email notification enabled
-
-You must specify your email address in the `mail-user` parameter
-
-```
-sbatch --mail-user=christian.poitras@ircm.qc.ca
-```

@@ -38,7 +38,7 @@ Run the following commands
 
 ```
 bowtie2-build sacCer3.fa sacCer3.fa.index
-sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca bowtie2.sh -x sacCer3.fa.index
+sbatch --array=0-1 bowtie2.sh -x sacCer3.fa.index
 ```
 
 <a name="filter"/>
@@ -46,7 +46,7 @@ sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca bowtie2.sh -x sacCer
 ## Filter reads to remove poorly map reads and duplicates
 
 ```
-sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca filterbam.sh
+sbatch --array=0-1 filterbam.sh
 ```
 
 <a name="bam2bed"/>
@@ -54,7 +54,7 @@ sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca filterbam.sh
 ## Convert BAM files to fragment BED files
 
 ```
-sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca bam2bed.sh
+sbatch --array=0-1 bam2bed.sh
 ```
 
 <a name="merge"/>
@@ -62,7 +62,7 @@ sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca bam2bed.sh
 ## Merge dataset samples data
 
 ```
-sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca merge.sh -s dataset.txt
+sbatch --array=0-1 merge.sh -s dataset.txt
 ```
 
 <a name="genomecov"/>
@@ -70,8 +70,8 @@ sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca merge.sh -s dataset.
 ## Genome coverage
 
 ```
-sbatch --array=0-1 --mail-user=christian.poitras@ircm.qc.ca genomecov.sh -S sacCer3.chrom.sizes
-sbatch --array=0 --mail-user=christian.poitras@ircm.qc.ca genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
+sbatch --array=0-1 genomecov.sh -S sacCer3.chrom.sizes
+sbatch --array=0 genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
 ```
 
 <a name="statistics"/>
@@ -79,5 +79,5 @@ sbatch --array=0 --mail-user=christian.poitras@ircm.qc.ca genomecov.sh -s datase
 ## Statistics
 
 ```
-sbatch --mail-user=christian.poitras@ircm.qc.ca statistics.sh -m dataset.txt
+sbatch statistics.sh -m dataset.txt
 ```
