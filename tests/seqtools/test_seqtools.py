@@ -1,12 +1,11 @@
 import logging
 from pathlib import Path
+import pytest
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-import pytest
-
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, Rename, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -21,6 +20,7 @@ def mock_testclass():
     merge_samples = Merge.merge_samples
     merge_samples_bw = MergeBigwigs.merge_samples
     plot2do_samples = Plot2do.plot2do_samples
+    rename = Rename.rename_
     slow_split_samples = SlowSplit.split_samples
     split_samples = Split.split_samples
     statistics_samples = Statistics.statistics_samples
@@ -36,6 +36,7 @@ def mock_testclass():
     Merge.merge_samples = merge_samples
     MergeBigwigs.merge_samples = merge_samples_bw
     Plot2do.plot2do_samples = plot2do_samples
+    Rename.rename_ = rename
     SlowSplit.split_samples = slow_split_samples
     Split.split_samples = split_samples
     Statistics.statistics_samples = statistics_samples
@@ -158,6 +159,16 @@ def test_seqtools_plot2do(testdir, mock_testclass):
     logging.warning(result.output)
     assert result.exit_code == 0
     Plot2do.plot2do_samples.assert_called_once_with(samples, index, ('--type', type,))
+
+
+def test_seqtools_rename(testdir, mock_testclass):
+    names = Path(__file__).parent.joinpath('names.txt')
+    Rename.rename_ = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['rename', '--names', names])
+    logging.warning(result.output)
+    assert result.exit_code == 0
+    Rename.rename_.assert_called_once_with(names, True, False, False)
 
 
 def test_seqtools_slowsplit(testdir, mock_testclass):
