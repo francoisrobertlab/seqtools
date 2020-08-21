@@ -17,8 +17,10 @@ ssh beluga.computecanada.ca
 ```
 curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/bash/configure_seqtools.sh >> configure_seqtools.sh
 chmod 744 configure_seqtools.sh
-./configure_seqtools.sh
+./configure_seqtools.sh $email@ircm.qc.ca
 ```
+
+Replace `$email@ircm.qc.ca` with your email address
 
 ## Reconnect to the server
 
