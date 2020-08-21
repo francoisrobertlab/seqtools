@@ -40,7 +40,7 @@ def rename_in_md5(md5, replacement, dry=False):
             columns = line.rstrip('\r\n').split()
             if len(columns) == 2:
                 columns[1] = replacement
-                outfile.write('\t'.join(columns))
+                outfile.write('  '.join(columns))
                 outfile.write('\n')
     if not dry:
         os.rename(md5_tmp, md5)
