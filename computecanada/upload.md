@@ -1,6 +1,6 @@
 # Uploading dataset files to Compute Canada server
 
-*The examples use Beluga server*
+:memo: *The examples use Beluga server*
 
 ## Install FTP program
 

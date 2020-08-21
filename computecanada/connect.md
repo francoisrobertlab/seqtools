@@ -1,6 +1,6 @@
 # Connecting to Compute Canada server
 
-*The examples use Beluga server*
+:memo: The examples use Beluga server
 
 ```
 ssh beluga.computecanada.ca

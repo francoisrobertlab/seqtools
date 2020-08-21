@@ -1,6 +1,6 @@
 # Install seqtools on Compute Canada servers
 
-*The examples use Beluga server*
+:memo: *The examples use Beluga server*
 
 ## Connect to the server
 
