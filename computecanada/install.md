@@ -24,7 +24,7 @@ Replace `$email@ircm.qc.ca` with your email address
 
 ## Reconnect to the server
 
-*If using Putty, close the window and reconnect*
+:bulb: If using Putty, close the window and reconnect
 
 On Mac, Linux and Windows 10
 
