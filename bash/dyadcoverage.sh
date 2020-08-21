@@ -1,6 +1,5 @@
 #!/bin/bash
 #SBATCH --account=def-robertf
-#SBATCH --array=0-0
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=16G
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
