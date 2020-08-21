@@ -1,8 +1,8 @@
 # ChIP-seq
 
-*All commands assume sacCer3 genome with [2 samples](sbatch.md)*
+:information_source: *[Connecting to Compute Canada server](connect.md)*
 
-*[Connecting to Compute Canada server](connect.md)*
+:bulb: Most `sbatch` commands can be optimized using `--array` argument, see [sbatch](sbatch.md)
 
 #### Steps
 
@@ -38,7 +38,7 @@ Run the following commands
 
 ```
 bowtie2-build sacCer3.fa sacCer3.fa.index
-sbatch --array=0-1 bowtie2.sh -x sacCer3.fa.index
+sbatch bowtie2.sh -x sacCer3.fa.index
 ```
 
 <a name="filter"/>
@@ -46,7 +46,7 @@ sbatch --array=0-1 bowtie2.sh -x sacCer3.fa.index
 ## Filter reads to remove poorly map reads and duplicates
 
 ```
-sbatch --array=0-1 filterbam.sh
+sbatch filterbam.sh
 ```
 
 <a name="bam2bed"/>
@@ -54,7 +54,7 @@ sbatch --array=0-1 filterbam.sh
 ## Convert BAM files to fragment BED files
 
 ```
-sbatch --array=0-1 bam2bed.sh
+sbatch bam2bed.sh
 ```
 
 <a name="merge"/>
@@ -62,7 +62,7 @@ sbatch --array=0-1 bam2bed.sh
 ## Merge dataset samples data
 
 ```
-sbatch --array=0-1 merge.sh -s dataset.txt
+sbatch merge.sh -s dataset.txt
 ```
 
 <a name="genomecov"/>
@@ -70,8 +70,8 @@ sbatch --array=0-1 merge.sh -s dataset.txt
 ## Genome coverage
 
 ```
-sbatch --array=0-1 genomecov.sh -S sacCer3.chrom.sizes
-sbatch --array=0 genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
+sbatch genomecov.sh -S sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
 ```
 
 <a name="statistics"/>
