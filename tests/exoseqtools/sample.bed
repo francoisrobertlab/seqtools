@@ -1,0 +1,9 @@
+track name=test
+chr1	100	150	test1	1	+
+chr2	400	450	test2	2	+
+chr3	500	650	test3	3	+
+chr4	800	750	test4	4	+
+chr5	100	150	test5	1	-
+chr6	400	450	test6	2	-
+chr7	500	650	test7	3	-
+chr8	800	750	test8	4	-
