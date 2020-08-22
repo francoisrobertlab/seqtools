@@ -55,7 +55,7 @@ def moveannotations_sample(sample, distance=0, discard_negatives=True, reverse_n
                 columns[2] = str(int(columns[2]) + distance)
             if discard_negatives and (columns[1].startswith("-") or columns[2].startswith("-")):
                 # Discard annotation.
-                logging.info("Discarding annotation {}", line)
+                logging.info("Discarding annotation {}".format(line))
                 continue
             outfile.write('\t'.join(columns))
             outfile.write('\n')
