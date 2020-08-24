@@ -13,7 +13,6 @@ This module loads the following modules and their requirements:
     - kentutils/20180716
     - sra-toolkit/2.9.6
     - vap
-    - plot2do
 ]])
 
 whatis("Version: 1.0.0")
@@ -33,7 +32,6 @@ always_load("bedtools/2.27.1")
 always_load("sra-toolkit/2.9.6")
 always_load("kentutils/20180716")
 always_load("vap")
-always_load("plot2do")
 
 local venv = "~/seqtools-robertf-venv"
 local call_nucleosomes = "~/projects/def-robertf/CallNucleosomes"
