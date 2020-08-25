@@ -33,10 +33,11 @@ always_load("sra-toolkit/2.9.6")
 always_load("kentutils/20180716")
 always_load("vap")
 
-local venv = "~/seqtools-robertf-venv"
-local call_nucleosomes = "~/projects/def-robertf/CallNucleosomes"
-local installation = "~/projects/def-robertf/seqtools"
+local home = os.getenv("HOME") or ""
+local venv = pathJoin(home, "seqtools-robertf-venv")
+local call_nucleosomes = pathJoin(home, "projects/def-robertf/CallNucleosomes")
+local installation = pathJoin(home, "projects/def-robertf/seqtools")
 prepend_path("PATH", installation)
-prepend_path("PATH", pathJoin(venv,"bash"))
-prepend_path("PATH", pathJoin(venv,"bin"))
-prepend_path("PERL5LIB", pathJoin(call_nucleosomes,"perl_library"))
+prepend_path("PATH", pathJoin(venv, "bash"))
+prepend_path("PATH", pathJoin(venv, "bin"))
+prepend_path("PERL5LIB", pathJoin(call_nucleosomes, "perl_library"))
