@@ -6,13 +6,19 @@
 
 #### Steps
 
-* [Upload dataset files to Compute Canada](upload.md)
+* [Upload dataset files to Compute Canada](upload)
 * [Align FASTQ files](align)
 * [Filter reads](filter)
 * [Convert BAM to BED](bam2bed)
 * [Merge samples into dataset](merge)
 * [Genome converage](genomecov)
 * [Statistics](statistics)
+
+<a name="upload"/>
+
+## Upload dataset files to Compute Canada
+
+See [Uploading dataset files to Compute Canada server](upload.md)
 
 <a name="align"/>
 
