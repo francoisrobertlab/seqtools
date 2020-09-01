@@ -9,3 +9,4 @@
 #### Analysis of data
 
 * [ChIP-seq](chipseq.md)
+* [ChIP-exo](chipexo.md)
