@@ -86,8 +86,8 @@ sbatch merge.sh -s dataset.txt
 ## Move annotations
 
 ```
-sbatch moveannotations.sh -d 6 -r -dn
-sbatch moveannotations.sh -s dataset.txt -d 6 -r -dn
+sbatch moveannotations.sh -d 6 -rn -dn
+sbatch moveannotations.sh -s dataset.txt -d 6 -rn -dn
 ```
 
 <a name="genomecov"/>
