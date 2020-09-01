@@ -39,6 +39,8 @@ def merge_sample(name, samples):
             sample_bed = sample + '.bed'
             with open(sample_bed, 'r') as infile:
                 for line in infile:
+                    if line.startswith('browser') or line.startswith('track'):
+                        continue
                     outfile.write(line)
     merged_bed = name + '.bed'
     Bed.sort(merged_bed_tmp, merged_bed)
