@@ -1,4 +1,4 @@
-# ChIP-seq
+# ChIP-exo
 
 :information_source: *[Connecting to Compute Canada server](connect.md)*
 
