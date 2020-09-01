@@ -49,7 +49,7 @@ def test_bam2bed(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(bb.bam2bed, ['-s', samples])
     assert result.exit_code == 0
-    bb.bam2bed_samples.assert_called_once_with(samples, True, threads, None, None)
+    bb.bam2bed_samples.assert_called_once_with(samples, True, threads, '-dedup', None)
 
 
 def test_bam2bed_parameters(testdir, mock_testclass):
@@ -68,9 +68,9 @@ def test_bam2bed_samples(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     bb.bam2bed_sample = MagicMock()
     bb.bam2bed_samples(samples)
-    bb.bam2bed_sample.assert_any_call('POLR2A', True, None, None)
-    bb.bam2bed_sample.assert_any_call('ASDURF', True, None, None)
-    bb.bam2bed_sample.assert_any_call('POLR1C', True, None, None)
+    bb.bam2bed_sample.assert_any_call('POLR2A', True, None, '')
+    bb.bam2bed_sample.assert_any_call('ASDURF', True, None, '')
+    bb.bam2bed_sample.assert_any_call('POLR1C', True, None, '')
 
 
 def test_bam2bed_samples_all_threads(testdir, mock_testclass):

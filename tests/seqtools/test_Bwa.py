@@ -115,7 +115,7 @@ def test_bwa_samples_parameters(testdir, mock_testclass):
 def test_bwa_sample(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     fastq2 = sample + '_2.fastq'
     b.run_bwa = MagicMock()
@@ -129,7 +129,7 @@ def test_bwa_sample(testdir, mock_testclass):
 def test_bwa_sample_parameters(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     fastq2 = sample + '_2.fastq'
     threads = 2
@@ -145,7 +145,7 @@ def test_bwa_sample_parameters(testdir, mock_testclass):
 def test_bwa_sample_single(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     b.run_bwa = MagicMock()
     Fastq.fastq = MagicMock(side_effect=[fastq, None])
@@ -165,7 +165,7 @@ def test_bwa_index(testdir, mock_testclass):
 def test_run_bwa(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -183,7 +183,7 @@ def test_run_bwa(testdir, mock_testclass):
 def test_run_bwa_parameters(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -203,7 +203,7 @@ def test_run_bwa_parameters(testdir, mock_testclass):
 def test_run_bwa_singlethread(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -223,7 +223,7 @@ def test_run_bwa_singlethread(testdir, mock_testclass):
 def test_run_bwa_single(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -239,7 +239,7 @@ def test_run_bwa_single(testdir, mock_testclass):
 def test_run_bwa_fastq2notexists(testdir, mock_testclass):
     sample = 'PORL2A'
     fasta = 'sacCer3.fa'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)

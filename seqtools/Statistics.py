@@ -70,8 +70,8 @@ def sample_statistics(sample, splits):
     '''Statistics of a single sample.'''
     print ('Computing statistics for sample {}'.format(sample))
     sample_stats = [sample]
-    bam_raw = sample + '-raw.bam'
-    sample_stats.extend([flagstat_total(bam_raw) if os.path.isfile(bam_raw) else ''])
+    bam = sample + '.bam'
+    sample_stats.extend([flagstat_total(bam) if os.path.isfile(bam) else ''])
     bam_filtered = sample + '-filtered.bam'
     sample_stats.extend([flagstat_total(bam_filtered) if os.path.isfile(bam_filtered) else ''])
     bed_raw = sample + '.bed'

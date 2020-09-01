@@ -172,7 +172,7 @@ def test_headers_missmatch(testdir, mock_testclass):
 
 def test_sample_statistics(testdir, mock_testclass):
     sample = 'POLR2A'
-    Path(sample + '-raw.bam').touch()
+    Path(sample + '.bam').touch()
     Path(sample + '-filtered.bam').touch()
     Path(sample + '.bed').touch()
     splits = ['100-110', '120-130']
@@ -188,7 +188,7 @@ def test_sample_statistics(testdir, mock_testclass):
     assert stats[4] == 50
     assert stats[5] == 40
     assert len(stats) == 6
-    s.flagstat_total.assert_any_call(sample + '-raw.bam')
+    s.flagstat_total.assert_any_call(sample + '.bam')
     s.flagstat_total.assert_any_call(sample + '-filtered.bam')
     Bed.count_bed.assert_any_call(sample + '.bed')
     Bed.count_bed.assert_any_call(sample + '-100-110.bed')

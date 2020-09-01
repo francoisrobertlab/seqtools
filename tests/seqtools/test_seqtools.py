@@ -55,7 +55,7 @@ def test_seqtools_bam2bed(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['bam2bed', '--samples', samples, '--unpaired', '--threads', threads, '--index', index])
     assert result.exit_code == 0
-    Bam2Bed.bam2bed_samples.assert_called_once_with(samples, False, threads, None, index)
+    Bam2Bed.bam2bed_samples.assert_called_once_with(samples, False, threads, '-dedup', index)
 
 
 def test_seqtools_bowtie2(testdir, mock_testclass):
@@ -181,7 +181,7 @@ def test_seqtools_removesecondmate(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['removesecondmate', '--samples', samples])
     assert result.exit_code == 0
-    RemoveSecondMate.removesecondmate_samples.assert_called_once_with(samples, 1, None)
+    RemoveSecondMate.removesecondmate_samples.assert_called_once_with(samples, '-dedup', '-mate1', 1, None)
 
 
 def test_seqtools_rename(testdir, mock_testclass):

@@ -102,7 +102,7 @@ def test_bowtie_samples_parameters(testdir, mock_testclass):
 
 def test_bowtie_sample(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     fastq2 = sample + '_2.fastq'
     b.run_bowtie = MagicMock()
@@ -115,7 +115,7 @@ def test_bowtie_sample(testdir, mock_testclass):
 
 def test_bowtie_sample_parameters(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     fastq2 = sample + '_2.fastq'
     threads = 2
@@ -130,7 +130,7 @@ def test_bowtie_sample_parameters(testdir, mock_testclass):
 
 def test_bowtie_sample_single(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     fastq = sample + '_1.fastq'
     b.run_bowtie = MagicMock()
     Fastq.fastq = MagicMock(side_effect=[fastq, None])
@@ -142,7 +142,7 @@ def test_bowtie_sample_single(testdir, mock_testclass):
 
 def test_run_bowtie(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -159,7 +159,7 @@ def test_run_bowtie(testdir, mock_testclass):
 
 def test_run_bowtie_parameters(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -178,7 +178,7 @@ def test_run_bowtie_parameters(testdir, mock_testclass):
 
 def test_run_bowtie_singlethread(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -197,7 +197,7 @@ def test_run_bowtie_singlethread(testdir, mock_testclass):
 
 def test_run_bowtie_single(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
@@ -212,7 +212,7 @@ def test_run_bowtie_single(testdir, mock_testclass):
 
 def test_run_bowtie_fastq2notexists(testdir, mock_testclass):
     sample = 'PORL2A'
-    bam = sample + '-raw.bam'
+    bam = sample + '.bam'
     sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)

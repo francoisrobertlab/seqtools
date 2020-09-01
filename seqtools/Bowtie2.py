@@ -41,8 +41,8 @@ def bowtie_sample(sample, threads=None, bowtie_args=()):
         raise AssertionError('Cannot find FASTQ files for sample ' + sample)
     fastq2 = Fastq.fastq(sample, 2)
     paired = fastq2 is not None and os.path.isfile(fastq2)
-    bam_raw = sample + '-raw.bam'
-    run_bowtie(fastq1, fastq2, bam_raw, threads, bowtie_args)
+    bam = sample + '.bam'
+    run_bowtie(fastq1, fastq2, bam, threads, bowtie_args)
 
 
 def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=()):

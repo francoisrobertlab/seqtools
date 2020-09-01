@@ -15,7 +15,7 @@ from seqtools.txt import Parser
               help='Sample reads are paired')
 @click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
-@click.option('--suffix', default=None,
+@click.option('--suffix', default='-dedup', show_default=True,
               help='Suffix added to sample name in BAM filename.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
@@ -25,7 +25,7 @@ def bam2bed(samples, paired, threads, suffix, index):
     bam2bed_samples(samples, paired, threads, suffix, index)
 
 
-def bam2bed_samples(samples='samples.txt', paired=True, threads=None, suffix=None, index=None):
+def bam2bed_samples(samples='samples.txt', paired=True, threads=None, suffix='', index=None):
     '''Converts BAM file to BED for samples.'''
     sample_names = Parser.first(samples)
     if index != None:
@@ -34,12 +34,10 @@ def bam2bed_samples(samples='samples.txt', paired=True, threads=None, suffix=Non
         bam2bed_sample(sample, paired, threads, suffix)
 
 
-def bam2bed_sample(sample, paired, threads=None, suffix=None):
+def bam2bed_sample(sample, paired, threads=None, suffix=''):
     '''Converts BAM file to BED for a single sample.'''
     print ('Converting BAM to BED for sample {}'.format(sample))
-    bam = sample + '.bam'
-    if suffix:
-        bam = sample + suffix + '.bam'
+    bam = sample + suffix + '.bam'
     bed = sample + '.bed'
     if paired:
         bedpe = sample + '.bedpe'

@@ -43,8 +43,8 @@ def bwa_sample(sample, fasta, threads=None, bwa_args=()):
         raise AssertionError('Cannot find FASTQ files for sample ' + sample)
     fastq2 = Fastq.fastq(sample, 2)
     paired = fastq2 is not None and os.path.isfile(fastq2)
-    bam_raw = sample + '-raw.bam'
-    run_bwa(fastq1, fastq2, fasta, bam_raw, threads, bwa_args)
+    bam = sample + '.bam'
+    run_bwa(fastq1, fastq2, fasta, bam, threads, bwa_args)
 
 
 def bwa_index(fasta):

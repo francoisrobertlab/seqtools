@@ -36,16 +36,18 @@ def filter_bam(samples='samples.txt', paired=True, dedup=True, threads=None, ind
 def filter_bam_sample(sample, paired, dedup, threads=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     print ('Filtering BAM for sample {}'.format(sample))
-    bam_raw = sample + '-raw.bam'
+    bam = sample + '.bam'
     bam_filtered = sample + '-filtered.bam'
-    filter_mapped(bam_raw, bam_filtered, paired, threads)
-    bam_sort_input = bam_filtered
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    filter_mapped(bam, bam_filtered_tmp, paired, threads)
+    sort(bam_filtered_tmp, bam_filtered, threads)
+    os.remove(bam_filtered_tmp)
     if dedup:
         bam_dedup = sample + '-dedup.bam'
-        remove_duplicates(bam_filtered, bam_dedup, threads)
-        bam_sort_input = bam_dedup
-    bam = sample + '.bam'
-    sort(bam_sort_input, bam, threads)
+        bam_dedup_tmp = sample + '-dedup-tmp.bam'
+        remove_duplicates(bam_filtered, bam_dedup_tmp, threads)
+        sort(bam_dedup_tmp, bam_dedup, threads)
+        os.remove(bam_dedup_tmp)
 
 
 def filter_mapped(bam_input, bam_output, paired, threads=None):

@@ -106,112 +106,127 @@ def test_filter_bam_second_paired_threads(testdir, mock_testclass):
 
 def test_filter_bam_sample_single(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
-    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup]))
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
+    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup_tmp]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]), create_file(['-o', bam_dedup]))
     fb.filter_bam_sample(sample, False, True)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, False, None)
-    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup, None)
-    fb.sort.assert_called_with(bam_dedup, bam, None)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, False, None)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, None)
+    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup_tmp, None)
+    fb.sort.assert_any_call(bam_dedup_tmp, bam_dedup, None)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_bam_sample_single_nodedup(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
     fb.remove_duplicates = MagicMock()
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]))
     fb.filter_bam_sample(sample, False, False)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, False, None)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, False, None)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, None)
     fb.remove_duplicates.assert_not_called()
-    fb.sort.assert_called_with(bam_filtered, bam, None)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert not os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_bam_sample_single_threads(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
     threads = 3
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
     fb.remove_duplicates = MagicMock()
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]))
     fb.filter_bam_sample(sample, False, False, threads)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, False, threads)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, False, threads)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, threads)
     fb.remove_duplicates.assert_not_called()
-    fb.sort.assert_called_with(bam_filtered, bam, threads)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert not os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_bam_sample_paired(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
-    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup]))
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
+    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup_tmp]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]), create_file(['-o', bam_dedup]))
     fb.filter_bam_sample(sample, True, True)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, True, None)
-    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup, None)
-    fb.sort.assert_called_with(bam_dedup, bam, None)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, True, None)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, None)
+    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup_tmp, None)
+    fb.sort.assert_any_call(bam_dedup_tmp, bam_dedup, None)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_bam_sample_paired_nodedup(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
     fb.remove_duplicates = MagicMock()
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]))
     fb.filter_bam_sample(sample, True, False)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, True, None)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, True, None)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, None)
     fb.remove_duplicates.assert_not_called()
-    fb.sort.assert_called_with(bam_filtered, bam, None)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert not os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_bam_sample_paired_threads(testdir, mock_testclass):
     sample = 'POLR2A'
-    bam_raw = sample + '-raw.bam'
-    bam_filtered = sample + '-filtered.bam'
-    bam_dedup = sample + '-dedup.bam'
     bam = sample + '.bam'
+    bam_filtered = sample + '-filtered.bam'
+    bam_filtered_tmp = sample + '-filtered-tmp.bam'
+    bam_dedup = sample + '-dedup.bam'
+    bam_dedup_tmp = sample + '-dedup-tmp.bam'
     threads = 3
-    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered]))
-    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup]))
-    fb.sort = MagicMock(create_file(['-o', bam]))
+    fb.filter_mapped = MagicMock(create_file(['-o', bam_filtered_tmp]))
+    fb.remove_duplicates = MagicMock(create_file(['-o', bam_dedup_tmp]))
+    fb.sort = MagicMock(create_file(['-o', bam_filtered]), create_file(['-o', bam_dedup]))
     fb.filter_bam_sample(sample, True, True, threads)
-    fb.filter_mapped.assert_called_with(bam_raw, bam_filtered, True, threads)
-    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup, threads)
-    fb.sort.assert_called_with(bam_dedup, bam, threads)
+    fb.filter_mapped.assert_called_with(bam, bam_filtered_tmp, True, threads)
+    fb.sort.assert_any_call(bam_filtered_tmp, bam_filtered, threads)
+    fb.remove_duplicates.assert_called_with(bam_filtered, bam_dedup_tmp, threads)
+    fb.sort.assert_any_call(bam_dedup_tmp, bam_dedup, threads)
     assert os.path.exists(bam_filtered)
+    assert not os.path.exists(bam_filtered_tmp)
     assert os.path.exists(bam_dedup)
-    assert os.path.exists(bam)
+    assert not os.path.exists(bam_dedup_tmp)
 
 
 def test_filter_mapped_single(testdir, mock_testclass):
