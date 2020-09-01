@@ -1,11 +1,11 @@
 import logging
 from pathlib import Path
-import pytest
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, Plot2do, Rename, SlowSplit, Split, Statistics, Vap
+import pytest
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -19,7 +19,9 @@ def mock_testclass():
     intersect_samples = Intersect.intersect_samples
     merge_samples = Merge.merge_samples
     merge_samples_bw = MergeBigwigs.merge_samples
+    moveannotations_samples = MoveAnnotations.moveannotations_samples
     plot2do_samples = Plot2do.plot2do_samples
+    removesecondmate_samples = RemoveSecondMate.removesecondmate_samples
     rename = Rename.rename_
     slow_split_samples = SlowSplit.split_samples
     split_samples = Split.split_samples
@@ -35,7 +37,9 @@ def mock_testclass():
     Intersect.intersect_samples = intersect_samples
     Merge.merge_samples = merge_samples
     MergeBigwigs.merge_samples = merge_samples_bw
+    MoveAnnotations.moveannotations_samples = moveannotations_samples
     Plot2do.plot2do_samples = plot2do_samples
+    RemoveSecondMate.removesecondmate_samples = removesecondmate_samples
     Rename.rename_ = rename
     SlowSplit.split_samples = slow_split_samples
     Split.split_samples = split_samples
@@ -149,6 +153,16 @@ def test_seqtools_mergebw(testdir, mock_testclass):
     MergeBigwigs.merge_samples.assert_called_once_with(samples, sizes, index)
 
  
+def test_seqtools_moveannotations(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    distance = 32
+    MoveAnnotations.moveannotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['moveannotations', '--samples', samples, '--distance', distance])
+    assert result.exit_code == 0
+    MoveAnnotations.moveannotations_samples.assert_called_once_with(samples, distance, True, True, None)
+
+
 def test_seqtools_plot2do(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 2
@@ -159,6 +173,15 @@ def test_seqtools_plot2do(testdir, mock_testclass):
     logging.warning(result.output)
     assert result.exit_code == 0
     Plot2do.plot2do_samples.assert_called_once_with(samples, index, ('--type', type,))
+
+
+def test_seqtools_removesecondmate(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    RemoveSecondMate.removesecondmate_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['removesecondmate', '--samples', samples])
+    assert result.exit_code == 0
+    RemoveSecondMate.removesecondmate_samples.assert_called_once_with(samples, 1, None)
 
 
 def test_seqtools_rename(testdir, mock_testclass):

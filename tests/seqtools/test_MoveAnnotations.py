@@ -1,13 +1,13 @@
 import logging
 import os
 from pathlib import Path
-import pytest
 from shutil import copyfile
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-from exoseqtools import MoveAnnnotations as ma
+import pytest
+from seqtools import MoveAnnotations as ma
 from seqtools.txt import Parser
 
 

@@ -1,14 +1,14 @@
 import logging
 import os
 from pathlib import Path
-import pytest
 from shutil import copyfile
 import subprocess
 from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
-from exoseqtools import RemoveSecondMateBam as rsm
+import pytest
+from seqtools import RemoveSecondMate as rsm
 from seqtools.txt import Parser
 
 
