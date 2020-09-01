@@ -12,33 +12,35 @@ from seqtools.txt import Parser
               help='Sample names listed one sample name by line.')
 @click.option('--paired/--unpaired', '-p/-u', default=True, show_default=True,
               help='Sample reads are paired')
+@click.option('--dedup/--no-dedup', '-d/-nd', default=True, show_default=True,
+              help='Remove duplicates')
 @click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def filterbam(samples, paired, threads, index):
+def filterbam(samples, paired, dedup, threads, index):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    filter_bam(samples, paired, threads, index)
+    filter_bam(samples, paired, dedup, threads, index)
 
 
-def filter_bam(samples='samples.txt', paired=True, threads=None, index=None):
+def filter_bam(samples='samples.txt', paired=True, dedup=True, threads=None, index=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        filter_bam_sample(sample, paired, threads)
+        filter_bam_sample(sample, paired, dedup, threads)
 
 
-def filter_bam_sample(sample, paired, threads=None):
+def filter_bam_sample(sample, paired, dedup, threads=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     print ('Filtering BAM for sample {}'.format(sample))
     bam_raw = sample + '-raw.bam'
     bam_filtered = sample + '-filtered.bam'
     filter_mapped(bam_raw, bam_filtered, paired, threads)
     bam_sort_input = bam_filtered
-    if paired:
+    if dedup:
         bam_dedup = sample + '-dedup.bam'
         remove_duplicates(bam_filtered, bam_dedup, threads)
         bam_sort_input = bam_dedup

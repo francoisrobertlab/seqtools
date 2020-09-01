@@ -103,7 +103,7 @@ def test_seqtools_filterbam(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['filterbam', '--samples', samples, '--unpaired', '--threads', threads, '--index', index])
     assert result.exit_code == 0
-    FilterBam.filter_bam.assert_called_once_with(samples, False, threads, index)
+    FilterBam.filter_bam.assert_called_once_with(samples, False, True, threads, index)
 
 
 def test_seqtools_genomecov(testdir, mock_testclass):
