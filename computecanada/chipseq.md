@@ -68,7 +68,7 @@ sbatch bam2bed.sh
 ## Merge dataset samples data
 
 ```
-sbatch merge.sh -s dataset.txt
+sbatch merge.sh -m dataset.txt
 ```
 
 <a name="genomecov"/>
