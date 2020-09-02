@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.bed import Bed
@@ -70,23 +71,23 @@ def genome_coverage(sample, sizes, scale=None, strand=None, genomecov_args=()):
 
 def coverage(bed_input, bed_output, sizes, sample, scale=None, strand=None, genomecov_args=()):
     '''Compute genome coverage.'''
-    coverage_output = bed_input + '.cov'
+    coverage_output_o, coverage_output = tempfile.mkstemp(suffix='.bed')
     cmd = ['bedtools', 'genomecov', '-bg', '-i', bed_input, '-g', sizes] + list(genomecov_args)
     if scale:
         cmd.extend(['-scale', str(scale)]) 
     if strand:
         cmd.extend(['-strand', strand]) 
     logging.debug('Running {}'.format(cmd))
-    with open(coverage_output, 'w') as outfile:
+    with open(coverage_output_o, 'w') as outfile:
         subprocess.run(cmd, stdout=outfile, check=True)
-    sort_output = bed_input + '.sort'
+    sort_output_o, sort_output = tempfile.mkstemp(suffix='.bed')
     Bed.sort(coverage_output, sort_output)
     os.remove(coverage_output)
     track = 'track type=bedGraph name="' + sample
     if strand:
         track += ' Minus' if strand == '-' else ' Plus'
     track += '"'
-    with open(sort_output, 'r') as infile, open(bed_output, 'w') as outfile:
+    with open(sort_output_o, 'r') as infile, open(bed_output, 'w') as outfile:
         outfile.write(track + '\n')
         outfile.writelines(infile)
     os.remove(sort_output)

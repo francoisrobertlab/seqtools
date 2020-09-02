@@ -49,6 +49,12 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
+def create_file_sort(*args, **kwargs):
+    output = args[1]
+    with open(output, 'w') as outfile:
+        outfile.write('test')
+
+
 def test_genomecov(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sizes = 'sacCer3.chrom.sizes'
@@ -492,149 +498,125 @@ def test_genome_coverage_scale_positivestrand(testdir, mock_testclass):
 def test_coverage(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_five(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, genomecov_args=('-5',))
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-5'], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_three(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, genomecov_args=('-3',))
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-3'], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_scale(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     scale = 1.5
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, scale)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale)], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + '"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_negativestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     strand = '-'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, None, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-strand', strand], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Minus"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_scale_negativestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     scale = 1.5
     strand = '-'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, scale, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale), '-strand', strand], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Minus"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_positivestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     strand = '+'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, None, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-strand', strand], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Plus"\n'
+        assert infile.readline() == 'test'
 
 
 def test_coverage_scale_positivestrand(testdir, mock_testclass):
     sample = 'POLR2A'
     bed = sample + '.bed'
-    coverage_output = bed + '.cov'
-    sort_output = bed + '.sort'
     output = sample + '-out.bed'
     sizes = 'human.sizes'
     scale = 1.5
     strand = '+'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', sort_output]))
+    Bed.sort = MagicMock(side_effect=create_file_sort)
     gc.coverage(bed, output, sizes, sample, scale, strand)
     subprocess.run.assert_called_once_with(['bedtools', 'genomecov', '-bg', '-i', bed, '-g', sizes, '-scale', str(scale), '-strand', strand], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(coverage_output, sort_output)
-    assert not os.path.exists(coverage_output)
-    assert not os.path.exists(sort_output)
+    Bed.sort.assert_called_once_with(ANY, ANY)
     with open(output, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Plus"\n'
+        assert infile.readline() == 'test'
