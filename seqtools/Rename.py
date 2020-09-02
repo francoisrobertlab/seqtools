@@ -1,5 +1,6 @@
 import glob
 import os
+import tempfile
 
 import click
 
@@ -34,8 +35,8 @@ def rename_(names, md5=True, strip_start=False, dry=False):
         
 
 def rename_in_md5(md5, replacement, dry=False):
-    md5_tmp = md5 + '.tmp'
-    with open(md5, 'r') as infile, open(md5_tmp, 'w') as outfile:
+    md5_temp_o, md5_temp = tempfile.mkstemp(suffix='.md5')
+    with open(md5, 'r') as infile, open(md5_temp_o, 'w') as outfile:
         for line in infile:
             columns = line.rstrip('\r\n').split()
             if len(columns) == 2:
@@ -43,9 +44,9 @@ def rename_in_md5(md5, replacement, dry=False):
                 outfile.write('  '.join(columns))
                 outfile.write('\n')
     if not dry:
-        os.rename(md5_tmp, md5)
+        os.rename(md5_temp, md5)
     else:
-        os.remove(md5_tmp)
+        os.remove(md5_temp)
 
 
 if __name__ == '__main__':

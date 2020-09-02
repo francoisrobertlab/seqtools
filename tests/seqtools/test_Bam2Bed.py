@@ -42,6 +42,18 @@ def create_file(*args, **kwargs):
             outfile.write('test')
 
 
+def create_file_bam2bedpe(*args, **kwargs):
+    output = args[1]
+    with open(output, 'w') as outfile:
+        outfile.write('test')
+
+
+def create_file_bedsort(*args, **kwargs):
+    output = args[1]
+    with open(output, 'w') as outfile:
+         outfile.write('test bed sort')
+
+
 def test_bam2bed(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     threads = 1
@@ -107,30 +119,28 @@ def test_bam2bed_samples_second_threads(testdir, mock_testclass):
 def test_bam2bed_sample_paired(testdir, mock_testclass):
     sample = 'POLR2A'
     bam = sample + '.bam'
-    bedpe = sample + '.bedpe'
     bed = sample + '.bed'
     threads = 2
-    bb.bam2bedpe = MagicMock(side_effect=create_file(['-o', bedpe]))
+    bb.bam2bedpe = MagicMock(side_effect=create_file_bam2bedpe)
     bb.bedpe2bed = MagicMock()
     bb.bam2bed_sample(sample, True, threads)
-    bb.bam2bedpe.assert_called_with(bam, bedpe, threads)
-    bb.bedpe2bed.assert_called_with(bedpe, bed)
-    assert not os.path.exists(bedpe)
+    bb.bam2bedpe.assert_called_with(bam, ANY, threads)
+    bb.bedpe2bed.assert_called_with(ANY, bed)
+    assert bb.bam2bedpe.call_args.args[1] == bb.bedpe2bed.call_args.args[0]
 
 
 def test_bam2bed_sample_paired_suffix(testdir, mock_testclass):
     sample = 'POLR2A'
     suffix = '-test'
     bam = sample + suffix + '.bam'
-    bedpe = sample + '.bedpe'
     bed = sample + '.bed'
     threads = 2
-    bb.bam2bedpe = MagicMock(side_effect=create_file(['-o', bedpe]))
+    bb.bam2bedpe = MagicMock(side_effect=create_file_bam2bedpe)
     bb.bedpe2bed = MagicMock()
     bb.bam2bed_sample(sample, True, threads, suffix)
-    bb.bam2bedpe.assert_called_with(bam, bedpe, threads)
-    bb.bedpe2bed.assert_called_with(bedpe, bed)
-    assert not os.path.exists(bedpe)
+    bb.bam2bedpe.assert_called_with(bam, ANY, threads)
+    bb.bedpe2bed.assert_called_with(ANY, bed)
+    assert bb.bam2bedpe.call_args.args[1] == bb.bedpe2bed.call_args.args[0]
 
 
 def test_bam2bed_sample_notpaired(testdir, mock_testclass):
@@ -156,39 +166,37 @@ def test_bam2bed_sample_unpaired(testdir, mock_testclass):
     sample = 'POLR2A'
     bam = sample + '.bam'
     bed = sample + '.bed'
-    conversion_output = bed + '-bam2bed.bed'
     subprocess.run = MagicMock(side_effect=create_file)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', bed]))
+    Bed.sort = MagicMock(side_effect=create_file_bedsort)
     bb.bam2bed_unpaired(bam, bed)
     subprocess.run.assert_any_call(['bedtools', 'bamtobed', '-i', bam], stdout=ANY, check=True)
-    Bed.sort.assert_called_with(conversion_output, bed)
-    assert not os.path.exists(conversion_output)
+    Bed.sort.assert_called_with(ANY, bed)
     assert os.path.exists(bed)
+    with open(bed, 'r') as infile:
+        assert infile.readline() == 'test bed sort'
 
     
 def test_bam2bedpe(testdir, mock_testclass):
     bam = 'POLR2A.bam'
-    bam_sort = bam + '.sort'
     bedpe = 'POLR2A.bedpe'
     threads = 2
     subprocess.run = MagicMock(side_effect=create_file)
     bb.bam2bedpe(bam, bedpe, threads)
-    subprocess.run.assert_any_call(['samtools', 'sort', '-n', '--threads', str(threads - 1), '-o', bam_sort, bam], check=True)
-    subprocess.run.assert_any_call(['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', bam_sort], stdout=ANY, check=True)
-    assert not os.path.exists(bam_sort)
+    subprocess.run.assert_any_call(['samtools', 'sort', '-n', '--threads', str(threads - 1), '-o', ANY, bam], check=True)
+    subprocess.run.assert_any_call(['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', ANY], stdout=ANY, check=True)
+    assert subprocess.run.call_args_list[0].args[0][6] == subprocess.run.call_args_list[1].args[0][5]
     assert os.path.exists(bedpe)
 
 
 def test_bam2bedpe_singlethread(testdir, mock_testclass):
     bam = 'POLR2A.bam'
-    bam_sort = bam + '.sort'
     bedpe = 'POLR2A.bedpe'
     threads = 1
     subprocess.run = MagicMock(side_effect=create_file)
     bb.bam2bedpe(bam, bedpe, threads)
-    subprocess.run.assert_any_call(['samtools', 'sort', '-n', '-o', bam_sort, bam], check=True)
-    subprocess.run.assert_any_call(['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', bam_sort], stdout=ANY, check=True)
-    assert not os.path.exists(bam_sort)
+    subprocess.run.assert_any_call(['samtools', 'sort', '-n', '-o', ANY, bam], check=True)
+    subprocess.run.assert_any_call(['bedtools', 'bamtobed', '-bedpe', '-mate1', '-i', ANY], stdout=ANY, check=True)
+    assert subprocess.run.call_args_list[0].args[0][4] == subprocess.run.call_args_list[1].args[0][5]
     assert os.path.exists(bedpe)
 
 
@@ -196,12 +204,10 @@ def test_bedpe2bed(testdir, mock_testclass):
     bedpe = 'POLR2A.bedpe'
     sample_bedpe = Path(__file__).parent.joinpath('sample.bedpe')
     copyfile(sample_bedpe, bedpe)
-    merge = bedpe + '-merge.bed'
     bed = 'POLR2A.bed'
     Bed.sort = MagicMock(side_effect=copyfile)
     bb.bedpe2bed(bedpe, bed)
-    Bed.sort.assert_called_with(merge, bed)
-    assert not os.path.exists(merge)
+    Bed.sort.assert_called_with(ANY, bed)
     assert os.path.exists(bed)
     with open(bed, 'r') as infile:
         assert infile.readline() == 'chr1\t100\t250\ttest1\t1\t+\t0\ttest0\n'

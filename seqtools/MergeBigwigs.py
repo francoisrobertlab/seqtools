@@ -1,12 +1,13 @@
 import logging
 import math
 import os
+import tempfile
 
 import click
-
-import pyBigWig as pbw
 from seqtools.bed import Bed
 from seqtools.txt import Parser
+
+import pyBigWig as pbw
 
 
 @click.command()
@@ -38,8 +39,8 @@ def merge_sample(name, samples, sizes):
     print ('Merging samples {} into a single sample {}'.format(samples, name))
     sizes_columns = Parser.columns(sizes)
     bws = [pbw.open(sample + '.bw') for sample in samples]
-    merged_bed_tmp = name + '-tmp.bed'
-    with open(merged_bed_tmp, 'w') as output:
+    merge_temp_o, merge_temp = tempfile.mkstemp(suffix='.bed')
+    with open(merge_temp_o, 'w') as output:
         output.write('track type=bedGraph name="' + name + '"\n')
         for size_columns in sizes_columns:
             chromosome = size_columns[0]
@@ -60,12 +61,12 @@ def merge_sample(name, samples, sizes):
                 output.write('\t')
                 output.write(str(sums[i]))
                 output.write('\n')
-    merged_bed_sort_tmp = name + '-tmp-sort.bed'
-    Bed.sort(merged_bed_tmp, merged_bed_sort_tmp)
+    sort_temp_o, sort_temp = tempfile.mkstemp(suffix='.bed')
+    Bed.sort(merge_temp, sort_temp)
     merged_bw = name + '.bw'
-    Bed.bedgraph_to_bigwig(merged_bed_sort_tmp, merged_bw, sizes)
-    os.remove(merged_bed_sort_tmp)
-    os.remove(merged_bed_tmp)
+    Bed.bedgraph_to_bigwig(sort_temp, merged_bw, sizes)
+    os.remove(sort_temp)
+    os.remove(merge_temp)
 
 
 if __name__ == '__main__':

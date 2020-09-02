@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.bed import Bed
@@ -40,7 +41,7 @@ def bam2bed_sample(sample, paired, threads=None, suffix=''):
     bam = sample + suffix + '.bam'
     bed = sample + '.bed'
     if paired:
-        bedpe = sample + '.bedpe'
+        bedpe_o, bedpe = tempfile.mkstemp(suffix='.bedpe')
         bam2bedpe(bam, bedpe, threads)
         bedpe2bed(bedpe, bed)
         os.remove(bedpe)
@@ -50,10 +51,10 @@ def bam2bed_sample(sample, paired, threads=None, suffix=''):
 
 def bam2bed_unpaired(bam, bed):
     '''Converts BAM file to BED.'''
-    conversion_output = bed + '-bam2bed.bed'
+    conversion_output_o, conversion_output = tempfile.mkstemp(suffix='.bed')
     cmd = ['bedtools', 'bamtobed', '-i', bam]
     logging.debug('Running {}'.format(cmd))
-    with open(conversion_output, 'w') as outfile:
+    with open(conversion_output_o, 'w') as outfile:
         subprocess.run(cmd, stdout=outfile, check=True)
     Bed.sort(conversion_output, bed)
     os.remove(conversion_output)
@@ -62,7 +63,7 @@ def bam2bed_unpaired(bam, bed):
 def bam2bedpe(bam, bedpe, threads=None):
     '''Converts BAM file to BEDPE.'''
     print ('Converting BAM {} to BEDPE {}'.format(bam, bedpe))
-    sort_output = bam + '.sort'
+    sort_output_o, sort_output = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'sort', '-n']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
@@ -79,9 +80,9 @@ def bam2bedpe(bam, bedpe, threads=None):
 def bedpe2bed(bedpe, bed):
     '''Converts BEDPE file to BED by merging the paired reads.'''
     print ('Converting BAM BEDPE {} to BED {} by merging the paired reads'.format(bedpe, bed))
-    merge_output = bedpe + '-merge.bed'
+    merge_output_o, merge_output = tempfile.mkstemp(suffix='.bed')
     with open(bedpe, 'r') as infile:
-        with open(merge_output, 'w') as outfile:
+        with open(merge_output_o, 'w') as outfile:
             for line in infile:
                 if line.startswith('track') or line.startswith('browser') or line.startswith('#'):
                     outfile.write(line)

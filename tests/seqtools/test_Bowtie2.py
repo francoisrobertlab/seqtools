@@ -143,24 +143,23 @@ def test_bowtie_sample_single(testdir, mock_testclass):
 def test_run_bowtie(testdir, mock_testclass):
     sample = 'PORL2A'
     bam = sample + '.bam'
-    sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
     fastq2 = sample + '_2.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq2)
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bowtie(fastq, fastq2, bam, None, ())
-    call1 = ['bowtie2', '-S', sam, '-1', fastq, '-2', fastq2]
-    call2 = ['samtools', 'view', '-b', '-o', bam, sam]
+    call1 = ['bowtie2', '-S', ANY, '-1', fastq, '-2', fastq2]
+    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
     subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    assert subprocess.run.call_args_list[0].args[0][2] == subprocess.run.call_args_list[1].args[0][5]
 
 
 def test_run_bowtie_parameters(testdir, mock_testclass):
     sample = 'PORL2A'
     bam = sample + '.bam'
-    sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
     fastq2 = sample + '_2.fastq'
@@ -169,17 +168,17 @@ def test_run_bowtie_parameters(testdir, mock_testclass):
     bowtie_args = ('-x', 'sacCer3.fa',)
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bowtie(fastq, fastq2, bam, threads, bowtie_args)
-    call1 = ['bowtie2', '-x', 'sacCer3.fa', '-p', str(threads), '-S', sam, '-1', fastq, '-2', fastq2]
-    call2 = ['samtools', 'view', '-b', '--threads', str(threads - 1), '-o', bam, sam]
+    call1 = ['bowtie2', '-x', 'sacCer3.fa', '-p', str(threads), '-S', ANY, '-1', fastq, '-2', fastq2]
+    call2 = ['samtools', 'view', '-b', '--threads', str(threads - 1), '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
     subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    assert subprocess.run.call_args_list[0].args[0][6] == subprocess.run.call_args_list[1].args[0][7]
 
 
 def test_run_bowtie_singlethread(testdir, mock_testclass):
     sample = 'PORL2A'
     bam = sample + '.bam'
-    sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
     fastq2 = sample + '_2.fastq'
@@ -188,39 +187,40 @@ def test_run_bowtie_singlethread(testdir, mock_testclass):
     bowtie_args = ('-x', 'sacCer3.fa',)
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bowtie(fastq, fastq2, bam, threads, bowtie_args)
-    call1 = ['bowtie2', '-x', 'sacCer3.fa', '-S', sam, '-1', fastq, '-2', fastq2]
-    call2 = ['samtools', 'view', '-b', '-o', bam, sam]
+    call1 = ['bowtie2', '-x', 'sacCer3.fa', '-S', ANY, '-1', fastq, '-2', fastq2]
+    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
     subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    assert subprocess.run.call_args_list[0].args[0][4] == subprocess.run.call_args_list[1].args[0][5]
 
 
 def test_run_bowtie_single(testdir, mock_testclass):
     sample = 'PORL2A'
     bam = sample + '.bam'
-    sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bowtie(fastq, None, bam, None, ())
-    call1 = ['bowtie2', '-S', sam, '-U', fastq]
-    call2 = ['samtools', 'view', '-b', '-o', bam, sam]
+    call1 = ['bowtie2', '-S', ANY, '-U', fastq]
+    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
     subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    assert subprocess.run.call_args_list[0].args[0][2] == subprocess.run.call_args_list[1].args[0][5]
 
 
 def test_run_bowtie_fastq2notexists(testdir, mock_testclass):
     sample = 'PORL2A'
     bam = sample + '.bam'
-    sam = bam + '.sam'
     fastq = sample + '_1.fastq'
     copyfile(Path(__file__).parent.joinpath('samples.txt'), fastq)
     fastq2 = sample + '_2.fastq'
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bowtie(fastq, None, bam, None, ())
-    call1 = ['bowtie2', '-S', sam, '-U', fastq]
-    call2 = ['samtools', 'view', '-b', '-o', bam, sam]
+    call1 = ['bowtie2', '-S', ANY, '-U', fastq]
+    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
     subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    assert subprocess.run.call_args_list[0].args[0][2] == subprocess.run.call_args_list[1].args[0][5]

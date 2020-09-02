@@ -2,6 +2,7 @@ import logging
 from multiprocessing import Pool
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.bed import Bed
@@ -33,8 +34,8 @@ def merge_samples(merge='merge.txt', index=None):
 def merge_sample(name, samples):
     '''Merge BED files related to samples.'''
     print ('Merging samples {} into a single sample {}'.format(samples, name))
-    merged_bed_tmp = name + '-tmp.bed'
-    with open(merged_bed_tmp, 'w') as outfile:
+    merge_temp_o, merge_temp = tempfile.mkstemp(suffix='.bed')
+    with open(merge_temp_o, 'w') as outfile:
         for sample in samples:
             sample_bed = sample + '.bed'
             with open(sample_bed, 'r') as infile:
@@ -43,8 +44,8 @@ def merge_sample(name, samples):
                         continue
                     outfile.write(line)
     merged_bed = name + '.bed'
-    Bed.sort(merged_bed_tmp, merged_bed)
-    os.remove(merged_bed_tmp)
+    Bed.sort(merge_temp, merged_bed)
+    os.remove(merge_temp)
 
 
 if __name__ == '__main__':

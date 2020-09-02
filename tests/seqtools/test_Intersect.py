@@ -112,17 +112,14 @@ def test_intersect_sample(testdir, mock_testclass):
     annotation_length = 8
     bed = sample + '.bed'
     tag_bed = tag + '.bed'
-    intersect_output = tag + '-tosort.bed'
-    stripping_output = tag + '-tmp.bed'
     subprocess.run = MagicMock(side_effect=create_intersectbed)
     Bed.sort = MagicMock(side_effect=create_file(['-o', tag_bed]))
+    os_remove = os.remove
     os.remove = MagicMock()
     ib.intersect_sample(sample, tag, annotations, annotation_length)
     subprocess.run.assert_called_once_with(['bedtools', 'intersect', '-a', annotations, '-b', bed, '-wb'], stdout=ANY, check=True)
-    Bed.sort.assert_called_once_with(stripping_output, tag_bed)
-    os.remove.assert_any_call(intersect_output)
-    os.remove.assert_any_call(stripping_output)
-    with open(stripping_output, 'r') as infile:
+    Bed.sort.assert_called_once_with(ANY, tag_bed)
+    with open(Bed.sort.call_args.args[0], 'r') as infile:
         assert infile.readline() == 'chr1\t110\t120\ttest1\t1\t+\n'
         assert infile.readline() == 'chr2\t415\t425\ttest2\t2\t+\n'
         assert infile.readline() == 'chr3\t520\t530\ttest3\t3\t+\n'
@@ -132,3 +129,5 @@ def test_intersect_sample(testdir, mock_testclass):
         assert infile.readline() == 'chr7\t520\t530\ttest3\t3\t-\n'
         assert infile.readline() == 'chr8\t820\t830\ttest4\t4\t-\n'
         assert infile.readline() == ''
+    for remove_args in os.remove.call_args_list:
+        os_remove(remove_args.args[0])

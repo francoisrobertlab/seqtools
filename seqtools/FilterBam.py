@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.txt import Parser
@@ -47,7 +48,7 @@ def filter_bam_sample(sample, paired, dedup, threads=None):
 def filter_mapped(bam_input, bam_output, paired, threads=None):
     '''Filter BAM file to remove poorly mapped sequences.'''
     print ('Filtering BAM {} to remove poorly mapped sequences'.format(bam_input))
-    temp = bam_input + '.tmp'
+    temp_o, temp = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'view', '-b', '-F', '2048']
     if bool(paired):
         cmd.extend(['-f', '2'])
@@ -65,34 +66,34 @@ def filter_mapped(bam_input, bam_output, paired, threads=None):
 def remove_duplicates(bam_input, bam_output, threads=None):
     '''Remove duplicated sequences from BAM file.'''
     print ('Removing duplicated sequences from BAM {}'.format(bam_input))
-    sort_bam = bam_input + '.fixsort'
+    sort_bam_o, sort_bam = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'sort', '-n']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend(['-o', sort_bam, bam_input])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    fixmate_output = bam_input + '.fix'
+    fixmate_o, fixmate = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'fixmate', '-m']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend([sort_bam, fixmate_output])
+    cmd.extend([sort_bam, fixmate])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     os.remove(sort_bam)
-    sort_output = bam_input + '.sort'
-    sort(fixmate_output, sort_output, threads)
-    os.remove(fixmate_output)
-    markdup_output = bam_input + '.dedup.tmp'
+    sort_fix_o, sort_fix = tempfile.mkstemp(suffix='.bam')
+    sort(fixmate, sort_fix, threads)
+    os.remove(fixmate)
+    markdup_o, markdup = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'markdup', '-r']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend([sort_output, markdup_output])
+    cmd.extend([sort_fix, markdup])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
-    os.remove(sort_output)
-    sort(markdup_output, bam_output, threads)
-    os.remove(markdup_output)
+    os.remove(sort_fix)
+    sort(markdup, bam_output, threads)
+    os.remove(markdup)
 
 
 def sort(bam_input, bam_output, threads=None):

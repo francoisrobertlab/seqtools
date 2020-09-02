@@ -90,12 +90,12 @@ def test_merge_sample(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sample.bed'), sample1_bed)
     copyfile(Path(__file__).parent.joinpath('sample2.bed'), sample2_bed)
     Bed.sort = MagicMock(side_effect=create_file(['-o', merge_bed]))
+    os_remove = os.remove
     os.remove = MagicMock()
     mb.merge_sample(merge, [sample1, sample2])
-    Bed.sort.assert_called_once_with(merge_bed_tmp, merge_bed)
-    os.remove.assert_called_once_with(merge_bed_tmp)
+    Bed.sort.assert_called_once_with(ANY, merge_bed)
     assert os.path.exists(merge_bed)
-    with open(merge_bed_tmp, 'r') as infile:
+    with open(Bed.sort.call_args.args[0], 'r') as infile:
         assert infile.readline() == 'chr1\t100\t150\ttest1\t1\t+\n'
         assert infile.readline() == 'chr2\t400\t450\ttest2\t2\t+\n'
         assert infile.readline() == 'chr3\t500\t650\ttest3\t3\t+\n'
@@ -113,3 +113,5 @@ def test_merge_sample(testdir, mock_testclass):
         assert infile.readline() == 'chr7\t600\t550\ttest7\t3\t-\n'
         assert infile.readline() == 'chr8\t700\t850\ttest8\t4\t-\n'
         assert infile.readline() == ''
+    for remove_args in os.remove.call_args_list:
+        os_remove(remove_args.args[0])

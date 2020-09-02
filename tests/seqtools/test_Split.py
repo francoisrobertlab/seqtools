@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, ANY
 
 import click
 from click.testing import CliRunner
+from more_itertools.more import side_effect
 import pytest
-
 from seqtools import Split as s
 from seqtools.bed import Bed
 
@@ -27,14 +27,10 @@ def mock_testclass():
     os.remove = remove
    
 
-def write_file(file, annotations):
-    if 'stdout' in kwargs:
-        outfile = kwargs['stdout']
-        outfile.write('test')
-    elif '-o' in args[0]:
-        output = args[0][args[0].index('-o') + 1]
-        with open(output, 'w') as outfile:
-            outfile.write('test')
+def create_file_sort(*args, **kwargs):
+    output = args[1]
+    sort_copy = Path(__file__).parent.joinpath('sample-split.bed')
+    copyfile(sort_copy, output)
 
 
 def test_split(testdir, mock_testclass):
@@ -113,31 +109,30 @@ def test_split_sample(testdir, mock_testclass):
     sort = sample + '-sort.bed'
     sort_copy = Path(__file__).parent.joinpath('sample-split.bed')
     copyfile(sort_copy, sort)
-    Bed.sort_bysize = MagicMock()
+    Bed.sort_bysize = MagicMock(side_effect=create_file_sort)
     Bed.sort = MagicMock()
+    os_remove = os.remove
     os.remove = MagicMock()
     binlength = 10
     binminlength = 100
     binmaxlength = 130
     s.split_sample(sample, binlength, binminlength, binmaxlength)
-    Bed.sort_bysize.assert_called_once_with(bed, sort)
-    Bed.sort.assert_any_call(sample + '-100-110-tmp.bed', sample + '-100-110.bed')
-    Bed.sort.assert_any_call(sample + '-110-120-tmp.bed', sample + '-110-120.bed')
-    Bed.sort.assert_any_call(sample + '-120-130-tmp.bed', sample + '-120-130.bed')
-    os.remove.assert_any_call(sort)
-    os.remove.assert_any_call(sample + '-100-110-tmp.bed')
-    os.remove.assert_any_call(sample + '-110-120-tmp.bed')
-    os.remove.assert_any_call(sample + '-120-130-tmp.bed')
-    with open(sample + '-100-110-tmp.bed', 'r') as infile:
+    Bed.sort_bysize.assert_called_once_with(bed, ANY)
+    Bed.sort.assert_any_call(ANY, sample + '-100-110.bed')
+    Bed.sort.assert_any_call(ANY, sample + '-110-120.bed')
+    Bed.sort.assert_any_call(ANY, sample + '-120-130.bed')
+    with open(Bed.sort.call_args_list[0].args[0], 'r') as infile:
         assert infile.readline() == 'chr4\t800\t900\ttest4\t4\t+\n'
         assert infile.readline() == ''
-    with open(sample + '-110-120-tmp.bed', 'r') as infile:
+    with open(Bed.sort.call_args_list[1].args[0], 'r') as infile:
         assert infile.readline() == 'chr8\t800\t910\ttest8\t4\t-\n'
         assert infile.readline() == ''
-    with open(sample + '-120-130-tmp.bed', 'r') as infile:
+    with open(Bed.sort.call_args_list[2].args[0], 'r') as infile:
         assert infile.readline() == 'chr5\t100\t220\ttest5\t1\t-\n'
         assert infile.readline() == 'chr1\t100\t229\ttest1\t1\t+\n'
         assert infile.readline() == ''
+    for remove_args in os.remove.call_args_list:
+        os_remove(remove_args.args[0])
 
 
 def test_annotation_length(testdir, mock_testclass):

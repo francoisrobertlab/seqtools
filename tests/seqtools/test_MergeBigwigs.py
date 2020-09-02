@@ -99,8 +99,6 @@ def test_mergebw_second(testdir, mock_testclass):
 
 def test_merge_sample(testdir, mock_testclass):
     merge = 'POLR2A'
-    merge_bed_tmp = merge + '-tmp.bed'
-    merged_bed_sort_tmp = merge + '-tmp-sort.bed'
     merge_bw = merge + '.bw'
     sample1 = merge + '_1'
     sample1_bw = sample1 + '.bw'
@@ -111,14 +109,14 @@ def test_merge_sample(testdir, mock_testclass):
     copyfile(Path(__file__).parent.joinpath('sample2.bw'), sample2_bw)
     Bed.sort = MagicMock()
     Bed.bedgraph_to_bigwig = MagicMock(side_effect=create_file(['-o', merge_bw]))
+    os_remove = os.remove
     os.remove = MagicMock()
     mb.merge_sample(merge, [sample1, sample2], sizes)
-    Bed.sort.assert_called_once_with(merge_bed_tmp, merged_bed_sort_tmp)
-    Bed.bedgraph_to_bigwig.assert_called_once_with(merged_bed_sort_tmp, merge_bw, sizes)
-    os.remove.assert_any_call(merge_bed_tmp)
-    os.remove.assert_any_call(merged_bed_sort_tmp)
+    Bed.sort.assert_called_once_with(ANY, ANY)
+    Bed.bedgraph_to_bigwig.assert_called_once_with(ANY, merge_bw, sizes)
+    assert Bed.sort.call_args.args[1] == Bed.bedgraph_to_bigwig.call_args.args[0]
     assert os.path.exists(merge_bw)
-    with open(merge_bed_tmp, 'r') as infile:
+    with open(Bed.sort.call_args.args[0], 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="POLR2A"\n'
         assert infile.readline() == 'chrI\t0\t1\t0\n'
         assert infile.readline() == 'chrI\t1\t2\t0\n'
@@ -166,3 +164,5 @@ def test_merge_sample(testdir, mock_testclass):
         assert math.isclose(float(line.split('\t')[3]), 0.6, abs_tol=0.001), line.split('\t')[3]
         assert infile.readline() == 'chrI\t14\t15\t0\n'
         assert infile.readline() == ''
+    for remove_args in os.remove.call_args_list:
+        os_remove(remove_args.args[0])

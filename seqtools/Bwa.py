@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.seq import Fastq
@@ -56,7 +57,7 @@ def bwa_index(fasta):
 
 def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=()):
     '''Run BWA on FASTQ files.'''
-    sam_output = bam_output + '.sam'
+    sam_output_o, sam_output = tempfile.mkstemp(suffix='.sam')
     cmd = ['bwa', 'mem'] + list(bwa_args)
     if not threads is None and threads > 1:
         cmd.extend(['-t', str(threads)])

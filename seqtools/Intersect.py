@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.bed import Bed
@@ -49,13 +50,13 @@ def intersect_sample(sample, tag, annotations, annot_length):
     print ('Keep only reads that intersects specified annotations for sample {}'.format(sample))
     bed = sample + '.bed'
     bed_tag = tag + '.bed'
-    bed_intersect_tmp = tag + '-tosort.bed'
-    bed_sort_tmp = tag + '-tmp.bed'
+    intersect_temp_o, intersect_temp = tempfile.mkstemp(suffix='.bed')
+    sort_temp_o, sort_temp = tempfile.mkstemp(suffix='.bed')
     cmd = ['bedtools', 'intersect', '-a', annotations, '-b', bed, '-wb']
     logging.debug('Running {}'.format(cmd))
-    with open(bed_intersect_tmp, 'w') as outfile:
+    with open(intersect_temp_o, 'w') as outfile:
         subprocess.run(cmd, stdout=outfile, check=True)
-    with open(bed_intersect_tmp, 'r') as infile, open(bed_sort_tmp, 'w') as outfile:
+    with open(intersect_temp, 'r') as infile, open(sort_temp_o, 'w') as outfile:
         for line in infile:
             if line.startswith('#'):
                 outfile.write(line)
@@ -66,9 +67,9 @@ def intersect_sample(sample, tag, annotations, annot_length):
                         outfile.write('\t')
                     outfile.write(columns[i])
                 outfile.write('\n')
-    os.remove(bed_intersect_tmp)
-    Bed.sort(bed_sort_tmp, bed_tag)
-    os.remove(bed_sort_tmp)
+    os.remove(intersect_temp)
+    Bed.sort(sort_temp, bed_tag)
+    os.remove(sort_temp)
 
     
 if __name__ == '__main__':

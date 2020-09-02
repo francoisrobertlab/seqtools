@@ -2,6 +2,7 @@ from distutils.command.check import check
 import logging
 import os
 import subprocess
+import tempfile
 
 import click
 from seqtools.seq import Fastq
@@ -47,7 +48,7 @@ def bowtie_sample(sample, threads=None, bowtie_args=()):
 
 def run_bowtie(fastq1, fastq2, bam_output, threads=None, bowtie_args=()):
     '''Run bowtie2 on FASTQ files.'''
-    sam_output = bam_output + '.sam'
+    sam_output_o, sam_output = tempfile.mkstemp(suffix='.sam')
     cmd = ['bowtie2'] + list(bowtie_args)
     if not threads is None and threads > 1:
         cmd.extend(['-p', str(threads)])

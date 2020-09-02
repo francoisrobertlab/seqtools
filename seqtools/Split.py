@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import subprocess
+import tempfile
 
 import click
 from seqtools.bed import Bed
@@ -40,24 +41,24 @@ def split_sample(sample, binlength, binminlength, binmaxlength):
     print ('Split BED file of sample {}'.format(sample))
     if binlength is not None:
         bed = sample + '.bed'
-        bed_sort = sample + '-sort.bed'
+        bed_sort_o, bed_sort = tempfile.mkstemp(suffix='.bed')
         Bed.sort_bysize(bed, bed_sort)
         with open(bed_sort, 'r') as infile:
             line = infile.readline()
             length = annotation_length(line)
             for bin_start in range(binminlength, binmaxlength, binlength):
                 bin_end = min(bin_start + binlength, binmaxlength)
-                bin_file_tmp = '{}-{}-{}-tmp.bed'.format(sample, bin_start, bin_end)
+                bin_temp_o, bin_temp = tempfile.mkstemp(suffix='.bed')
                 bin_file = '{}-{}-{}.bed'.format(sample, bin_start, bin_end)
                 print ('Splitting BED {} to BIN {}'.format(bed_sort, bin_file))
-                with open(bin_file_tmp, 'w') as outfile:
+                with open(bin_temp_o, 'w') as outfile:
                     while line != '' and length < bin_end:
                         if length >= bin_start:
                             outfile.write(line)
                         line = infile.readline()
                         length = annotation_length(line)
-                Bed.sort(bin_file_tmp, bin_file)
-                os.remove(bin_file_tmp)
+                Bed.sort(bin_temp, bin_file)
+                os.remove(bin_temp)
         os.remove(bed_sort)
 
 
