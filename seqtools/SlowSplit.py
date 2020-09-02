@@ -36,13 +36,13 @@ def split_sample(sample, binlength, binminlength, binmaxlength):
     '''Split BED file from a single sample based on lenght of annotations.'''
     print ('Split BED file of sample {}'.format(sample))
     if binlength is not None:
-        bed_raw = sample + '.bed'
+        bed = sample + '.bed'
         for bin_start in range(binminlength, binmaxlength, binlength):
             bin_end = min(bin_start + binlength, binmaxlength)
             sample_bin = '{}-{}-{}'.format(sample, bin_start, bin_end)
-            bed_bin_raw = sample_bin + '.bed'
-            print ('Splitting BED {} to BIN {}'.format(bed_raw, bed_bin_raw))
-            filter_bed_by_length(bed_raw, bed_bin_raw, bin_start, bin_end)
+            bed_bin = sample_bin + '.bed'
+            print ('Splitting BED {} to BIN {}'.format(bed, bed_bin))
+            filter_bed_by_length(bed, bed_bin, bin_start, bin_end)
 
 
 def filter_bed_by_length(bed, output, minLength, maxLength):

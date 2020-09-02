@@ -39,9 +39,9 @@ def split_sample(sample, binlength, binminlength, binmaxlength):
     '''Split BED file from a single sample based on lenght of annotations.'''
     print ('Split BED file of sample {}'.format(sample))
     if binlength is not None:
-        bed_raw = sample + '.bed'
+        bed = sample + '.bed'
         bed_sort = sample + '-sort.bed'
-        Bed.sort_bysize(bed_raw, bed_sort)
+        Bed.sort_bysize(bed, bed_sort)
         with open(bed_sort, 'r') as infile:
             line = infile.readline()
             length = annotation_length(line)

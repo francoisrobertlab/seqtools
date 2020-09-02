@@ -3,8 +3,9 @@ import os
 import subprocess
 
 import click
-import seqtools.Split as sb
 from seqtools.txt import Parser
+
+import seqtools.Split as sb
 
 
 @click.command()
@@ -37,9 +38,9 @@ def sample_splits_prepgenomecov(sample):
 
 
 def prepgenomecov_sample(sample):
-    bed_raw = sample + '.bed'
+    bed = sample + '.bed'
     bed_forcoverage = sample + '-forcov.bed'
-    center_annotations(bed_raw, bed_forcoverage)
+    center_annotations(bed, bed_forcoverage)
 
 
 def center_annotations(bed, output):

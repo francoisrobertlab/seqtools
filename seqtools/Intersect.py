@@ -4,8 +4,9 @@ import os
 import subprocess
 
 import click
-import pandas as pd
 from seqtools.bed import Bed
+
+import pandas as pd
 
 
 @click.command()
@@ -46,11 +47,11 @@ def annotations_length(annotations):
 def intersect_sample(sample, tag, annotations, annot_length):
     '''Keep only reads that intersects specified annotations for a single sample.'''
     print ('Keep only reads that intersects specified annotations for sample {}'.format(sample))
-    bed_raw = sample + '.bed'
-    bed_tag_raw = tag + '.bed'
+    bed = sample + '.bed'
+    bed_tag = tag + '.bed'
     bed_intersect_tmp = tag + '-tosort.bed'
     bed_sort_tmp = tag + '-tmp.bed'
-    cmd = ['bedtools', 'intersect', '-a', annotations, '-b', bed_raw, '-wb']
+    cmd = ['bedtools', 'intersect', '-a', annotations, '-b', bed, '-wb']
     logging.debug('Running {}'.format(cmd))
     with open(bed_intersect_tmp, 'w') as outfile:
         subprocess.run(cmd, stdout=outfile, check=True)
@@ -66,7 +67,7 @@ def intersect_sample(sample, tag, annotations, annot_length):
                     outfile.write(columns[i])
                 outfile.write('\n')
     os.remove(bed_intersect_tmp)
-    Bed.sort(bed_sort_tmp, bed_tag_raw)
+    Bed.sort(bed_sort_tmp, bed_tag)
     os.remove(bed_sort_tmp)
 
     
