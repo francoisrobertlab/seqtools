@@ -8,9 +8,7 @@ from seqtools.txt import Parser
 import seqtools.Split as sb
 
 
-@click.command(context_settings=dict(
-    ignore_unknown_options=True,
-))
+@click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
 @click.option('--distance', '-d', type=int,
