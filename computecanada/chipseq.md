@@ -47,6 +47,8 @@ bowtie2-build sacCer3.fa sacCer3.fa.index
 sbatch bowtie2.sh -x sacCer3.fa.index
 ```
 
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
 <a name="filter"/>
 
 ## Filter reads to remove poorly map reads and duplicates

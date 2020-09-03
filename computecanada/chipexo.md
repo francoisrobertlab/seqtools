@@ -49,6 +49,8 @@ bwa index sacCer3.fa
 sbatch bwa.sh --fasta sacCer3.fa
 ```
 
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
 <a name="filter"/>
 
 ## Filter reads to remove poorly map reads and duplicates
