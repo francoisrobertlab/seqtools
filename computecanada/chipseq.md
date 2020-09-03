@@ -70,7 +70,7 @@ sbatch genomecov.sh -S sacCer3.chrom.sizes
 sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
 ```
 
-:bulb: These commands can be called simultaneously
+:bulb: The previous commands can be called simultaneously
 
 ## Statistics
 

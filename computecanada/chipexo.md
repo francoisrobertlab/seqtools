@@ -78,7 +78,7 @@ sbatch moveannotations.sh -d 6 -rn -dn
 sbatch moveannotations.sh -s dataset.txt -d 6 -rn -dn
 ```
 
-:bulb: These commands can be called simultaneously
+:bulb: The previous commands can be called simultaneously
 
 ## Genome coverage
 
@@ -91,7 +91,7 @@ sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes -5 --strand +
 sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes -5 --strand -
 ```
 
-:bulb: These commands can be called simultaneously
+:bulb: The previous commands can be called simultaneously
 
 ## Statistics
 
