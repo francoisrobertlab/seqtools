@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=def-robertf
 #SBATCH --time=24:00:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=16G
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=48G
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
 #SBATCH --output=bowtie2-%A_%a.out
