@@ -40,7 +40,7 @@ See [Uploading dataset files to Compute Canada server](upload.md)
 twoBitToFa sacCer3.2bit sacCer3.fa
 ```
 
-### Run bowtie2
+### Run bwa
 
 Run the following commands
 
