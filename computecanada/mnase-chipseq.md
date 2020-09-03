@@ -14,9 +14,9 @@
 * [Keep only middle nucleotide](#keep-only-middle-nucleotide)
 * [Genome converage](#genome-coverage)
 * [Statistics](#statistics)
-* [Heatmaps of coverage over genes versus fragment size (Optional)](#heatmaps-of-coverage-over-genes-versus-fragment-size-(optional\))
-* [Two-dimensional occupancy (2DO) plots (Optional)](#two-dimensional-occupancy-(2do\)-plots-(optional\))
-* [Distributions of MNase-ChIP-seq fragments relative to nucleosome dyads (Optional)](#distributions-of-mnase-chip-seq-fragments-relative-to-nucleosome-dyads-(optional\))
+* [Heatmaps of coverage over genes versus fragment size (Optional)](#heatmaps-of-coverage-over-genes-versus-fragment-size-\(optional\))
+* [Two-dimensional occupancy (2DO) plots (Optional)](#two-dimensional-occupancy-\(2do\)-plots-\(optional\))
+* [Distributions of MNase-ChIP-seq fragments relative to nucleosome dyads (Optional)](#distributions-of-mnase-chip-seq-fragments-relative-to-nucleosome-dyads-\(optional\))
 
 ## Upload dataset files to Compute Canada
 
