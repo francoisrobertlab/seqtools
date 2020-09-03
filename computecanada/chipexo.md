@@ -53,6 +53,8 @@ sbatch bwa.sh --fasta sacCer3.fa
 sbatch filterbam.sh
 ```
 
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
 ## Remove second mate
 
 ```

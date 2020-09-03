@@ -55,6 +55,8 @@ sbatch bowtie2.sh -x sacCer3.fa.index -X 1000
 sbatch filterbam.sh
 ```
 
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
 ## Convert BAM files to fragment BED files
 
 ```
