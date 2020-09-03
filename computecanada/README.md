@@ -10,3 +10,4 @@
 
 * [ChIP-seq](chipseq.md)
 * [ChIP-exo](chipexo.md)
+* [MNase-ChIP-seq](mnase-chipseq.md)
