@@ -6,23 +6,19 @@
 
 #### Steps
 
-* [Upload dataset files to Compute Canada](upload)
-* [Align FASTQ files](align)
-* [Filter reads](filter)
-* [Remove second mate](removesecondmate)
-* [Convert BAM to BED](bam2bed)
-* [Merge samples into dataset](merge)
-* [Move annotations](moveannotations)
-* [Genome converage](genomecov)
-* [Statistics](statistics)
-
-<a name="upload"/>
+* [Upload dataset files to Compute Canada](#upload-dataset-files-to-compute-canada)
+* [Align FASTQ files](#align-fastq-files-with-genome)
+* [Filter reads](#filter-reads-to-remove-poorly-map-reads-and-duplicates)
+* [Remove second mate](#remove-second-mate)
+* [Convert BAM to BED](#convert-bam-files-to-fragment-bed-files)
+* [Merge samples into dataset](#merge-dataset-samples-data)
+* [Move annotations](#move-annotations)
+* [Genome converage](#genome-coverage)
+* [Statistics](#statistics)
 
 ## Upload dataset files to Compute Canada
 
 See [Uploading dataset files to Compute Canada server](upload.md)
-
-<a name="align"/>
 
 ## Align FASTQ files with genome
 
@@ -51,15 +47,11 @@ sbatch bwa.sh --fasta sacCer3.fa
 
 :bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
 
-<a name="filter"/>
-
 ## Filter reads to remove poorly map reads and duplicates
 
 ```
 sbatch filterbam.sh
 ```
-
-<a name="removesecondmate"/>
 
 ## Remove second mate
 
@@ -67,23 +59,17 @@ sbatch filterbam.sh
 sbatch removesecondmate.sh
 ```
 
-<a name="bam2bed"/>
-
 ## Convert BAM files to fragment BED files
 
 ```
 sbatch bam2bed.sh --unpaired --suffix -mate1
 ```
 
-<a name="merge"/>
-
 ## Merge dataset samples data
 
 ```
 sbatch merge.sh -m dataset.txt
 ```
-
-<a name="moveannotations"/>
 
 ## Move annotations
 
@@ -93,8 +79,6 @@ sbatch moveannotations.sh -s dataset.txt -d 6 -rn -dn
 ```
 
 :bulb: These commands can be called simultaneously
-
-<a name="genomecov"/>
 
 ## Genome coverage
 
@@ -108,8 +92,6 @@ sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes -5 --strand -
 ```
 
 :bulb: These commands can be called simultaneously
-
-<a name="statistics"/>
 
 ## Statistics
 
