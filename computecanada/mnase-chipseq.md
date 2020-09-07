@@ -63,6 +63,8 @@ sbatch filterbam.sh
 sbatch bam2bed.sh
 ```
 
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
 ## Merge dataset samples data
 
 ```
