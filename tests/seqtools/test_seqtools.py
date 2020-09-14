@@ -197,12 +197,11 @@ def test_seqtools_rename(testdir, mock_testclass):
 
 def test_seqtools_shiftannotations(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    genome = Path(__file__).parent.joinpath('sizes.txt')
     ShiftAnnotations.shift_annotations_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['shiftannotations', '--samples', samples, '--genome', genome])
+    result = runner.invoke(seqtools.seqtools, ['shiftannotations', '--samples', samples])
     assert result.exit_code == 0
-    ShiftAnnotations.shift_annotations_samples.assert_called_once_with(samples, genome, None, ())
+    ShiftAnnotations.shift_annotations_samples.assert_called_once_with(samples, None, ())
 
 
 def test_seqtools_slowsplit(testdir, mock_testclass):
