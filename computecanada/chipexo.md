@@ -76,8 +76,8 @@ sbatch merge.sh -m dataset.txt
 ## Move annotations
 
 ```
-sbatch moveannotations.sh -d 6 -rn -dn
-sbatch moveannotations.sh -s dataset.txt -d 6 -rn -dn
+sbatch shiftannotations.sh -g sacCer3.chrom.sizes -m -6 -p 6
+sbatch shiftannotations.sh -s dataset.txt -g sacCer3.chrom.sizes -m -6 -p 6
 ```
 
 :bulb: The previous commands can be called simultaneously
