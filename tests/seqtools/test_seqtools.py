@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -23,6 +23,7 @@ def mock_testclass():
     plot2do_samples = Plot2do.plot2do_samples
     removesecondmate_samples = RemoveSecondMate.removesecondmate_samples
     rename = Rename.rename_
+    shift_annotations_samples = ShiftAnnotations.shift_annotations_samples
     slow_split_samples = SlowSplit.split_samples
     split_samples = Split.split_samples
     statistics_samples = Statistics.statistics_samples
@@ -192,6 +193,16 @@ def test_seqtools_rename(testdir, mock_testclass):
     logging.warning(result.output)
     assert result.exit_code == 0
     Rename.rename_.assert_called_once_with(names, True, False, False)
+
+
+def test_seqtools_shiftannotations(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    genome = Path(__file__).parent.joinpath('sizes.txt')
+    ShiftAnnotations.shift_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['shiftannotations', '--samples', samples, '--genome', genome])
+    assert result.exit_code == 0
+    ShiftAnnotations.shift_annotations_samples.assert_called_once_with(samples, genome, None, ())
 
 
 def test_seqtools_slowsplit(testdir, mock_testclass):
