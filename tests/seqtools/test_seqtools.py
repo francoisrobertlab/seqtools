@@ -115,7 +115,7 @@ def test_seqtools_genomecov(testdir, mock_testclass):
     index = 2
     GenomeCoverage.genome_coverage_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '--sizes', sizes, '-5', '--scale', scale, '--strand', strand, '--index', index])
+    result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '-g', sizes, '-5', '-scale', scale, '-strand', strand, '--index', index])
     assert result.exit_code == 0
     GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, index, ('-5',))
 

@@ -83,8 +83,8 @@ sbatch mnase-prepgenomecov.sh -s dataset.txt
 ## Genome coverage
 
 ```
-sbatch genomecov.sh -S sacCer3.chrom.sizes
-sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
+sbatch genomecov.sh -g sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 ```
 
 :bulb: The previous commands can be called simultaneously
@@ -102,7 +102,7 @@ Upload [VAP parameters file](mnase-chipseq/vap_parameters.txt) to Compute Canada
 ```
 sbatch split.sh -s dataset.txt --binLength 10 --binMinLength 50 --binMaxLength 500
 sbatch mnase-prepgenomecov.sh -s dataset.txt
-sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 sbatch vap.sh -s dataset.txt -p vap_parameters.txt
 remove-bins.sh
 ```
@@ -134,7 +134,7 @@ sbatch slowsplit.sh -s dataset.txt --binLength 11 --binMinLength 120 --binMaxLen
 
 ```
 sbatch mnase-prepgenomecov.sh -s dataset.txt
-sbatch genomecov.sh -s dataset.txt -S sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 ```
 
 :warning: The previous commands must be called sequentially
