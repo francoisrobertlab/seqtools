@@ -64,7 +64,7 @@ sbatch removesecondmate.sh
 ## Convert BAM files to fragment BED files
 
 ```
-sbatch bam2bed.sh --unpaired --suffix -mate1
+sbatch bam2bed.sh --unpaired -is -mate1
 ```
 
 ## Merge dataset samples data
