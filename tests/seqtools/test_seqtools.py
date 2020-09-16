@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -21,7 +21,6 @@ def mock_testclass():
     intersect_samples = Intersect.intersect_samples
     merge_samples = Merge.merge_samples
     merge_samples_bw = MergeBigwigs.merge_samples
-    moveannotations_samples = MoveAnnotations.moveannotations_samples
     plot2do_samples = Plot2do.plot2do_samples
     removesecondmate_samples = RemoveSecondMate.removesecondmate_samples
     rename = Rename.rename_
@@ -41,7 +40,6 @@ def mock_testclass():
     Intersect.intersect_samples = intersect_samples
     Merge.merge_samples = merge_samples
     MergeBigwigs.merge_samples = merge_samples_bw
-    MoveAnnotations.moveannotations_samples = moveannotations_samples
     Plot2do.plot2do_samples = plot2do_samples
     RemoveSecondMate.removesecondmate_samples = removesecondmate_samples
     Rename.rename_ = rename
@@ -175,16 +173,6 @@ def test_seqtools_mergebw(testdir, mock_testclass):
     MergeBigwigs.merge_samples.assert_called_once_with(samples, sizes, index)
 
  
-def test_seqtools_moveannotations(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('samples.txt')
-    distance = 32
-    MoveAnnotations.moveannotations_samples = MagicMock()
-    runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['moveannotations', '--samples', samples, '--distance', distance])
-    assert result.exit_code == 0
-    MoveAnnotations.moveannotations_samples.assert_called_once_with(samples, distance, True, True, None)
-
-
 def test_seqtools_plot2do(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 2
