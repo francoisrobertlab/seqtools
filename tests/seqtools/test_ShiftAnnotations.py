@@ -40,21 +40,23 @@ def test_shiftannotations(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(sa.shiftannotations, ['-s', samples])
     assert result.exit_code == 0
-    sa.shift_annotations_samples.assert_called_once_with(samples, None, ())
+    sa.shift_annotations_samples.assert_called_once_with(samples, '', '-forcov', None, ())
 
 
 def test_shiftannotations_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     genome = 'sacCer3.chrom.sizes'
     copyfile(Path(__file__).parent.joinpath('sizes.txt'), genome)
+    input_suffix = '-input'
+    output_suffix = '-output'
     minus = '2'
     plus = '-2'
     index = 1
     sa.shift_annotations_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(sa.shiftannotations, ['-s', samples, '-g', genome, '-m', minus, '-p', plus, '-i', index])
+    result = runner.invoke(sa.shiftannotations, ['-s', samples, '-is', input_suffix, '-os', output_suffix, '-g', genome, '-m', minus, '-p', plus, '-i', index])
     assert result.exit_code == 0
-    sa.shift_annotations_samples.assert_called_once_with(samples, index, ('-g', genome, '-m', minus, '-p', plus,))
+    sa.shift_annotations_samples.assert_called_once_with(samples, input_suffix, output_suffix, index, ('-g', genome, '-m', minus, '-p', plus,))
 
 
 def test_shiftannotations_second(testdir, mock_testclass):
@@ -64,7 +66,7 @@ def test_shiftannotations_second(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(sa.shiftannotations, ['-s', samples, '-i', index])
     assert result.exit_code == 0
-    sa.shift_annotations_samples.assert_called_once_with(samples, index, ())
+    sa.shift_annotations_samples.assert_called_once_with(samples, '', '-forcov', index, ())
 
 
 def test_shiftannotations_samplesnotexists(testdir, mock_testclass):
@@ -84,21 +86,23 @@ def test_shift_annotations_samples(testdir, mock_testclass):
     sa.shift_annotations_samples(samples_file)
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
-        sa.shift_annotations_sample.assert_any_call(sample, ())
+        sa.shift_annotations_sample.assert_any_call(sample, '', '-forcov', ())
 
 
 def test_shift_annotations_samples_parameters(testdir, mock_testclass):
     samples_file = Path(__file__).parent.joinpath('samples.txt')
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     genome = 'sacCer3.chrom.sizes'
+    input_suffix = '-input'
+    output_suffix = '-output'
     minus = '2'
     plus = '-2'
     Parser.first = MagicMock(return_value=samples)
     sa.shift_annotations_sample = MagicMock()
-    sa.shift_annotations_samples(samples_file, bedtools_args=('-g', genome, '-m', minus, '-p', plus,))
+    sa.shift_annotations_samples(samples_file, input_suffix, output_suffix, bedtools_args=('-g', genome, '-m', minus, '-p', plus,))
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
-        sa.shift_annotations_sample.assert_any_call(sample, ('-g', genome, '-m', minus, '-p', plus,))
+        sa.shift_annotations_sample.assert_any_call(sample, input_suffix, output_suffix, ('-g', genome, '-m', minus, '-p', plus,))
 
 
 def test_shift_annotations_samples_second(testdir, mock_testclass):
@@ -108,7 +112,7 @@ def test_shift_annotations_samples_second(testdir, mock_testclass):
     sa.shift_annotations_sample = MagicMock()
     sa.shift_annotations_samples(samples_file, index=1)
     Parser.first.assert_called_once_with(samples_file)
-    sa.shift_annotations_sample.assert_any_call(samples[1], ())
+    sa.shift_annotations_sample.assert_any_call(samples[1], '', '-forcov', ())
 
     
 def test_shift_annotations_sample(testdir, mock_testclass):
@@ -128,14 +132,16 @@ def test_shift_annotations_sample(testdir, mock_testclass):
 def test_shift_annotations_sample_parameters(testdir, mock_testclass):
     sample = 'POLR2A'
     genome = 'sacCer3.chrom.sizes'
+    input_suffix = '-input'
+    output_suffix = '-output'
     minus = '2'
     plus = '-2'
     src_bed = Path(__file__).parent.joinpath('sample.bed')
-    bed = sample + '.bed'
-    forcov = sample + '-forcov.bed'
+    bed = sample + input_suffix + '.bed'
+    forcov = sample + output_suffix + '.bed'
     copyfile(src_bed, bed)
     subprocess.run = MagicMock(side_effect=create_file)
-    sa.shift_annotations_sample(sample, ('-g', genome, '-m', minus, '-p', plus,))
+    sa.shift_annotations_sample(sample, input_suffix, output_suffix, ('-g', genome, '-m', minus, '-p', plus,))
     subprocess.run.assert_called_once_with(['bedtools', 'shift', '-i', bed, '-g', genome, '-m', minus, '-p', plus], stdout=ANY, check=True)
     assert os.path.exists(forcov)
     with open(forcov, 'r') as infile:

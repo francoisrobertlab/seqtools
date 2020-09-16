@@ -222,7 +222,7 @@ def test_seqtools_shiftannotations(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['shiftannotations', '--samples', samples])
     assert result.exit_code == 0
-    ShiftAnnotations.shift_annotations_samples.assert_called_once_with(samples, None, ())
+    ShiftAnnotations.shift_annotations_samples.assert_called_once_with(samples, '', '-forcov', None, ())
 
 
 def test_seqtools_slowsplit(testdir, mock_testclass):
