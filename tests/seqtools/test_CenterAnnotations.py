@@ -34,7 +34,29 @@ def test_centerannotations(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(ca.centerannotations, ['-s', samples])
     assert result.exit_code == 0
-    ca.center_annotations_samples.assert_called_once_with(samples, None)
+    ca.center_annotations_samples.assert_called_once_with(samples, '', '-forcov', None)
+
+
+def test_centerannotations_parameters(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-input'
+    output_suffix = '-output'
+    ca.center_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(ca.centerannotations, ['-s', samples, '-is', input_suffix, '-os', output_suffix])
+    assert result.exit_code == 0
+    ca.center_annotations_samples.assert_called_once_with(samples, input_suffix, output_suffix, None)
+
+
+def test_centerannotations_same_suffixes(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-input'
+    output_suffix = '-input'
+    ca.center_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(ca.centerannotations, ['-s', samples, '-is', input_suffix, '-os', output_suffix])
+    assert result.exit_code > 0
+    ca.center_annotations_samples.assert_not_called()
 
 
 def test_centerannotations_second(testdir, mock_testclass):
@@ -44,7 +66,7 @@ def test_centerannotations_second(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(ca.centerannotations, ['-s', samples, '-i', index])
     assert result.exit_code == 0
-    ca.center_annotations_samples.assert_called_once_with(samples, index)
+    ca.center_annotations_samples.assert_called_once_with(samples, '', '-forcov', index)
 
 
 def test_centerannotations_samplesnotexists(testdir, mock_testclass):
@@ -64,7 +86,20 @@ def test_center_annotations_samples(testdir, mock_testclass):
     ca.center_annotations_samples(samples_file)
     Parser.first.assert_called_once_with(samples_file)
     for sample in samples:
-        ca.center_annotations_sample_splits.assert_any_call(sample)
+        ca.center_annotations_sample_splits.assert_any_call(sample, '', '-forcov')
+
+
+def test_center_annotations_samples_parameters(testdir, mock_testclass):
+    samples_file = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-input'
+    output_suffix = '-output'
+    samples = ['POLR2A', 'ASDURF', 'POLR1C']
+    Parser.first = MagicMock(return_value=samples)
+    ca.center_annotations_sample_splits = MagicMock()
+    ca.center_annotations_samples(samples_file, input_suffix, output_suffix)
+    Parser.first.assert_called_once_with(samples_file)
+    for sample in samples:
+        ca.center_annotations_sample_splits.assert_any_call(sample, input_suffix, output_suffix)
 
 
 def test_center_annotations_samples_second(testdir, mock_testclass):
@@ -72,9 +107,9 @@ def test_center_annotations_samples_second(testdir, mock_testclass):
     samples = ['POLR2A', 'ASDURF', 'POLR1C']
     Parser.first = MagicMock(return_value=samples)
     ca.center_annotations_sample_splits = MagicMock()
-    ca.center_annotations_samples(samples_file, 1)
+    ca.center_annotations_samples(samples_file, index=1)
     Parser.first.assert_called_once_with(samples_file)
-    ca.center_annotations_sample_splits.assert_called_once_with(samples[1])
+    ca.center_annotations_sample_splits.assert_called_once_with(samples[1], '', '-forcov')
 
     
 def test_center_annotations_sample_splits(testdir, mock_testclass):
@@ -83,9 +118,22 @@ def test_center_annotations_sample_splits(testdir, mock_testclass):
     ca.center_annotations_sample = MagicMock()
     sb.splits = MagicMock(return_value=splits)
     ca.center_annotations_sample_splits(sample)
-    ca.center_annotations_sample.assert_any_call(sample)
+    ca.center_annotations_sample.assert_any_call(sample, '', '-forcov')
     for split in splits:
-        ca.center_annotations_sample.assert_any_call(split)
+        ca.center_annotations_sample.assert_any_call(split, '', '-forcov')
+
+
+def test_center_annotations_sample_splits_parameters(testdir, mock_testclass):
+    sample = 'POLR2A'
+    input_suffix = '-input'
+    output_suffix = '-output'
+    splits = ['POLR2A-100-110', 'POLR2A-120-130']
+    ca.center_annotations_sample = MagicMock()
+    sb.splits = MagicMock(return_value=splits)
+    ca.center_annotations_sample_splits(sample, input_suffix, output_suffix)
+    ca.center_annotations_sample.assert_any_call(sample, input_suffix, output_suffix)
+    for split in splits:
+        ca.center_annotations_sample.assert_any_call(split, input_suffix, output_suffix)
 
     
 def test_center_annotations_sample_splits_notsplits(testdir, mock_testclass):
@@ -94,7 +142,7 @@ def test_center_annotations_sample_splits_notsplits(testdir, mock_testclass):
     ca.center_annotations_sample = MagicMock()
     sb.splits = MagicMock(return_value=splits)
     ca.center_annotations_sample_splits(sample)
-    ca.center_annotations_sample.assert_called_once_with(sample)
+    ca.center_annotations_sample.assert_called_once_with(sample, '', '-forcov')
 
     
 def test_center_annotations_sample(testdir, mock_testclass):
@@ -112,6 +160,17 @@ def test_center_annotations_sample_split(testdir, mock_testclass):
     forcov = split + '-forcov.bed'
     ca.center_annotations = MagicMock()
     ca.center_annotations_sample(split)
+    ca.center_annotations.assert_called_once_with(bed, forcov)
+
+
+def test_center_annotations_sample_parameters(testdir, mock_testclass):
+    sample = 'POLR2A'
+    input_suffix = '-input'
+    output_suffix = '-output'
+    bed = sample + input_suffix + '.bed'
+    forcov = sample + output_suffix + '.bed'
+    ca.center_annotations = MagicMock()
+    ca.center_annotations_sample(sample, input_suffix, output_suffix)
     ca.center_annotations.assert_called_once_with(bed, forcov)
 
     

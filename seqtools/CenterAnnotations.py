@@ -8,38 +8,50 @@ import seqtools.Split as sb
 from seqtools.txt import Parser
 
 
+def validate_output_suffix(ctx, param, value):
+    '''Validates that output suffix is different than input suffix'''
+    if value == ctx.params['input_suffix']:
+        raise click.BadParameter('output suffix "{}" must be different than input suffix'.format(value))
+    else:
+        return value
+
+
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
+@click.option('--input-suffix', '-is', default='', show_default=True,
+              help='Suffix added to sample name in BED filename for input.')
+@click.option('--output-suffix', '-os', callback=validate_output_suffix, default='-forcov', show_default=True,
+              help='Suffix added to sample name in BED filename for input.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def centerannotations(samples, index):
+def centerannotations(samples, input_suffix, output_suffix, index):
     '''Prepare BED file used for genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    center_annotations_samples(samples, index)
+    center_annotations_samples(samples, input_suffix, output_suffix, index)
 
 
-def center_annotations_samples(samples='samples.txt', index=None):
+def center_annotations_samples(samples='samples.txt', input_suffix='', output_suffix='-forcov', index=None):
     '''Prepare BED file used for genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        center_annotations_sample_splits(sample)
+        center_annotations_sample_splits(sample, input_suffix, output_suffix)
 
 
-def center_annotations_sample_splits(sample):
+def center_annotations_sample_splits(sample, input_suffix='', output_suffix='-forcov'):
     '''Prepare BED file used for genome coverage on a single sample.'''
     print ('Compute genome coverage on sample {}'.format(sample))
-    center_annotations_sample(sample)
+    center_annotations_sample(sample, input_suffix, output_suffix)
     splits = sb.splits(sample)
     for split in splits:
-        center_annotations_sample(split)
+        center_annotations_sample(split, input_suffix, output_suffix)
 
 
-def center_annotations_sample(sample):
-    bed = sample + '.bed'
-    bed_forcoverage = sample + '-forcov.bed'
+def center_annotations_sample(sample, input_suffix='', output_suffix='-forcov'):
+    bed = sample + input_suffix + '.bed'
+    bed_forcoverage = sample + output_suffix + '.bed'
     center_annotations(bed, bed_forcoverage)
 
 

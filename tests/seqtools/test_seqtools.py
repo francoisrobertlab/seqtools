@@ -91,7 +91,7 @@ def test_seqtools_centerannotations(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['centerannotations', '--samples', samples])
     assert result.exit_code == 0
-    CenterAnnotations.center_annotations_samples.assert_called_once_with(samples, None)
+    CenterAnnotations.center_annotations_samples.assert_called_once_with(samples, '', '-forcov', None)
 
 
 def test_seqtools_download(testdir, mock_testclass):
