@@ -132,13 +132,13 @@ def test_seqtools_genomecov(testdir, mock_testclass):
     GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, index, ('-5',))
 
 
-def test_ignorestrand(testdir, mock_testclass):
+def test_seqtools_ignorestrand(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     IgnoreStrand.ignore_strand_samples = MagicMock()
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['ignorestrand', '--samples', samples])
     assert result.exit_code == 0
-    IgnoreStrand.ignore_strand_samples.assert_called_once_with(samples, None)
+    IgnoreStrand.ignore_strand_samples.assert_called_once_with(samples, '', '-forcov', None)
 
 
 def test_seqtools_intersect(testdir, mock_testclass):
