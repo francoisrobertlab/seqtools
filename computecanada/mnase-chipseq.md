@@ -74,8 +74,8 @@ sbatch merge.sh -m dataset.txt
 ## Keep only middle nucleotide
 
 ```
-sbatch mnase-prepgenomecov.sh
-sbatch mnase-prepgenomecov.sh -s dataset.txt
+sbatch centerannotations.sh
+sbatch centerannotations.sh -s dataset.txt
 ```
 
 :bulb: The previous commands can be called simultaneously

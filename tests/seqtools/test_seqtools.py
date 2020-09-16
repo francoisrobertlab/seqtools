@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -13,6 +13,7 @@ def mock_testclass():
     bam2bed_samples = Bam2Bed.bam2bed_samples
     bowtie_samples = Bowtie2.bowtie_samples
     bwa_samples = Bwa.bwa_samples
+    center_annotations_samples = CenterAnnotations.center_annotations_samples
     download_samples = Download.download_samples
     filter_bam = FilterBam.filter_bam
     genome_coverage_samples = GenomeCoverage.genome_coverage_samples
@@ -80,6 +81,15 @@ def test_seqtools_bwa(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['bwa', '--samples', samples, '--fasta', fasta, '--threads', threads, '--index', index])
     assert result.exit_code == 0
     Bwa.bwa_sample.assert_called_once_with('POLR1C', fasta, threads, ())
+
+
+def test_seqtools_centerannotations(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    CenterAnnotations.center_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['centerannotations', '--samples', samples])
+    assert result.exit_code == 0
+    CenterAnnotations.center_annotations_samples.assert_called_once_with(samples, None)
 
 
 def test_seqtools_download(testdir, mock_testclass):

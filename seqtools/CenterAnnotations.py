@@ -3,9 +3,9 @@ import os
 import subprocess
 
 import click
-from seqtools.txt import Parser
 
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -13,31 +13,31 @@ import seqtools.Split as sb
               help='Sample names listed one sample name by line.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def prepgenomecov(samples, index):
+def centerannotations(samples, index):
     '''Prepare BED file used for genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    prep_genomecov(samples, index)
+    center_annotations_samples(samples, index)
 
 
-def prep_genomecov(samples='samples.txt', index=None):
+def center_annotations_samples(samples='samples.txt', index=None):
     '''Prepare BED file used for genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        sample_splits_prepgenomecov(sample)
+        center_annotations_sample_splits(sample)
 
 
-def sample_splits_prepgenomecov(sample):
+def center_annotations_sample_splits(sample):
     '''Prepare BED file used for genome coverage on a single sample.'''
     print ('Compute genome coverage on sample {}'.format(sample))
-    prepgenomecov_sample(sample)
+    center_annotations_sample(sample)
     splits = sb.splits(sample)
     for split in splits:
-        prepgenomecov_sample(split)
+        center_annotations_sample(split)
 
 
-def prepgenomecov_sample(sample):
+def center_annotations_sample(sample):
     bed = sample + '.bed'
     bed_forcoverage = sample + '-forcov.bed'
     center_annotations(bed, bed_forcoverage)
@@ -70,4 +70,4 @@ def center_annotations(bed, output):
 
 
 if __name__ == '__main__':
-    prepgenomecov()
+    centerannotations()

@@ -6,7 +6,7 @@ import click
 from click.testing import CliRunner
 import pytest
 
-from mnaseseqtools import mnasetools, DyadCoverage, DyadStatistics, FirstDyadPosition, FitDoubleGaussian, FitGaussian, PrepareGenomeCoverage
+from mnaseseqtools import mnasetools, DyadCoverage, DyadStatistics, FirstDyadPosition, FitDoubleGaussian, FitGaussian
 
 
 @pytest.fixture
@@ -16,14 +16,12 @@ def mock_testclass():
     first_dyad_position = FirstDyadPosition.first_dyad_position
     fit_double_gaussian = FitDoubleGaussian.fit_double_gaussian
     fit_gaussian = FitGaussian.fit_gaussian
-    prep_genomecov = PrepareGenomeCoverage.prep_genomecov
     yield
     DyadCoverage.dyad_coverage = dyad_coverage
     DyadStatistics.dyad_statistics = dyad_statistics
     FirstDyadPosition.first_dyad_position = first_dyad_position
     FitDoubleGaussian.fit_double_gaussian = fit_double_gaussian
     FitGaussian.fit_gaussian = fit_gaussian
-    PrepareGenomeCoverage.prep_genomecov = prep_genomecov
 
 
 def test_dyadcov(testdir, mock_testclass):
@@ -77,12 +75,3 @@ def test_fitgaussian(testdir, mock_testclass):
     result = runner.invoke(mnasetools.mnasetools, ['fitgaussian', '--samples', samples])
     assert result.exit_code == 0
     FitGaussian.fit_gaussian.assert_called_once_with(samples, False, False, False, False, None, None, None, None, None, None, None, None, None)
-
-
-def test_prepgenomecov(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('samples.txt')
-    PrepareGenomeCoverage.prep_genomecov = MagicMock()
-    runner = CliRunner()
-    result = runner.invoke(mnasetools.mnasetools, ['prepgenomecov', '--samples', samples])
-    assert result.exit_code == 0
-    PrepareGenomeCoverage.prep_genomecov.assert_called_once_with(samples, None)
