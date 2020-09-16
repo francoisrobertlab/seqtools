@@ -1,6 +1,6 @@
 import click
 
-from seqtools import Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, Intersect, IntersectAnnotations, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, IntersectAnnotations, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @click.group()
@@ -15,6 +15,7 @@ seqtools.add_command(CenterAnnotations.centerannotations)
 seqtools.add_command(Download.download)
 seqtools.add_command(FilterBam.filterbam)
 seqtools.add_command(GenomeCoverage.genomecov)
+seqtools.add_command(IgnoreStrand.ignorestrand)
 seqtools.add_command(Intersect.intersect)
 seqtools.add_command(IntersectAnnotations.intersectannotations)
 seqtools.add_command(Merge.merge)

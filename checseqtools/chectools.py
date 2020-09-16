@@ -1,6 +1,6 @@
 import click
 
-from checseqtools import DyadPosition, PrepareGenomeCoverage
+from checseqtools import DyadPosition
 
 
 @click.group()
@@ -9,7 +9,6 @@ def chectools():
 
 
 chectools.add_command(DyadPosition.dyadposition)
-chectools.add_command(PrepareGenomeCoverage.prepgenomecov)
 
 if __name__ == '__main__':
    chectools()

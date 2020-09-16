@@ -3,9 +3,9 @@ import os
 import subprocess
 
 import click
-from seqtools.txt import Parser
 
 import seqtools.Split as sb
+from seqtools.txt import Parser
 
 
 @click.command()
@@ -13,31 +13,31 @@ import seqtools.Split as sb
               help='Sample names listed one sample name by line.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def prepgenomecov(samples, index):
+def ignorestrand(samples, index):
     '''Prepare BED file used for genome coverage on samples.'''
     logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    prep_genomecov(samples, index)
+    ignore_strand_samples(samples, index)
 
 
-def prep_genomecov(samples='samples.txt', index=None):
+def ignore_strand_samples(samples='samples.txt', index=None):
     '''Prepare BED file used for genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        sample_splits_prepgenomecov(sample)
+        ignore_strand_sample_splits(sample)
 
 
-def sample_splits_prepgenomecov(sample):
+def ignore_strand_sample_splits(sample):
     '''Prepare BED file used for genome coverage on a single sample.'''
     print ('Prepare BED file used for genome coverage on sample {}'.format(sample))
-    prepgenomecov_sample(sample)
+    ignore_strand_sample(sample)
     splits = sb.splits(sample)
     for split in splits:
-        prepgenomecov_sample(split)
+        ignore_strand_sample(split)
 
 
-def prepgenomecov_sample(sample):
+def ignore_strand_sample(sample):
     bed = sample + '.bed'
     bed_forcoverage = sample + '-forcov.bed'
     ignore_strand(bed, bed_forcoverage)
@@ -60,4 +60,4 @@ def ignore_strand(bed, output):
 
 
 if __name__ == '__main__':
-    prepgenomecov()
+    ignorestrand()

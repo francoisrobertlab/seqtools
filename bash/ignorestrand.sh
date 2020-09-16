@@ -13,4 +13,4 @@ then
   SLURM_ARRAY_TASK_ID=0
 fi
 
-chectools prepgenomecov -i $SLURM_ARRAY_TASK_ID $@
+seqtools ignorestrand -i $SLURM_ARRAY_TASK_ID $@

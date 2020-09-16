@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, MoveAnnotations, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -17,6 +17,7 @@ def mock_testclass():
     download_samples = Download.download_samples
     filter_bam = FilterBam.filter_bam
     genome_coverage_samples = GenomeCoverage.genome_coverage_samples
+    ignore_strand_samples = IgnoreStrand.ignore_strand_samples
     intersect_samples = Intersect.intersect_samples
     merge_samples = Merge.merge_samples
     merge_samples_bw = MergeBigwigs.merge_samples
@@ -36,6 +37,7 @@ def mock_testclass():
     Download.download_samples = download_samples
     FilterBam.filter_bam = filter_bam
     GenomeCoverage.genome_coverage_samples = genome_coverage_samples
+    IgnoreStrand.ignore_strand_samples = ignore_strand_samples
     Intersect.intersect_samples = intersect_samples
     Merge.merge_samples = merge_samples
     MergeBigwigs.merge_samples = merge_samples_bw
@@ -128,6 +130,15 @@ def test_seqtools_genomecov(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '-g', sizes, '-5', '-scale', scale, '-strand', strand, '--index', index])
     assert result.exit_code == 0
     GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, index, ('-5',))
+
+
+def test_ignorestrand(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    IgnoreStrand.ignore_strand_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['ignorestrand', '--samples', samples])
+    assert result.exit_code == 0
+    IgnoreStrand.ignore_strand_samples.assert_called_once_with(samples, None)
 
 
 def test_seqtools_intersect(testdir, mock_testclass):
