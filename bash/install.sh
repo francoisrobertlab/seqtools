@@ -28,7 +28,7 @@ pip install git+https://git@github.com/francoisrobertlab/seqtools.git
 echo "Updating bash scripts"
 rm -R "$BASH"
 mkdir "$BASH"
-git clone https://github.com/francoisrobertlab/seqtools.git "$SEQTOOLS"
+git clone --depth 1 https://github.com/francoisrobertlab/seqtools.git "$SEQTOOLS"
 cp "$SEQTOOLS_BASH"/*.sh "$BASH"
 find "$BASH" -type f -name "*.sh" -exec sed -i "s/christian\.poitras@ircm\.qc\.ca/$EMAIL/g" {} \;
 rm -Rf "$SEQTOOLS"
