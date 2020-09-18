@@ -14,7 +14,7 @@ then
 fi
 if [[ ! "$EMAIL" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$ ]]
 then
-    echo "You must supply your email address as the first argument"
+    echo "Could not find your email address. Did you run configure.sh?"
     exit 1
 fi
 if [ ! -d "$VENV" ]
