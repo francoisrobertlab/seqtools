@@ -101,6 +101,11 @@ Upload [VAP parameters file](mnase-chipseq/vap_parameters.txt) to Compute Canada
 
 ```
 sbatch split.sh -s dataset.txt --binLength 10 --binMinLength 50 --binMaxLength 500
+```
+
+:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
+```
 sbatch mnase-prepgenomecov.sh -s dataset.txt
 sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 sbatch vap.sh -s dataset.txt -p vap_parameters.txt
