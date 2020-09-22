@@ -97,13 +97,17 @@ sbatch statistics.sh -m dataset.txt
 
 ## Heatmaps of coverage over genes versus fragment size (Optional)
 
-Upload [VAP parameters file](mnase-chipseq/vap_parameters.txt) to Compute Canada, see [Uploading dataset files to Compute Canada server](upload.md)
+Download [VAP parameters file](mnase-chipseq/vap_parameters.txt) to Compute Canada
+
+```
+curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/vap_parameters.txt >> vap_parameters.txt
+```
 
 ```
 sbatch split.sh -s dataset.txt --binLength 10 --binMinLength 50 --binMaxLength 500
 ```
 
-:bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+:bulb: To prevent out of memory errors when running `split.sh`, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
 
 ```
 sbatch centerannotations.sh -s dataset.txt
