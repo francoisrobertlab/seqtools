@@ -106,7 +106,7 @@ sbatch split.sh -s dataset.txt --binLength 10 --binMinLength 50 --binMaxLength 5
 :bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
 
 ```
-sbatch mnase-prepgenomecov.sh -s dataset.txt
+sbatch centerannotations.sh -s dataset.txt
 sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 sbatch vap.sh -s dataset.txt -p vap_parameters.txt
 remove-bins.sh
@@ -138,7 +138,7 @@ sbatch slowsplit.sh -s dataset.txt --binLength 11 --binMinLength 120 --binMaxLen
 :bulb: The previous commands can be called simultaneously
 
 ```
-sbatch mnase-prepgenomecov.sh -s dataset.txt
+sbatch centerannotations.sh -s dataset.txt
 sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
 ```
 
