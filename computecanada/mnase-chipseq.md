@@ -101,14 +101,14 @@ sbatch statistics.sh -m dataset.txt
 
 Upload your VAP parameters file and related files to Compute Canada, see [VAP](https://bitbucket.org/labjacquespe/vap/src/master/) and [Uploading dataset files to Compute Canada server](upload.md)
 
-An example of such files for yeast is available [here](mnase-chipseq)
+An example of such files for yeast is available [here](mnase-chipseq/vap)
 
 For yeast, you can copy the example files using these commands
 
 ```
-curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/vap_parameters.txt >> vap_parameters.txt
-curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/Group_AllLongGenes_TxSorted.txt >> Group_AllLongGenes_TxSorted.txt
-curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/sgdGeneAndOthers_UTR_TIF-seq_sacCer3_july_2018.txt >> sgdGeneAndOthers_UTR_TIF-seq_sacCer3_july_2018.txt
+curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/vap/vap_parameters.txt >> vap_parameters.txt
+curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/vap/Group_AllLongGenes_TxSorted.txt >> Group_AllLongGenes_TxSorted.txt
+curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/vap/sgdGeneAndOthers_UTR_TIF-seq_sacCer3_july_2018.txt >> sgdGeneAndOthers_UTR_TIF-seq_sacCer3_july_2018.txt
 ```
 
 ### Run the analysis
