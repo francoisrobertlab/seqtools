@@ -142,12 +142,16 @@ sbatch plot2do.sh -f ~/scratch/$dataset_name/dataset.txt -t dyads -r Plus1 -L 40
 
 :warning: For other organisms than yeast, please contact François Robert
 
+### Copy dyad positions files
+
 Copy [first dyad positions](mnase-chipseq/dyads/sacCer3/first_dyad.txt) and [second dyad positions](mnase-chipseq/dyads/sacCer3/second_dyad.txt) to Compute Canada
 
 ```
 curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/dyads/sacCer3/first_dyad.txt >> first_dyad.txt
 curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/computecanada/mnase-chipseq/dyads/sacCer3/second_dyad.txt >> second_dyad.txt
 ```
+
+### Run the analysis
 
 ```
 sbatch slowsplit.sh -s dataset.txt --binLength 11 --binMinLength 63 --binMaxLength 73
