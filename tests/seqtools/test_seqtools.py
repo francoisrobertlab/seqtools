@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, ChipexoQual, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -14,6 +14,7 @@ def mock_testclass():
     bowtie_samples = Bowtie2.bowtie_samples
     bwa_samples = Bwa.bwa_samples
     center_annotations_samples = CenterAnnotations.center_annotations_samples
+    chipexoqual_datasets = ChipexoQual.chipexoqual_datasets
     download_samples = Download.download_samples
     filter_bam = FilterBam.filter_bam
     genome_coverage_samples = GenomeCoverage.genome_coverage_samples
@@ -33,6 +34,8 @@ def mock_testclass():
     Bam2Bed.bam2bed_samples = bam2bed_samples
     Bowtie2.bowtie_samples = bowtie_samples
     Bwa.bwa_samples = bwa_samples
+    CenterAnnotations.center_annotations_samples = center_annotations_samples
+    ChipexoQual.chipexoqual_datasets = chipexoqual_datasets
     Download.download_samples = download_samples
     FilterBam.filter_bam = filter_bam
     GenomeCoverage.genome_coverage_samples = genome_coverage_samples
@@ -43,6 +46,7 @@ def mock_testclass():
     Plot2do.plot2do_samples = plot2do_samples
     RemoveSecondMate.removesecondmate_samples = removesecondmate_samples
     Rename.rename_ = rename
+    ShiftAnnotations.shift_annotations_samples = shift_annotations_samples
     SlowSplit.split_samples = slow_split_samples
     Split.split_samples = split_samples
     Statistics.statistics_samples = statistics_samples
@@ -90,6 +94,15 @@ def test_seqtools_centerannotations(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['centerannotations', '--samples', samples])
     assert result.exit_code == 0
     CenterAnnotations.center_annotations_samples.assert_called_once_with(samples, '', '-forcov', None)
+
+
+def test_seqtools_chipexoqual(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    ChipexoQual.chipexoqual_datasets = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['chipexoqual', '--datasets', datasets])
+    assert result.exit_code == 0
+    ChipexoQual.chipexoqual_datasets.assert_called_once_with(datasets, None, ())
 
 
 def test_seqtools_download(testdir, mock_testclass):
