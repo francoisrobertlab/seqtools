@@ -138,7 +138,7 @@ sbatch plot2do.sh -f ~/scratch/$dataset_name/dataset.txt
 
 ## Distributions of MNase-ChIP-seq fragments relative to nucleosome dyads (Optional)
 
-Upload [first dyad positions (sacCer3)](mnase-chipseq/sacCer3/first_dyad.txt) and [second dyad positions (sacCer3)](mnase-chipseq/sacCer3/second_dyad.txt) to Compute Canada, see [Uploading dataset files to Compute Canada server](upload.md)
+Upload [first dyad positions (sacCer3)](mnase-chipseq/dyads/sacCer3/first_dyad.txt) and [second dyad positions (sacCer3)](mnase-chipseq/dyads/sacCer3/second_dyad.txt) to Compute Canada, see [Uploading dataset files to Compute Canada server](upload.md)
 
 For other organisms, contact François Robert
 
