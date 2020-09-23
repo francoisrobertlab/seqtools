@@ -131,10 +131,12 @@ remove-bins.sh
 ```
 module load plot2do
 cd ~/projects/def-robertf/plot2DO
-sbatch plot2do.sh -f ~/scratch/$dataset_name/dataset.txt
+sbatch plot2do.sh -f ~/scratch/$dataset_name/dataset.txt -t dyads -r Plus1 -L 400 -m 0.02
 ```
 
 `$dataset_name` is the folder containing the dataset files to be analyzed
+
+:bulb: To prevent out of memory errors when running `plot2do.sh`, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
 
 ## Distributions of MNase-ChIP-seq fragments relative to nucleosome dyads (Optional)
 
