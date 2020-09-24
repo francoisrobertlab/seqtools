@@ -9,6 +9,7 @@
 * [Upload dataset files to Compute Canada](#upload-dataset-files-to-compute-canada)
 * [Align FASTQ files](#align-fastq-files-with-genome)
 * [Filter reads](#filter-reads-to-remove-poorly-map-reads-and-duplicates)
+* [Quality control check](#quality-control-check)
 * [Remove second mate](#remove-second-mate)
 * [Convert BAM to BED](#convert-bam-files-to-fragment-bed-files)
 * [Merge samples into dataset](#merge-dataset-samples-data)
@@ -54,6 +55,27 @@ sbatch filterbam.sh
 ```
 
 :bulb: To prevent out of memory errors, use `--array` argument for `sbatch`, see [sbatch](sbatch.md)
+
+## Quality control check
+
+### FastQC
+
+```
+sbatch fastqc.sh *.bam
+```
+
+Copy the HTML and ZIP files produced by FastQC on your local computer using an FTP software and check the result. [See the documentation for FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+
+:bulb: Check HTML files ending with "-dedup.bam" first!
+
+### ChIPexoQual
+
+```
+module load chipexoqual
+sbatch chipexoqual.sh --datasets dataset.txt 
+```
+
+Copy the PDF files produced by ChIPexoQual on your local computer using an FTP software and check the result. [See the documentation for ChIPexoQual](https://www.bioconductor.org/packages/release/bioc/vignettes/ChIPexoQual/inst/doc/vignette.html)
 
 ## Remove second mate
 
