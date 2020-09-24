@@ -36,7 +36,7 @@ def chipexoqual_dataset(dataset, samples, chipexoqual_args=()):
     '''Run ChIPexoQual on one dataset.'''
     print ('Running ChIPexoQual on dataset {}'.format(dataset))
     base = os.environ['CHIPEXOQUAL_BASE'] + '/' if os.environ['CHIPEXOQUAL_BASE'] else ''
-    cmd = ['Rscript', base + 'chipexoqual.R', '-p', dataset] + list(chipexoqual_args) + [sample + '.bam' for sample in samples]
+    cmd = ['Rscript', base + 'chipexoqual.R', '-p', dataset + '_'] + list(chipexoqual_args) + [sample + '.bam' for sample in samples]
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
 

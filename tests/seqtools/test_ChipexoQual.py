@@ -85,7 +85,7 @@ def test_chipexoqual_dataset(testdir, mock_testclass):
     samples = ['PORL2A_1', 'PORL2A_2']
     subprocess.run = MagicMock()
     cq.chipexoqual_dataset(dataset, samples)
-    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset, 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
+    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset + '_', 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
 
 
 def test_chipexoqual_dataset_parameters(testdir, mock_testclass):
@@ -96,7 +96,7 @@ def test_chipexoqual_dataset_parameters(testdir, mock_testclass):
     chipexoqual_args = ('-s', '1000000',)
     subprocess.run = MagicMock()
     cq.chipexoqual_dataset(dataset, samples, chipexoqual_args=chipexoqual_args)
-    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset, '-s', '1000000', 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
+    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset + '_', '-s', '1000000', 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
 
 
 def test_chipexoqual_noenvironment(testdir, mock_testclass):
@@ -104,4 +104,4 @@ def test_chipexoqual_noenvironment(testdir, mock_testclass):
     samples = ['PORL2A_1', 'PORL2A_2']
     subprocess.run = MagicMock()
     cq.chipexoqual_dataset(dataset, samples)
-    subprocess.run.assert_any_call(['Rscript', 'chipexoqual.R', '-p', dataset, 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
+    subprocess.run.assert_any_call(['Rscript', 'chipexoqual.R', '-p', dataset + '_', 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
