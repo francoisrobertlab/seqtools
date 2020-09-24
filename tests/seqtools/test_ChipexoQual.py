@@ -23,7 +23,8 @@ def mock_testclass():
     cq.chipexoqual_datasets = chipexoqual_datasets
     cq.chipexoqual_dataset = chipexoqual_dataset
     run = subprocess.run
-    os.environ['CHIPEXOQUAL_BASE'] = ''
+    if 'CHIPEXOQUAL_BASE' in os.environ:
+        del os.environ['CHIPEXOQUAL_BASE'] 
     
 
 def test_chipexoqual(testdir, mock_testclass):
