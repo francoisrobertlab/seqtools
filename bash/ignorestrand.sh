@@ -5,8 +5,8 @@
 #SBATCH --mem=8G
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
-#SBATCH --output=prepgenomecov-%A_%a.out
-#SBATCH --error=prepgenomecov-%A_%a.out
+#SBATCH --output=ignorestrand-%A_%a.out
+#SBATCH --error=ignorestrand-%A_%a.out
 
 if [ -z "$SLURM_ARRAY_TASK_ID" ]
 then

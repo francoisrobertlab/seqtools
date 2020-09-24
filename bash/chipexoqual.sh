@@ -5,8 +5,8 @@
 #SBATCH --mem=16G
 #SBATCH --mail-user=christian.poitras@ircm.qc.ca
 #SBATCH --mail-type=ALL
-#SBATCH --output=centerannotations-%A_%a.out
-#SBATCH --error=centerannotations-%A_%a.out
+#SBATCH --output=chipexoqual-%A_%a.out
+#SBATCH --error=chipexoqual-%A_%a.out
 
 args=("$@")
 if [ ! -z "$SLURM_ARRAY_TASK_ID" ]
