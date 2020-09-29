@@ -23,6 +23,7 @@ chmod 744 configure.sh
 Replace `$email@ircm.qc.ca` with your email address
 
 ```
+rm configure.sh
 source .bash_profile
 ```
 
