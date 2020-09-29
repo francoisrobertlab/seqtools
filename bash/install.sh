@@ -4,7 +4,7 @@ VENV="$HOME/seqtools-robertf-venv"
 BASH="$VENV"/bash
 SEQTOOLS="$VENV"/seqtools
 SEQTOOLS_BASH="$SEQTOOLS"/bash
-EMAIL="$USER_EMAIL"
+EMAIL="$JOB_MAIL"
 
 if [ "$1" == "clean" ]
 then
