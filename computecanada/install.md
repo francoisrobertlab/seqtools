@@ -22,15 +22,8 @@ chmod 744 configure.sh
 
 Replace `$email@ircm.qc.ca` with your email address
 
-## Reconnect to the server
-
-:bulb: If using Putty, close the window and reconnect
-
-On Mac, Linux and Windows 10
-
 ```
-exit
-ssh beluga.computecanada.ca
+source .bash_profile
 ```
 
 ## Run installation script
