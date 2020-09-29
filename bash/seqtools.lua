@@ -34,7 +34,7 @@ always_load("kentutils/20180716")
 always_load("vap")
 
 local home = os.getenv("HOME") or ""
-local venv = pathJoin(home, "seqtools-robertf-venv")
+local venv = pathJoin(home, "seqtools-venv")
 local call_nucleosomes = pathJoin(home, "projects/def-robertf/CallNucleosomes")
 local installation = pathJoin(home, "projects/def-robertf/seqtools")
 prepend_path("PATH", installation)

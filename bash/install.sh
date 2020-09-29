@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VENV="$HOME/seqtools-robertf-venv"
+VENV="$HOME/seqtools-venv"
 BASH="$VENV"/bash
 SEQTOOLS="$VENV"/seqtools
 SEQTOOLS_BASH="$SEQTOOLS"/bash
