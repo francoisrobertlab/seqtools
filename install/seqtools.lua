@@ -37,7 +37,7 @@ local home = os.getenv("HOME") or ""
 local venv = pathJoin(home, "seqtools-venv")
 local call_nucleosomes = pathJoin(home, "projects/def-robertf/CallNucleosomes")
 local installation = pathJoin(home, "projects/def-robertf/seqtools")
-prepend_path("PATH", installation)
+prepend_path("PATH", pathJoin(installation, "install"))
 prepend_path("PATH", pathJoin(venv, "bash"))
 prepend_path("PATH", pathJoin(venv, "bin"))
 prepend_path("PERL5LIB", pathJoin(call_nucleosomes, "perl_library"))

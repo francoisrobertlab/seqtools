@@ -15,7 +15,7 @@ ssh beluga.computecanada.ca
 ## Run the configuration script
 
 ```
-curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/bash/configure.sh >> configure.sh
+curl https://raw.githubusercontent.com/francoisrobertlab/seqtools/master/install/configure.sh >> configure.sh
 chmod 744 configure.sh
 ./configure.sh $email@ircm.qc.ca
 ```
