@@ -19,7 +19,7 @@ import pyBigWig as pbw
               help='Index of sample to process in samples file.')
 def mergebw(merge, sizes, index):
     '''Merge bigWig files related to samples.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     merge_samples(merge, sizes, index)
 
 

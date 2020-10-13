@@ -21,7 +21,7 @@ from seqtools.txt import Parser
 @click.argument('bowtie_args', nargs=-1, type=click.UNPROCESSED)
 def bowtie2(samples, threads, index, bowtie_args):
     '''Align samples using bowtie2 program.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bowtie_samples(samples, threads, index, bowtie_args)
 
 

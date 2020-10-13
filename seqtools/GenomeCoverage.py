@@ -29,7 +29,7 @@ BASE_SCALE = 1000000
 @click.argument('genomecov_args', nargs=-1, type=click.UNPROCESSED)
 def genomecov(samples, genome, scale, strand, index, genomecov_args):
     '''Compute genome coverage on samples.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     genome_coverage_samples(samples, genome, scale, strand, index, genomecov_args)
 
 

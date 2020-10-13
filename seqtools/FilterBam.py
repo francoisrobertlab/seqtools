@@ -21,7 +21,7 @@ from seqtools.txt import Parser
               help='Index of sample to process in samples file.')
 def filterbam(samples, paired, dedup, threads, index):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     filter_bam(samples, paired, dedup, threads, index)
 
 

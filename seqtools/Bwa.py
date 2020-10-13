@@ -23,7 +23,7 @@ from seqtools.txt import Parser
 @click.argument('bwa_args', nargs=-1, type=click.UNPROCESSED)
 def bwa(samples, fasta, threads, index, bwa_args):
     '''Align samples using bwa program.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     bwa_samples(samples, fasta, threads, index, bwa_args)
 
 

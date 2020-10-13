@@ -19,7 +19,7 @@ from seqtools.txt import Parser
               help='Output file were statistics are written.')
 def statistics(samples, merge, output):
     '''Creates statistics file for samples.'''
-    logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     statistics_samples(samples, merge, output)
 
 
