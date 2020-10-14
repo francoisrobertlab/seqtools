@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 import tempfile
 
 import click
@@ -44,7 +45,7 @@ def rename_in_md5(md5, replacement, dry=False):
                 outfile.write('  '.join(columns))
                 outfile.write('\n')
     if not dry:
-        os.rename(md5_temp, md5)
+        shutil.copyfile(md5_temp, md5)
     else:
         os.remove(md5_temp)
 
