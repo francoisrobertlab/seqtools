@@ -33,7 +33,7 @@ def test_chipexoqual(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(cq.chipexoqual, ['--datasets', datasets])
     assert result.exit_code == 0
-    cq.chipexoqual_datasets.assert_called_once_with(datasets, None, ())
+    cq.chipexoqual_datasets.assert_called_once_with(datasets, '', None, ())
 
 
 def test_chipexoqual_parameters(testdir, mock_testclass):
@@ -41,9 +41,9 @@ def test_chipexoqual_parameters(testdir, mock_testclass):
     index = 1
     cq.chipexoqual_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(cq.chipexoqual, ['--datasets', datasets, '--index', index, '-s', '1000000'])
+    result = runner.invoke(cq.chipexoqual, ['--datasets', datasets, '--suffix', '-test', '--index', index, '-s', '1000000'])
     assert result.exit_code == 0
-    cq.chipexoqual_datasets.assert_called_once_with(datasets, 1, ('-s', '1000000',))
+    cq.chipexoqual_datasets.assert_called_once_with(datasets, '-test', 1, ('-s', '1000000',))
 
 
 def test_chipexoqual_datasetsnotexists(testdir, mock_testclass):
@@ -59,24 +59,24 @@ def test_chipexoqual_datasets(testdir, mock_testclass):
     datasets = Path(__file__).parent.joinpath('datasets.txt')
     cq.chipexoqual_dataset = MagicMock()
     cq.chipexoqual_datasets(datasets)
-    cq.chipexoqual_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], ())
-    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], ())
-    cq.chipexoqual_dataset.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], ())
+    cq.chipexoqual_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], '', ())
+    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', ())
+    cq.chipexoqual_dataset.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], '', ())
 
 
 def test_chipexoqual_datasets_second(testdir, mock_testclass):
     datasets = Path(__file__).parent.joinpath('datasets.txt')
     cq.chipexoqual_dataset = MagicMock()
     cq.chipexoqual_datasets(datasets, index=1)
-    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], ())
+    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', ())
 
 
 def test_chipexoqual_datasets_parameters(testdir, mock_testclass):
     datasets = Path(__file__).parent.joinpath('datasets.txt')
     chipexoqual_args = ('-s', '1000000',)
     cq.chipexoqual_dataset = MagicMock()
-    cq.chipexoqual_datasets(datasets, chipexoqual_args=chipexoqual_args)
-    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], chipexoqual_args)
+    cq.chipexoqual_datasets(datasets, '-test', chipexoqual_args=chipexoqual_args)
+    cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '-test', chipexoqual_args)
 
 
 def test_chipexoqual_dataset(testdir, mock_testclass):
@@ -94,10 +94,11 @@ def test_chipexoqual_dataset_parameters(testdir, mock_testclass):
     os.environ['CHIPEXOQUAL_BASE'] = base
     dataset = 'PORL2A'
     samples = ['PORL2A_1', 'PORL2A_2']
+    suffix = '-test'
     chipexoqual_args = ('-s', '1000000',)
     subprocess.run = MagicMock()
-    cq.chipexoqual_dataset(dataset, samples, chipexoqual_args=chipexoqual_args)
-    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset + '_', '-s', '1000000', 'PORL2A_1.bam', 'PORL2A_2.bam'], check=True)
+    cq.chipexoqual_dataset(dataset, samples, suffix, chipexoqual_args=chipexoqual_args)
+    subprocess.run.assert_any_call(['Rscript', base + '/chipexoqual.R', '-p', dataset + '_', '-s', '1000000', 'PORL2A_1-test.bam', 'PORL2A_2-test.bam'], check=True)
 
 
 def test_chipexoqual_noenvironment(testdir, mock_testclass):

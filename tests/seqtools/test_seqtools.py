@@ -102,7 +102,7 @@ def test_seqtools_chipexoqual(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['chipexoqual', '--datasets', datasets])
     assert result.exit_code == 0
-    ChipexoQual.chipexoqual_datasets.assert_called_once_with(datasets, None, ())
+    ChipexoQual.chipexoqual_datasets.assert_called_once_with(datasets, '', None, ())
 
 
 def test_seqtools_download(testdir, mock_testclass):
