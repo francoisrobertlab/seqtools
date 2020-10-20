@@ -22,7 +22,7 @@ def validate_output_suffix(ctx, param, value):
 @click.option('--input-suffix', '-is', default='', show_default=True,
               help='Suffix added to sample name in BED filename for input.')
 @click.option('--output-suffix', '-os', callback=validate_output_suffix, default='-forcov', show_default=True,
-              help='Suffix added to sample name in BED filename for input.')
+              help='Suffix added to sample name in BED filename for output.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 def centerannotations(samples, input_suffix, output_suffix, index):
