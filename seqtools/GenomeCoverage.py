@@ -13,6 +13,14 @@ from . import Split
 BASE_SCALE = 1000000
 
 
+def validate_output_suffix(ctx, param, value):
+    '''Validates that output suffix is different than input suffix'''
+    if value == ctx.params['input_suffix']:
+        raise click.BadParameter('output suffix "{}" must be different than input suffix'.format(value))
+    else:
+        return value
+
+
 @click.command(context_settings=dict(
     ignore_unknown_options=True,
 ))
@@ -24,47 +32,48 @@ BASE_SCALE = 1000000
               help='Scale for genome coverage. Defaults to 1000000 / number of reads.')
 @click.option('-strand', type=click.Choice(['+', '-']), default=None, show_default=True,
               help='Calculate coverage of intervals from a specific strand.')
+@click.option('--input-suffix', '-is', default='', show_default=True,
+              help='Suffix added to sample name in BED filename for input.')
+@click.option('--output-suffix', '-os', callback=validate_output_suffix, default='-cov', show_default=True,
+              help='Suffix added to sample name in BED filename for output.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 @click.argument('genomecov_args', nargs=-1, type=click.UNPROCESSED)
-def genomecov(samples, genome, scale, strand, index, genomecov_args):
+def genomecov(samples, genome, scale, strand, input_suffix, output_suffix, index, genomecov_args):
     '''Compute genome coverage on samples.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    genome_coverage_samples(samples, genome, scale, strand, index, genomecov_args)
+    genome_coverage_samples(samples, genome, scale, strand, input_suffix, output_suffix, index, genomecov_args)
 
 
-def genome_coverage_samples(samples='samples.txt', genome='sacCer3.chrom.sizes', scale=None, strand=None, index=None, genomecov_args=()):
+def genome_coverage_samples(samples='samples.txt', genome='sacCer3.chrom.sizes', scale=None, strand=None, input_suffix='', output_suffix='-cov', index=None, genomecov_args=()):
     '''Compute genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        sample_splits_genome_coverage(sample, genome, scale, strand, genomecov_args)
+        sample_splits_genome_coverage(sample, genome, scale, strand, input_suffix, output_suffix, genomecov_args)
 
 
-def sample_splits_genome_coverage(sample, genome, scale=None, strand=None, genomecov_args=()):
+def sample_splits_genome_coverage(sample, genome, scale=None, strand=None, input_suffix='', output_suffix='-cov', genomecov_args=()):
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
-    genome_coverage(sample, genome, scale, strand, genomecov_args)
+    genome_coverage(sample, genome, scale, strand, input_suffix, output_suffix, genomecov_args)
     splits = Split.splits(sample)
     for split in splits:
-        genome_coverage(split, genome, scale, strand, genomecov_args)
+        genome_coverage(split, genome, scale, strand, input_suffix, output_suffix, genomecov_args)
 
 
-def genome_coverage(sample, genome, scale=None, strand=None, genomecov_args=()):
-    bed_source = sample + '-forcov.bed'
-    if not os.path.exists(bed_source):
-        logging.info('File {} does not exists, using {} for coverage'.format(bed_source, sample + '.bed'))
-        bed_source = sample + '.bed'
+def genome_coverage(sample, genome, scale=None, strand=None, input_suffix='', output_suffix='-cov', genomecov_args=()):
+    bed_source = sample + input_suffix + '.bed'
     print ('Computing genome coverage on BED {}'.format(bed_source))
     if not scale:
         count = Bed.count_bed(bed_source)
         scale = BASE_SCALE / max(count, 1)
-    bed = sample + '-cov.bed'
-    bigwig = sample + '-cov.bw'
+    bed = sample + output_suffix + '.bed'
+    bigwig = sample + output_suffix + '.bw'
     if strand:
-        bed = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bed'
-        bigwig = sample + '-cov' + ('-neg' if strand == '-' else '-pos') + '.bw'
+        bed = sample + output_suffix + ('-neg' if strand == '-' else '-pos') + '.bed'
+        bigwig = sample + output_suffix + ('-neg' if strand == '-' else '-pos') + '.bw'
     coverage(bed_source, bed, genome, sample, scale, strand, genomecov_args)
     Bed.bedgraph_to_bigwig(bed, bigwig, genome)
 

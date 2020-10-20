@@ -135,12 +135,14 @@ def test_seqtools_genomecov(testdir, mock_testclass):
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     scale = 1.5
     strand = '-'
+    input_suffix = '-forcov'
+    output_suffix = '-cov'
     index = 2
     GenomeCoverage.genome_coverage_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '-g', sizes, '-5', '-scale', scale, '-strand', strand, '--index', index])
+    result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '-g', sizes, '-5', '-scale', scale, '-strand', strand, '-is', input_suffix, '-os', output_suffix, '--index', index])
     assert result.exit_code == 0
-    GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, index, ('-5',))
+    GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, input_suffix, output_suffix, index, ('-5',))
 
 
 def test_seqtools_ignorestrand(testdir, mock_testclass):

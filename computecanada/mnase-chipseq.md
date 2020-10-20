@@ -94,8 +94,8 @@ sbatch centerannotations.sh -s dataset.txt
 ## Genome coverage
 
 ```
-sbatch genomecov.sh -g sacCer3.chrom.sizes
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
+sbatch genomecov.sh -g sacCer3.chrom.sizes -is -forcov
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov
 ```
 
 :bulb: The previous commands can be called simultaneously
@@ -132,7 +132,7 @@ sbatch split.sh -s dataset.txt --binLength 10 --binMinLength 50 --binMaxLength 5
 
 ```
 sbatch centerannotations.sh -s dataset.txt
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov
 sbatch vap.sh -s dataset.txt -p vap_parameters.txt
 remove-bins.sh
 ```
@@ -175,7 +175,7 @@ sbatch slowsplit.sh -s dataset.txt --binLength 11 --binMinLength 120 --binMaxLen
 
 ```
 sbatch centerannotations.sh -s dataset.txt
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov
 ```
 
 :warning: The previous commands must be called sequentially

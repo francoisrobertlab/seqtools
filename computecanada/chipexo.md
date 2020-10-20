@@ -107,12 +107,12 @@ sbatch shiftannotations.sh -s dataset.txt -g sacCer3.chrom.sizes -m -6 -p 6
 ## Genome coverage
 
 ```
-sbatch genomecov.sh -g sacCer3.chrom.sizes -5
-sbatch genomecov.sh -g sacCer3.chrom.sizes -5 -strand +
-sbatch genomecov.sh -g sacCer3.chrom.sizes -5 -strand -
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -5
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -5 -strand +
-sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -5 -strand -
+sbatch genomecov.sh -g sacCer3.chrom.sizes -is -forcov -5
+sbatch genomecov.sh -g sacCer3.chrom.sizes -is -forcov -5 -strand +
+sbatch genomecov.sh -g sacCer3.chrom.sizes -is -forcov -5 -strand -
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov -5
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov -5 -strand +
+sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov -5 -strand -
 ```
 
 :bulb: The previous commands can be called simultaneously
