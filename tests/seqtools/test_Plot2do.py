@@ -30,19 +30,20 @@ def test_plot2do(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(p.plot2do, ['-f', samples])
     assert result.exit_code == 0
-    p.plot2do_samples.assert_called_once_with(samples, None, ())
+    p.plot2do_samples.assert_called_once_with(samples, '', None, ())
 
 
 def test_plot2do_sample_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-forcov'
     type = 'dyads'
     genome = 'mm9'
     index = 1
     p.plot2do_sample = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(p.plot2do, ['-f', samples, '--type', type, '--genome', genome, '--index', index])
+    result = runner.invoke(p.plot2do, ['-f', samples, '-is', input_suffix, '--type', type, '--genome', genome, '--index', index])
     assert result.exit_code == 0
-    p.plot2do_samples.assert_called_once_with(samples, index, ('--type', type, '--genome', genome,))
+    p.plot2do_samples.assert_called_once_with(samples, input_suffix, index, ('--type', type, '--genome', genome,))
 
 
 def test_plot2do_filenotexists(testdir, mock_testclass):
@@ -59,9 +60,9 @@ def test_plot2do_samples(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', ())
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', ())
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', ())
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', '', ())
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', '', ())
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', '', ())
 
 
 def test_plot2do_samples_second(testdir, mock_testclass):
@@ -69,18 +70,19 @@ def test_plot2do_samples_second(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples, index=1)
-    p.plot2do_sample.assert_called_once_with(samples_parent / 'ASDURF', ())
+    p.plot2do_sample.assert_called_once_with(samples_parent / 'ASDURF', '', ())
 
 
 def test_plot2do_samples_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     samples_parent = samples.parent
+    input_suffix = '-forcov'
     plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     p.plot2do_sample = MagicMock()
-    p.plot2do_samples(samples, plot2do_args=plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', plot2do_args)
+    p.plot2do_samples(samples, input_suffix, plot2do_args=plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', input_suffix, plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', input_suffix, plot2do_args)
+    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', input_suffix, plot2do_args)
 
 
 def test_plot2do_sample(testdir, mock_testclass):
@@ -94,17 +96,10 @@ def test_plot2do_sample(testdir, mock_testclass):
 
 def test_plot2do_sample_parameters(testdir, mock_testclass):
     sample = 'POLR2A'
-    bed = sample + '.bed'
+    input_suffix = '-forcov'
+    bed = sample + input_suffix + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), bed)
     plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     subprocess.run = MagicMock()
-    p.plot2do_sample(sample, plot2do_args)
+    p.plot2do_sample(sample, input_suffix, plot2do_args)
     subprocess.run.assert_called_once_with(['Rscript', 'plot2DO.R', '--type', 'dyads', '--genome', 'mm9', '-f', bed], check=True)
-
-
-def test_plot2do_sample_bednotexists(testdir, mock_testclass):
-    sample = 'POLR2A'
-    bed = sample + '.bed'
-    subprocess.run = MagicMock()
-    p.plot2do_sample(sample)
-    subprocess.run.assert_not_called()

@@ -210,7 +210,7 @@ def test_seqtools_plot2do(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['plot2do', '--file', samples, '--type', type, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    Plot2do.plot2do_samples.assert_called_once_with(samples, index, ('--type', type,))
+    Plot2do.plot2do_samples.assert_called_once_with(samples, '', index, ('--type', type,))
 
 
 def test_seqtools_removesecondmate(testdir, mock_testclass):
