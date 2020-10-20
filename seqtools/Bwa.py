@@ -66,13 +66,26 @@ def run_bwa(fastq1, fastq2, fasta, bam_output, threads=None, bwa_args=()):
         cmd.append(fastq2)
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
+    view_bam_o, view_bam = tempfile.mkstemp(suffix='.bam')
     cmd = ['samtools', 'view', '-b']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
-    cmd.extend(['-o', bam_output, sam_output])
+    cmd.extend(['-o', view_bam, sam_output])
     logging.debug('Running {}'.format(cmd))
     subprocess.run(cmd, check=True)
     os.remove(sam_output)
+    sort(view_bam, bam_output, threads)
+    os.remove(view_bam)
+
+
+def sort(bam_input, bam_output, threads=None):
+    '''Sort BAM file.'''
+    cmd = ['samtools', 'sort']
+    if not threads is None and threads > 1:
+        cmd.extend(['--threads', str(threads - 1)])
+    cmd.extend(['-o', bam_output, bam_input])
+    logging.debug('Running {}'.format(cmd))
+    subprocess.run(cmd, check=True)
 
 
 if __name__ == '__main__':

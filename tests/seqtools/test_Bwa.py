@@ -173,11 +173,14 @@ def test_run_bwa(testdir, mock_testclass):
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bwa(fastq, fastq2, fasta, bam, None, ())
     call1 = ['bwa', 'mem', '-o', ANY, fasta, fastq, fastq2]
-    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
+    call2 = ['samtools', 'view', '-b', '-o', ANY, ANY]
+    call3 = ['samtools', 'sort', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
-    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    subprocess.run.assert_any_call(call3, check=True)
+    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True), call(call3, check=True)], True)
     assert subprocess.run.call_args_list[0].args[0][3] == subprocess.run.call_args_list[1].args[0][5]
+    assert subprocess.run.call_args_list[1].args[0][4] == subprocess.run.call_args_list[2].args[0][4]
 
 
 def test_run_bwa_parameters(testdir, mock_testclass):
@@ -193,11 +196,14 @@ def test_run_bwa_parameters(testdir, mock_testclass):
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bwa(fastq, fastq2, fasta, bam, threads, bwa_args)
     call1 = ['bwa', 'mem', '-x', 'sacCer3.fa', '-t', str(threads), '-o', ANY, fasta, fastq, fastq2]
-    call2 = ['samtools', 'view', '-b', '--threads', str(threads - 1), '-o', bam, ANY]
+    call2 = ['samtools', 'view', '-b', '--threads', str(threads - 1), '-o', ANY, ANY]
+    call3 = ['samtools', 'sort', '--threads', str(threads - 1), '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
-    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    subprocess.run.assert_any_call(call3, check=True)
+    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True), call(call3, check=True)], True)
     assert subprocess.run.call_args_list[0].args[0][7] == subprocess.run.call_args_list[1].args[0][7]
+    assert subprocess.run.call_args_list[1].args[0][6] == subprocess.run.call_args_list[2].args[0][6]
 
 
 def test_run_bwa_singlethread(testdir, mock_testclass):
@@ -213,11 +219,14 @@ def test_run_bwa_singlethread(testdir, mock_testclass):
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bwa(fastq, fastq2, fasta, bam, threads, bwa_args)
     call1 = ['bwa', 'mem', '-x', 'sacCer3.fa', '-o', ANY, fasta, fastq, fastq2]
-    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
+    call2 = ['samtools', 'view', '-b', '-o', ANY, ANY]
+    call3 = ['samtools', 'sort', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
-    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    subprocess.run.assert_any_call(call3, check=True)
+    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True), call(call3, check=True)], True)
     assert subprocess.run.call_args_list[0].args[0][5] == subprocess.run.call_args_list[1].args[0][5]
+    assert subprocess.run.call_args_list[1].args[0][4] == subprocess.run.call_args_list[2].args[0][4]
 
 
 def test_run_bwa_single(testdir, mock_testclass):
@@ -229,11 +238,14 @@ def test_run_bwa_single(testdir, mock_testclass):
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bwa(fastq, None, fasta, bam, None, ())
     call1 = ['bwa', 'mem', '-o', ANY, fasta, fastq]
-    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
+    call2 = ['samtools', 'view', '-b', '-o', ANY, ANY]
+    call3 = ['samtools', 'sort', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
-    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    subprocess.run.assert_any_call(call3, check=True)
+    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True), call(call3, check=True)], True)
     assert subprocess.run.call_args_list[0].args[0][3] == subprocess.run.call_args_list[1].args[0][5]
+    assert subprocess.run.call_args_list[1].args[0][4] == subprocess.run.call_args_list[2].args[0][4]
 
 
 def test_run_bwa_fastq2notexists(testdir, mock_testclass):
@@ -246,8 +258,11 @@ def test_run_bwa_fastq2notexists(testdir, mock_testclass):
     subprocess.run = MagicMock(side_effect=create_file)
     b.run_bwa(fastq, None, fasta, bam, None, ())
     call1 = ['bwa', 'mem', '-o', ANY, fasta, fastq]
-    call2 = ['samtools', 'view', '-b', '-o', bam, ANY]
+    call2 = ['samtools', 'view', '-b', '-o', ANY, ANY]
+    call3 = ['samtools', 'sort', '-o', bam, ANY]
     subprocess.run.assert_any_call(call1, check=True)
     subprocess.run.assert_any_call(call2, check=True)
-    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True)], True)
+    subprocess.run.assert_any_call(call3, check=True)
+    subprocess.run.assert_has_calls([call(call1, check=True), call(call2, check=True), call(call3, check=True)], True)
     assert subprocess.run.call_args_list[0].args[0][3] == subprocess.run.call_args_list[1].args[0][5]
+    assert subprocess.run.call_args_list[1].args[0][4] == subprocess.run.call_args_list[2].args[0][4]
