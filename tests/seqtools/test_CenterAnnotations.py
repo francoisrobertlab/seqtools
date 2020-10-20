@@ -48,7 +48,7 @@ def test_centerannotations_parameters(testdir, mock_testclass):
     ca.center_annotations_samples.assert_called_once_with(samples, input_suffix, output_suffix, None)
 
 
-def test_centerannotations_same_suffixes(testdir, mock_testclass):
+def test_centerannotations_samesuffix(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     input_suffix = '-input'
     output_suffix = '-input'
@@ -57,6 +57,16 @@ def test_centerannotations_same_suffixes(testdir, mock_testclass):
     result = runner.invoke(ca.centerannotations, ['-s', samples, '-is', input_suffix, '-os', output_suffix])
     assert result.exit_code > 0
     ca.center_annotations_samples.assert_not_called()
+
+
+def test_centerannotations_onlyoutputsuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    output_suffix = '-output'
+    ca.center_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(ca.centerannotations, ['-s', samples, '-os', output_suffix])
+    assert result.exit_code == 0
+    ca.center_annotations_samples.assert_called_once_with(samples, '', output_suffix, None)
 
 
 def test_centerannotations_second(testdir, mock_testclass):

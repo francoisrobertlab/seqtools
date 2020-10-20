@@ -15,7 +15,8 @@ BASE_SCALE = 1000000
 
 def validate_output_suffix(ctx, param, value):
     '''Validates that output suffix is different than input suffix'''
-    if value == ctx.params['input_suffix']:
+    input_suffix = ctx.params['input_suffix'] if 'input_suffix' in ctx.params else ''
+    if value == input_suffix:
         raise click.BadParameter('output suffix "{}" must be different than input suffix'.format(value))
     else:
         return value

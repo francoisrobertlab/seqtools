@@ -48,6 +48,26 @@ def test_ignorestrand_parameters(testdir, mock_testclass):
     igs.ignore_strand_samples.assert_called_once_with(samples, input_suffix, output_suffix, None)
 
 
+def test_ignorestrand_samesuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-input'
+    igs.ignore_strand_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(igs.ignorestrand, ['-s', samples, '-is', input_suffix, '-os', input_suffix])
+    assert result.exit_code > 0
+    igs.ignore_strand_samples.assert_not_called()
+
+
+def test_ignorestrand_onlyoutputsuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    output_suffix = '-output'
+    igs.ignore_strand_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(igs.ignorestrand, ['-s', samples, '-os', output_suffix])
+    assert result.exit_code == 0
+    igs.ignore_strand_samples.assert_called_once_with(samples, '', output_suffix, None)
+
+
 def test_ignorestrand_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 1

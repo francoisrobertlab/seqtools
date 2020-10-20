@@ -59,6 +59,26 @@ def test_shiftannotations_parameters(testdir, mock_testclass):
     sa.shift_annotations_samples.assert_called_once_with(samples, input_suffix, output_suffix, index, ('-g', genome, '-m', minus, '-p', plus,))
 
 
+def test_shiftannotations_samesuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    input_suffix = '-input'
+    sa.shift_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(sa.shiftannotations, ['-s', samples, '-is', input_suffix, '-os', input_suffix])
+    assert result.exit_code > 0
+    sa.shift_annotations_samples.assert_not_called()
+
+
+def test_shiftannotations_onlyoutputsuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    output_suffix = '-output'
+    sa.shift_annotations_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(sa.shiftannotations, ['-s', samples, '-os', output_suffix])
+    assert result.exit_code == 0
+    sa.shift_annotations_samples.assert_called_once_with(samples, '', output_suffix, None, ())
+
+
 def test_shiftannotations_second(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     index = 1

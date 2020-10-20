@@ -103,6 +103,49 @@ def test_genomecov_parameters(testdir, mock_testclass):
     gc.genome_coverage_samples.assert_called_once_with(samples, genome, scale, strand, input_suffix, output_suffix, index, ())
 
 
+def test_genomecov_samesuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    genome = Path(__file__).parent.joinpath('sizes.txt')
+    input_suffix = '-forcov'
+    gc.genome_coverage_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(gc.genomecov, ['-s', samples, '-g', genome, '--input-suffix', input_suffix, '--output-suffix', input_suffix])
+    assert result.exit_code > 0
+    gc.genome_coverage_samples.assert_not_called()
+
+
+def test_genomecov_onlyoutputsuffix(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    genome = Path(__file__).parent.joinpath('sizes.txt')
+    output_suffix = '-outcov'
+    gc.genome_coverage_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(gc.genomecov, ['-s', samples, '-g', genome, '--output-suffix', output_suffix])
+    assert result.exit_code == 0
+    gc.genome_coverage_samples.assert_called_once_with(samples, genome, None, None, '', output_suffix, None, ())
+
+
+def test_genomecov_samplesnotexists(testdir, mock_testclass):
+    samples = 'samples.txt'
+    genome = 'sacCer3.chrom.sizes'
+    copyfile(Path(__file__).parent.joinpath('sizes.txt'), genome)
+    gc.genome_coverage_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(gc.genomecov, ['-s', samples])
+    assert result.exit_code > 0
+    gc.genome_coverage_samples.assert_not_called()
+
+
+def test_genomecov_genomenotexists(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('samples.txt')
+    genome = 'sacCer3.chrom.sizes'
+    gc.genome_coverage_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(gc.genomecov, ['-s', samples, '-g', genome])
+    assert result.exit_code > 0
+    gc.genome_coverage_samples.assert_not_called()
+
+
 def test_genome_coverage_samples(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     genome = 'sacCer3.chrom.sizes'
