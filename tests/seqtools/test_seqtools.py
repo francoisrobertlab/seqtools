@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, ChipexoQual, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, ChipexoQual, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBam, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -21,6 +21,7 @@ def mock_testclass():
     ignore_strand_samples = IgnoreStrand.ignore_strand_samples
     intersect_samples = Intersect.intersect_samples
     merge_samples = Merge.merge_samples
+    merge_samples_bam = MergeBam.merge_samples
     merge_samples_bw = MergeBigwigs.merge_samples
     plot2do_samples = Plot2do.plot2do_samples
     removesecondmate_samples = RemoveSecondMate.removesecondmate_samples
@@ -42,6 +43,7 @@ def mock_testclass():
     IgnoreStrand.ignore_strand_samples = ignore_strand_samples
     Intersect.intersect_samples = intersect_samples
     Merge.merge_samples = merge_samples
+    MergeBam.merge_samples = merge_samples_bam
     MergeBigwigs.merge_samples = merge_samples_bw
     Plot2do.plot2do_samples = plot2do_samples
     RemoveSecondMate.removesecondmate_samples = removesecondmate_samples
@@ -174,6 +176,17 @@ def test_seqtools_merge(testdir, mock_testclass):
     logging.warning(result.output)
     assert result.exit_code == 0
     Merge.merge_samples.assert_called_once_with(samples, index)
+
+
+def test_seqtools_mergebam(testdir, mock_testclass):
+    samples = Path(__file__).parent.joinpath('merge.txt')
+    index = 2
+    MergeBam.merge_samples = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['mergebam', '--merge', samples])
+    logging.warning(result.output)
+    assert result.exit_code == 0
+    MergeBam.merge_samples.assert_called_once_with(samples, '', 1, None)
 
 
 def test_seqtools_mergebw(testdir, mock_testclass):
