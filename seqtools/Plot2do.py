@@ -32,7 +32,7 @@ def plot2do_samples(file, input_suffix='', index=None, plot2do_args=()):
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        plot2do_sample(file_parent / sample, input_suffix, plot2do_args)
+        plot2do_sample(str(file_parent / sample), input_suffix, plot2do_args)
 
 
 def plot2do_sample(sample, input_suffix='', plot2do_args=()):

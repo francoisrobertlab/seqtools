@@ -60,9 +60,9 @@ def test_plot2do_samples(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', '', ())
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', '', ())
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', '', ())
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'POLR2A'), '', ())
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'ASDURF'), '', ())
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'POLR1C'), '', ())
 
 
 def test_plot2do_samples_second(testdir, mock_testclass):
@@ -70,7 +70,7 @@ def test_plot2do_samples_second(testdir, mock_testclass):
     samples_parent = samples.parent
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples, index=1)
-    p.plot2do_sample.assert_called_once_with(samples_parent / 'ASDURF', '', ())
+    p.plot2do_sample.assert_called_once_with(str(samples_parent / 'ASDURF'), '', ())
 
 
 def test_plot2do_samples_parameters(testdir, mock_testclass):
@@ -80,9 +80,9 @@ def test_plot2do_samples_parameters(testdir, mock_testclass):
     plot2do_args = ('--type', 'dyads', '--genome', 'mm9',)
     p.plot2do_sample = MagicMock()
     p.plot2do_samples(samples, input_suffix, plot2do_args=plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR2A', input_suffix, plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'ASDURF', input_suffix, plot2do_args)
-    p.plot2do_sample.assert_any_call(samples_parent / 'POLR1C', input_suffix, plot2do_args)
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'POLR2A'), input_suffix, plot2do_args)
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'ASDURF'), input_suffix, plot2do_args)
+    p.plot2do_sample.assert_any_call(str(samples_parent / 'POLR1C'), input_suffix, plot2do_args)
 
 
 def test_plot2do_sample(testdir, mock_testclass):
