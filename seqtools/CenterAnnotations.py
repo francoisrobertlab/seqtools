@@ -43,7 +43,7 @@ def center_annotations_samples(samples='samples.txt', input_suffix='', output_su
 
 def center_annotations_sample_splits(sample, input_suffix='', output_suffix='-forcov'):
     '''Prepare BED file used for genome coverage on a single sample.'''
-    print ('Compute genome coverage on sample {}'.format(sample))
+    print ('Center annotations on sample {}'.format(sample))
     center_annotations_sample(sample, input_suffix, output_suffix)
     splits = sb.splits(sample)
     for split in splits:

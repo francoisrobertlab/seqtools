@@ -43,7 +43,7 @@ def ignore_strand_samples(samples='samples.txt', input_suffix='', output_suffix=
 
 def ignore_strand_sample_splits(sample, input_suffix='', output_suffix='-forcov'):
     '''Prepare BED file used for genome coverage on a single sample.'''
-    print ('Prepare BED file used for genome coverage on sample {}'.format(sample))
+    print ('Duplicate annotations on other strand on sample {}'.format(sample))
     ignore_strand_sample(sample, input_suffix, output_suffix)
     splits = sb.splits(sample)
     for split in splits:
