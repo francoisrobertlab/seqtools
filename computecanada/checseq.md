@@ -77,7 +77,7 @@ sbatch bam2bed.sh
 ## Merge dataset samples data
 
 ```
-sbatch merge.sh -m dataset.txt
+sbatch merge.sh
 ```
 
 ## Ignore fragment strand
@@ -101,7 +101,7 @@ sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov -5
 ## Statistics
 
 ```
-sbatch statistics.sh -m dataset.txt
+sbatch statistics.sh
 ```
 
 ## Heatmaps of coverage over genes versus fragment size (Optional)

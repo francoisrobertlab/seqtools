@@ -20,9 +20,9 @@ def mock_testclass():
     genome_coverage_samples = GenomeCoverage.genome_coverage_samples
     ignore_strand_samples = IgnoreStrand.ignore_strand_samples
     intersect_samples = Intersect.intersect_samples
-    merge_samples = Merge.merge_samples
-    merge_samples_bam = MergeBam.merge_samples
-    merge_samples_bw = MergeBigwigs.merge_samples
+    merge_datasets = Merge.merge_datasets
+    merge_datasets_bam = MergeBam.merge_datasets
+    merge_datasets_bw = MergeBigwigs.merge_datasets
     plot2do_samples = Plot2do.plot2do_samples
     removesecondmate_samples = RemoveSecondMate.removesecondmate_samples
     rename = Rename.rename_
@@ -42,9 +42,9 @@ def mock_testclass():
     GenomeCoverage.genome_coverage_samples = genome_coverage_samples
     IgnoreStrand.ignore_strand_samples = ignore_strand_samples
     Intersect.intersect_samples = intersect_samples
-    Merge.merge_samples = merge_samples
-    MergeBam.merge_samples = merge_samples_bam
-    MergeBigwigs.merge_samples = merge_samples_bw
+    Merge.merge_datasets = merge_datasets
+    MergeBam.merge_datasets = merge_datasets_bam
+    MergeBigwigs.merge_datasets = merge_datasets_bw
     Plot2do.plot2do_samples = plot2do_samples
     RemoveSecondMate.removesecondmate_samples = removesecondmate_samples
     Rename.rename_ = rename
@@ -99,7 +99,7 @@ def test_seqtools_centerannotations(testdir, mock_testclass):
 
 
 def test_seqtools_chipexoqual(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     ChipexoQual.chipexoqual_datasets = MagicMock()
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['chipexoqual', '--datasets', datasets])
@@ -168,37 +168,37 @@ def test_seqtools_intersect(testdir, mock_testclass):
 
 
 def test_seqtools_merge(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('merge.txt')
+    samples = Path(__file__).parent.joinpath('dataset.txt')
     index = 2
-    Merge.merge_samples = MagicMock()
+    Merge.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['merge', '--merge', samples, '--index', index])
+    result = runner.invoke(seqtools.seqtools, ['merge', '--datasets', samples, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    Merge.merge_samples.assert_called_once_with(samples, index)
+    Merge.merge_datasets.assert_called_once_with(samples, index)
 
 
 def test_seqtools_mergebam(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('merge.txt')
+    samples = Path(__file__).parent.joinpath('dataset.txt')
     index = 2
-    MergeBam.merge_samples = MagicMock()
+    MergeBam.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['mergebam', '--merge', samples])
+    result = runner.invoke(seqtools.seqtools, ['mergebam', '--datasets', samples])
     logging.warning(result.output)
     assert result.exit_code == 0
-    MergeBam.merge_samples.assert_called_once_with(samples, '', 1, None)
+    MergeBam.merge_datasets.assert_called_once_with(samples, '', 1, None)
 
 
 def test_seqtools_mergebw(testdir, mock_testclass):
-    samples = Path(__file__).parent.joinpath('merge.txt')
+    samples = Path(__file__).parent.joinpath('dataset.txt')
     sizes = Path(__file__).parent.joinpath('sizes.txt')
     index = 2
-    MergeBigwigs.merge_samples = MagicMock()
+    MergeBigwigs.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['mergebw', '--merge', samples, '--sizes', sizes, '--index', index])
+    result = runner.invoke(seqtools.seqtools, ['mergebw', '--datasets', samples, '--sizes', sizes, '--index', index])
     logging.warning(result.output)
     assert result.exit_code == 0
-    MergeBigwigs.merge_samples.assert_called_once_with(samples, sizes, index)
+    MergeBigwigs.merge_datasets.assert_called_once_with(samples, sizes, index)
 
  
 def test_seqtools_plot2do(testdir, mock_testclass):
@@ -271,14 +271,14 @@ def test_seqtools_split(testdir, mock_testclass):
 
 def test_seqtools_statistics(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    merge = Path(__file__).parent.joinpath('merge.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     output = 'stats.txt'
     Statistics.statistics_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(seqtools.seqtools, ['statistics', '--samples', samples, '--merge', merge, '--output', output])
+    result = runner.invoke(seqtools.seqtools, ['statistics', '--samples', samples, '--datasets', datasets, '--output', output])
     logging.warning(result.output)
     assert result.exit_code == 0
-    Statistics.statistics_samples.assert_called_once_with(samples, merge, output)
+    Statistics.statistics_samples.assert_called_once_with(samples, datasets, output)
 
 
 def test_seqtools_vap(testdir, mock_testclass):

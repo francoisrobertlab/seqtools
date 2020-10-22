@@ -45,18 +45,18 @@ def test_statistics(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(s.statistics, ['-s', samples])
     assert result.exit_code == 0
-    s.statistics_samples.assert_called_once_with(samples, 'merge.txt', 'statistics.txt')
+    s.statistics_samples.assert_called_once_with(samples, 'dataset.txt', 'statistics.txt')
 
 
 def test_statistics_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    merge = Path(__file__).parent.joinpath('merge.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     output = 'out.txt'
     s.statistics_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(s.statistics, ['-s', samples, '-m', merge, '-o', output])
+    result = runner.invoke(s.statistics, ['-s', samples, '-d', datasets, '-o', output])
     assert result.exit_code == 0
-    s.statistics_samples.assert_called_once_with(samples, merge, output)
+    s.statistics_samples.assert_called_once_with(samples, datasets, output)
 
 
 def test_statistics_samplesnotexists(testdir, mock_testclass):
@@ -68,55 +68,55 @@ def test_statistics_samplesnotexists(testdir, mock_testclass):
     s.statistics_samples.assert_not_called()
 
 
-def test_statistics_mergenotexists(testdir, mock_testclass):
+def test_statistics_datasetsnotexists(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    merge = 'merge.txt'
+    datasets = 'dataset.txt'
     s.statistics_samples = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(s.statistics, ['-s', samples, '-m', merge])
+    result = runner.invoke(s.statistics, ['-s', samples, '-d', datasets])
     assert result.exit_code == 0
-    s.statistics_samples.assert_called_once_with(samples, merge, 'statistics.txt')
+    s.statistics_samples.assert_called_once_with(samples, datasets, 'statistics.txt')
 
 
 def test_statistics_samples(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    merge = Path(__file__).parent.joinpath('merge.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     s.compute_statistics = MagicMock()
-    s.statistics_samples(samples, merge)
+    s.statistics_samples(samples, datasets)
     s.compute_statistics.assert_called_once_with(['POLR2A', 'ASDURF', 'POLR1C'], ['POLR2A', 'ASDURF', 'POLR1C'], 'statistics.txt')
 
 
-def test_statistics_samples_mergenotexists(testdir, mock_testclass):
+def test_statistics_samples_datasetsnotexists(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
-    merge = 'merge.txt'
+    datasets = 'dataset.txt'
     s.compute_statistics = MagicMock()
-    s.statistics_samples(samples, merge)
+    s.statistics_samples(samples, datasets)
     s.compute_statistics.assert_called_once_with(['POLR2A', 'ASDURF', 'POLR1C'], [], 'statistics.txt')
 
 
 def test_statistics_samples_parameters(testdir, mock_testclass):
     samples = Path(__file__).parent.joinpath('samples.txt')
     sample_pandas = ['samples-pandas']
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    merge_pandas = ['merge-pandas']
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    datasets_pandas = ['datasets-pandas']
     output = 'out.txt'
     s.compute_statistics = MagicMock()
-    s.statistics_samples(samples, merge, output)
+    s.statistics_samples(samples, datasets, output)
     s.compute_statistics.assert_called_once_with(['POLR2A', 'ASDURF', 'POLR1C'], ['POLR2A', 'ASDURF', 'POLR1C'], output)
 
 
 def test_compute_statistics(testdir, mock_testclass):
     samples = ['POLR2A', 'ASDURF']
-    merges = ['POLR1C']
+    datasets = ['POLR1C']
     output = 'out.txt'
     splits = ['100-110', '120-130']
     s.headers = MagicMock(return_value=(['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads', '100-110', '120-130'], splits))
     s.sample_statistics = MagicMock(side_effect=[['POLR2A', 500, 400, 300, 60, 40], ['ASDURF', 550, 450, 350, 70, 50], ['POLR1C', '', '', 250, 50, 30]])
-    s.compute_statistics(samples, merges, output)
-    s.headers.assert_called_once_with(samples, merges)
+    s.compute_statistics(samples, datasets, output)
+    s.headers.assert_called_once_with(samples, datasets)
     s.sample_statistics.assert_any_call(samples[0], splits)
     s.sample_statistics.assert_any_call(samples[1], splits)
-    s.sample_statistics.assert_any_call(merges[0], splits)
+    s.sample_statistics.assert_any_call(datasets[0], splits)
     with open(output, 'r') as infile:
         assert infile.readline() == 'Sample\tTotal reads\tMapped reads\tDeduplicated reads\t100-110\t120-130\n'
         assert infile.readline() == 'POLR2A\t500\t400\t300\t60\t40\n'
@@ -127,9 +127,9 @@ def test_compute_statistics(testdir, mock_testclass):
 
 def test_headers(testdir, mock_testclass):
     samples = ['POLR2A', 'ASDURF']
-    merges = ['POLR1C']
+    datasets = ['POLR1C']
     Split.splits = MagicMock(side_effect=splits)
-    headers, splits_headers = s.headers(samples, merges)
+    headers, splits_headers = s.headers(samples, datasets)
     assert headers[0] == 'Sample'
     assert headers[1] == 'Total reads'
     assert headers[2] == 'Mapped reads'
@@ -146,12 +146,12 @@ def test_headers(testdir, mock_testclass):
     
 def test_headers_missmatch(testdir, mock_testclass):
     samples = ['POLR2A', 'ASDURF']
-    merges = ['POLR1C']
+    datasets = ['POLR1C']
     sample1_headers = [samples[0] + '-100-110', samples[0] + '-110-120', samples[0] + '-130-140']
     sample2_headers = [samples[1] + '-100-110', samples[1] + '-110-120', samples[1] + '-130-140']
-    merge1_headers = [merges[0] + '-100-110', merges[0] + '-120-130', merges[0] + '-140-150']
-    Split.splits = MagicMock(side_effect=[sample1_headers, sample2_headers, merge1_headers])
-    headers, splits_headers = s.headers(samples, merges)
+    dataset1_headers = [datasets[0] + '-100-110', datasets[0] + '-120-130', datasets[0] + '-140-150']
+    Split.splits = MagicMock(side_effect=[sample1_headers, sample2_headers, dataset1_headers])
+    headers, splits_headers = s.headers(samples, datasets)
     assert headers[0] == 'Sample'
     assert headers[1] == 'Total reads'
     assert headers[2] == 'Mapped reads'

@@ -14,13 +14,13 @@ from seqtools.bed import Bed
 
 @pytest.fixture
 def mock_testclass():
-    merge_samples = mb.merge_samples
-    merge_sample = mb.merge_sample
+    merge_datasets = mb.merge_datasets
+    merge_dataset = mb.merge_dataset
     sort = Bed.sort
     remove = os.remove
     yield
-    mb.merge_samples = merge_samples
-    mb.merge_sample = merge_sample
+    mb.merge_datasets = merge_datasets
+    mb.merge_dataset = merge_dataset
     Bed.sort = sort
     os.remove = remove
     
@@ -36,65 +36,65 @@ def create_file(*args, **kwargs):
 
 
 def test_merge(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_samples = MagicMock()
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.merge, ['-m', merge])
+    result = runner.invoke(mb.merge, ['-d', datasets])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with(merge, None)
+    mb.merge_datasets.assert_called_once_with(datasets, None)
 
 
 def test_merge_parameters(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     index = 1
-    mb.merge_samples = MagicMock()
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.merge, ['-m', merge, '--index', index])
+    result = runner.invoke(mb.merge, ['-d', datasets, '--index', index])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with(merge, index)
+    mb.merge_datasets.assert_called_once_with(datasets, index)
 
 
 def test_merge_mergenotexists(testdir, mock_testclass):
-    merge = 'merge.txt'
-    mb.merge_samples = MagicMock()
+    datasets = 'dataset.txt'
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.merge, ['-m', merge])
+    result = runner.invoke(mb.merge, ['-d', datasets])
     assert result.exit_code != 0
-    mb.merge_samples.assert_not_called()
+    mb.merge_datasets.assert_not_called()
 
 
-def test_merge_samples(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_sample = MagicMock()
-    mb.merge_samples(merge)
-    mb.merge_sample.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'])
-    mb.merge_sample.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'])
-    mb.merge_sample.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'])
+def test_merge_datasets(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_dataset = MagicMock()
+    mb.merge_datasets(datasets)
+    mb.merge_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'])
+    mb.merge_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'])
+    mb.merge_dataset.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'])
 
 
-def test_merge_samples_second(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_sample = MagicMock()
-    mb.merge_samples(merge, 1)
-    mb.merge_sample.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'])
+def test_merge_datasets_second(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_dataset = MagicMock()
+    mb.merge_datasets(datasets, 1)
+    mb.merge_dataset.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'])
 
 
-def test_merge_sample(testdir, mock_testclass):
-    merge = 'POLR2A'
-    merge_bed_tmp = merge + '-tmp.bed'
-    merge_bed = merge + '.bed'
-    sample1 = merge + '_1'
+def test_merge_dataset(testdir, mock_testclass):
+    dataset = 'POLR2A'
+    dataset_bed_tmp = dataset + '-tmp.bed'
+    dataset_bed = dataset + '.bed'
+    sample1 = dataset + '_1'
     sample1_bed = sample1 + '.bed'
-    sample2 = merge + '_2'
+    sample2 = dataset + '_2'
     sample2_bed = sample2 + '.bed'
     copyfile(Path(__file__).parent.joinpath('sample.bed'), sample1_bed)
     copyfile(Path(__file__).parent.joinpath('sample2.bed'), sample2_bed)
-    Bed.sort = MagicMock(side_effect=create_file(['-o', merge_bed]))
+    Bed.sort = MagicMock(side_effect=create_file(['-o', dataset_bed]))
     os_remove = os.remove
     os.remove = MagicMock()
-    mb.merge_sample(merge, [sample1, sample2])
-    Bed.sort.assert_called_once_with(ANY, merge_bed)
-    assert os.path.exists(merge_bed)
+    mb.merge_dataset(dataset, [sample1, sample2])
+    Bed.sort.assert_called_once_with(ANY, dataset_bed)
+    assert os.path.exists(dataset_bed)
     with open(Bed.sort.call_args.args[0], 'r') as infile:
         assert infile.readline() == 'chr1\t100\t150\ttest1\t1\t+\n'
         assert infile.readline() == 'chr2\t400\t450\ttest2\t2\t+\n'

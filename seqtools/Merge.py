@@ -10,28 +10,28 @@ from seqtools.txt import Parser
 
 
 @click.command()
-@click.option('--merge', '-m', type=click.Path(exists=True), default='merge.txt', show_default=True,
-              help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
+@click.option('--datasets', '-d', type=click.Path(exists=True), default='dataset.txt', show_default=True,
+              help='Dataset name if first columns and sample names on following columns - tab delimited.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def merge(merge, index):
+def merge(datasets, index):
     '''Merge BED files related to samples.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    merge_samples(merge, index)
+    merge_datasets(datasets, index)
 
 
-def merge_samples(merge='merge.txt', index=None):
+def merge_datasets(datasets='dataset.txt', index=None):
     '''Merge BED files related to samples.'''
-    merge_columns = Parser.columns(merge)
+    datasets_columns = Parser.columns(datasets)
     if index != None:
-        merge_columns = [merge_columns[index]]
-    for columns in merge_columns:
+        datasets_columns = [datasets_columns[index]]
+    for columns in datasets_columns:
         name = columns[0]
         samples = [sample for sample in columns[1:]]
-        merge_sample(name, samples)
+        merge_dataset(name, samples)
 
 
-def merge_sample(name, samples):
+def merge_dataset(name, samples):
     '''Merge BED files related to samples.'''
     print ('Merging samples {} into a single sample {}'.format(samples, name))
     merge_temp_o, merge_temp = tempfile.mkstemp(suffix='.bed')

@@ -18,7 +18,7 @@ def test_columns():
 
 
 def test_columns_merge():
-    samples = Path(__file__).parent.parent.joinpath('merge.txt')
+    samples = Path(__file__).parent.parent.joinpath('dataset.txt')
     columns = p.columns(samples)
     assert columns[0][0] == 'POLR2A'
     assert columns[0][1] == 'POLR2A_1'
@@ -38,6 +38,6 @@ def test_first():
 
 
 def test_first_merge():
-    samples = Path(__file__).parent.parent.joinpath('merge.txt')
+    samples = Path(__file__).parent.parent.joinpath('dataset.txt')
     names = p.first(samples)
     assert names == ['POLR2A', 'ASDURF', 'POLR1C']

@@ -4,39 +4,39 @@ import os
 import tempfile
 
 import click
+
+import pyBigWig as pbw
 from seqtools.bed import Bed
 from seqtools.txt import Parser
 
-import pyBigWig as pbw
-
 
 @click.command()
-@click.option('--merge', '-m', type=click.Path(exists=True), default='merge.txt', show_default=True,
-              help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
+@click.option('--datasets', '-d', type=click.Path(exists=True), default='dataset.txt', show_default=True,
+              help='Dataset name if first columns and sample names on following columns - tab delimited.')
 @click.option('--sizes', '-S', type=click.Path(exists=True), default='sacCer3.chrom.sizes', show_default=True,
               help='Size of chromosomes.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def mergebw(merge, sizes, index):
+def mergebw(datasets, sizes, index):
     '''Merge bigWig files related to samples.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    merge_samples(merge, sizes, index)
+    merge_datasets(datasets, sizes, index)
 
 
-def merge_samples(merge='merge.txt', sizes='sacCer3.chrom.sizes', index=None):
+def merge_datasets(datasets='dataset.txt', sizes='sacCer3.chrom.sizes', index=None):
     '''Merge bigWig files related to samples.'''
-    merge_columns = Parser.columns(merge)
+    datasets_columns = Parser.columns(datasets)
     if index != None:
-        merge_columns = [merge_columns[index]]
-    for columns in merge_columns:
+        datasets_columns = [datasets_columns[index]]
+    for columns in datasets_columns:
         name = columns[0]
         samples = [sample for sample in columns[1:]]
-        merge_sample(name, samples, sizes)
+        merge_dataset(name, samples, sizes)
 
     
-def merge_sample(name, samples, sizes):
+def merge_dataset(name, samples, sizes):
     '''Merge bigWig files related to samples.'''
-    print ('Merging samples {} into a single sample {}'.format(samples, name))
+    print ('Merging samples {} into dataset {}'.format(samples, name))
     sizes_columns = Parser.columns(sizes)
     bws = [pbw.open(sample + '.bw') for sample in samples]
     merge_temp_o, merge_temp = tempfile.mkstemp(suffix='.bed')

@@ -10,7 +10,7 @@ from seqtools.txt import Parser
 @click.command(context_settings=dict(
     ignore_unknown_options=True,
 ))
-@click.option('--datasets', type=click.Path(exists=True), default='datasets.txt', show_default=True,
+@click.option('--datasets', type=click.Path(exists=True), default='dataset.txt', show_default=True,
               help='Dataset name in first columns and sample names on following columns - tab delimited.')
 @click.option('--suffix', default='', show_default=True,
               help='Suffix added to sample name in BAM filename for input.')
@@ -23,7 +23,7 @@ def chipexoqual(datasets, suffix, index, chipexoqual_args):
     chipexoqual_datasets(datasets, suffix, index, chipexoqual_args)
 
 
-def chipexoqual_datasets(datasets='datasets.txt', suffix='', index=None, chipexoqual_args=()):
+def chipexoqual_datasets(datasets='dataset.txt', suffix='', index=None, chipexoqual_args=()):
     '''Run ChIPexoQual on datasets.'''
     datasets_columns = Parser.columns(datasets)
     if index != None:

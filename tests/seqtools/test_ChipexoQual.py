@@ -28,7 +28,7 @@ def mock_testclass():
     
 
 def test_chipexoqual(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     cq.chipexoqual_datasets = MagicMock()
     runner = CliRunner()
     result = runner.invoke(cq.chipexoqual, ['--datasets', datasets])
@@ -37,7 +37,7 @@ def test_chipexoqual(testdir, mock_testclass):
 
 
 def test_chipexoqual_parameters(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     index = 1
     cq.chipexoqual_datasets = MagicMock()
     runner = CliRunner()
@@ -47,7 +47,7 @@ def test_chipexoqual_parameters(testdir, mock_testclass):
 
 
 def test_chipexoqual_datasetsnotexists(testdir, mock_testclass):
-    datasets = 'datasets.txt'
+    datasets = 'dataset.txt'
     cq.chipexoqual_datasets = MagicMock()
     runner = CliRunner()
     result = runner.invoke(cq.chipexoqual, ['--datasets', datasets])
@@ -56,7 +56,7 @@ def test_chipexoqual_datasetsnotexists(testdir, mock_testclass):
 
 
 def test_chipexoqual_datasets(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     cq.chipexoqual_dataset = MagicMock()
     cq.chipexoqual_datasets(datasets)
     cq.chipexoqual_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], '', ())
@@ -65,14 +65,14 @@ def test_chipexoqual_datasets(testdir, mock_testclass):
 
 
 def test_chipexoqual_datasets_second(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     cq.chipexoqual_dataset = MagicMock()
     cq.chipexoqual_datasets(datasets, index=1)
     cq.chipexoqual_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', ())
 
 
 def test_chipexoqual_datasets_parameters(testdir, mock_testclass):
-    datasets = Path(__file__).parent.joinpath('datasets.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     chipexoqual_args = ('-s', '1000000',)
     cq.chipexoqual_dataset = MagicMock()
     cq.chipexoqual_datasets(datasets, '-test', chipexoqual_args=chipexoqual_args)

@@ -13,12 +13,12 @@ from seqtools import MergeBam as mb
 
 @pytest.fixture
 def mock_testclass():
-    merge_samples = mb.merge_samples
-    merge_sample = mb.merge_sample
+    merge_datasets = mb.merge_datasets
+    merge_dataset = mb.merge_dataset
     run = subprocess.run
     yield
-    mb.merge_samples = merge_samples
-    mb.merge_sample = merge_sample
+    mb.merge_datasets = merge_datasets
+    mb.merge_dataset = merge_dataset
     subprocess.run = run
     
 
@@ -33,89 +33,89 @@ def create_file(*args, **kwargs):
 
 
 def test_mergebam(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_samples = MagicMock()
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.mergebam, ['-m', merge])
+    result = runner.invoke(mb.mergebam, ['-d', datasets])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with(merge, '', 1, None)
+    mb.merge_datasets.assert_called_once_with(datasets, '', 1, None)
 
 
 def test_mergebam_parameters(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     suffix = '-dedup'
     threads = 3
     index = 1
-    mb.merge_samples = MagicMock()
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.mergebam, ['-m', merge, '--suffix', suffix, '--threads', threads, '--index', index])
+    result = runner.invoke(mb.mergebam, ['-d', datasets, '--suffix', suffix, '--threads', threads, '--index', index])
     assert result.exit_code == 0
-    mb.merge_samples.assert_called_once_with(merge, suffix, threads, index)
+    mb.merge_datasets.assert_called_once_with(datasets, suffix, threads, index)
 
 
 def test_mergebam_mergenotexists(testdir, mock_testclass):
-    merge = 'merge.txt'
-    mb.merge_samples = MagicMock()
+    datasets = 'dataset.txt'
+    mb.merge_datasets = MagicMock()
     runner = CliRunner()
-    result = runner.invoke(mb.mergebam, ['-m', merge])
+    result = runner.invoke(mb.mergebam, ['-d', datasets])
     assert result.exit_code != 0
-    mb.merge_samples.assert_not_called()
+    mb.merge_datasets.assert_not_called()
 
 
-def test_merge_samples(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_sample = MagicMock()
-    mb.merge_samples(merge)
-    mb.merge_sample.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], '', 1)
-    mb.merge_sample.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', 1)
-    mb.merge_sample.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], '', 1)
+def test_merge_datasets(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_dataset = MagicMock()
+    mb.merge_datasets(datasets)
+    mb.merge_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], '', 1)
+    mb.merge_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', 1)
+    mb.merge_dataset.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], '', 1)
 
 
-def test_merge_samples_parameters(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
+def test_merge_datasets_parameters(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
     suffix = '-dedup'
     threads = 3
-    mb.merge_sample = MagicMock()
-    mb.merge_samples(merge, suffix, threads)
-    mb.merge_sample.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], suffix, threads)
-    mb.merge_sample.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], suffix, threads)
-    mb.merge_sample.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], suffix, threads)
+    mb.merge_dataset = MagicMock()
+    mb.merge_datasets(datasets, suffix, threads)
+    mb.merge_dataset.assert_any_call('POLR2A', ['POLR2A_1', 'POLR2A_2'], suffix, threads)
+    mb.merge_dataset.assert_any_call('ASDURF', ['ASDURF_1', 'ASDURF_2'], suffix, threads)
+    mb.merge_dataset.assert_any_call('POLR1C', ['POLR1C_1', 'POLR1C_2'], suffix, threads)
 
 
-def test_merge_samples_second(testdir, mock_testclass):
-    merge = Path(__file__).parent.joinpath('merge.txt')
-    mb.merge_sample = MagicMock()
-    mb.merge_samples(merge, index=1)
-    mb.merge_sample.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', 1)
+def test_merge_datasets_second(testdir, mock_testclass):
+    datasets = Path(__file__).parent.joinpath('dataset.txt')
+    mb.merge_dataset = MagicMock()
+    mb.merge_datasets(datasets, index=1)
+    mb.merge_dataset.assert_called_once_with('ASDURF', ['ASDURF_1', 'ASDURF_2'], '', 1)
 
 
-def test_merge_sample(testdir, mock_testclass):
-    merge = 'POLR2A'
-    merge_bam = merge + '.bam'
-    sample1 = merge + '_1'
+def test_merge_dataset(testdir, mock_testclass):
+    dataset = 'POLR2A'
+    dataset_bam = dataset + '.bam'
+    sample1 = dataset + '_1'
     sample1_bam = sample1 + '.bam'
-    sample2 = merge + '_2'
+    sample2 = dataset + '_2'
     sample2_bam = sample2 + '.bam'
     samples = [sample1, sample2]
     subprocess.run = MagicMock()
-    mb.merge_sample(merge, samples)
+    mb.merge_dataset(dataset, samples)
     subprocess.run.assert_any_call(['samtools', 'index', sample1_bam], check=True)
     subprocess.run.assert_any_call(['samtools', 'index', sample2_bam], check=True)
-    subprocess.run.assert_any_call(['samtools', 'merge', merge_bam, sample1_bam, sample2_bam], check=True)
+    subprocess.run.assert_any_call(['samtools', 'merge', dataset_bam, sample1_bam, sample2_bam], check=True)
 
 
-def test_merge_sample_parameter(testdir, mock_testclass):
+def test_merge_dataset_parameter(testdir, mock_testclass):
     suffix = '-dedup'
-    merge = 'POLR2A'
-    merge_bam = merge + suffix + '.bam'
-    sample1 = merge + '_1'
+    dataset = 'POLR2A'
+    dataset_bam = dataset + suffix + '.bam'
+    sample1 = dataset + '_1'
     sample1_bam = sample1 + suffix + '.bam'
-    sample2 = merge + '_2'
+    sample2 = dataset + '_2'
     sample2_bam = sample2 + suffix + '.bam'
     samples = [sample1, sample2]
     threads = 3
     subprocess.run = MagicMock()
-    mb.merge_sample(merge, samples, suffix, threads)
+    mb.merge_dataset(dataset, samples, suffix, threads)
     subprocess.run.assert_any_call(['samtools', 'index', '-@', str(threads - 1), sample1_bam], check=True)
     subprocess.run.assert_any_call(['samtools', 'index', '-@', str(threads - 1), sample2_bam], check=True)
-    subprocess.run.assert_any_call(['samtools', 'merge', '--threads', str(threads - 1), merge_bam, sample1_bam, sample2_bam], check=True)
+    subprocess.run.assert_any_call(['samtools', 'merge', '--threads', str(threads - 1), dataset_bam, sample1_bam, sample2_bam], check=True)

@@ -13,35 +13,35 @@ from seqtools.txt import Parser
 @click.command()
 @click.option('--samples', '-s', type=click.Path(exists=True), default='samples.txt', show_default=True,
               help='Sample names listed one sample name by line.')
-@click.option('--merge', '-m', type=click.Path(), default='merge.txt', show_default=True,
-              help='Merge name if first columns and sample names to merge on following columns - tab delimited.')
+@click.option('--datasets', '-d', type=click.Path(), default='dataset.txt', show_default=True,
+              help='Dataset name if first columns and sample names on following columns - tab delimited.')
 @click.option('--output', '-o', type=click.Path(), default='statistics.txt', show_default=True,
               help='Output file were statistics are written.')
-def statistics(samples, merge, output):
+def statistics(samples, datasets, output):
     '''Creates statistics file for samples.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    statistics_samples(samples, merge, output)
+    statistics_samples(samples, datasets, output)
 
 
-def statistics_samples(samples='samples.txt', merge='merge.txt', output='statistics.txt'):
+def statistics_samples(samples='samples.txt', datasets='dataset.txt', output='statistics.txt'):
     '''Creates statistics file for samples.'''
     sample_names = Parser.first(samples)
-    merge_names = []
-    if os.path.exists(merge):
-        merge_names = Parser.first(merge)
-    compute_statistics(sample_names, merge_names, output)
+    datasets_names = []
+    if os.path.exists(datasets):
+        datasets_names = Parser.first(datasets)
+    compute_statistics(sample_names, datasets_names, output)
 
 
-def compute_statistics(samples, merges, output):
-    all_headers = headers(samples, merges)
+def compute_statistics(samples, datasets, output):
+    all_headers = headers(samples, datasets)
     splits = all_headers[1]
     samples_stats = []
     for sample in samples:
         sample_stats = sample_statistics(sample, splits)
         samples_stats.append(sample_stats)
-    if merges:
-        for merge in merges:
-            sample_stats = sample_statistics(merge, splits)
+    if datasets:
+        for dataset in datasets:
+            sample_stats = sample_statistics(dataset, splits)
             samples_stats.append(sample_stats)
     with open(output, 'w') as out:
         out.write('\t'.join(all_headers[0]))
@@ -51,14 +51,14 @@ def compute_statistics(samples, merges, output):
             out.write('\n')
 
 
-def headers(samples, merges):
+def headers(samples, datasets):
     '''Statistics headers'''
     headers = ['Sample', 'Total reads', 'Mapped reads', 'Deduplicated reads']
     splits_headers = set()
     for sample in samples:
         splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
-    if merges:
-        for merge in merges:
+    if datasets:
+        for dataset in datasets:
             splits_headers.update([split[len(sample) + 1:] for split in Split.splits(sample)])
     splits_headers = [header for header in splits_headers]
     splits_headers.sort(key=Split.splitkey)

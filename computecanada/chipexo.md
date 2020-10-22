@@ -92,7 +92,7 @@ sbatch bam2bed.sh --unpaired -is -mate1
 ## Merge dataset samples data
 
 ```
-sbatch merge.sh -m dataset.txt
+sbatch merge.sh
 ```
 
 ## Move annotations
@@ -120,5 +120,5 @@ sbatch genomecov.sh -s dataset.txt -g sacCer3.chrom.sizes -is -forcov -5 -strand
 ## Statistics
 
 ```
-sbatch statistics.sh -m dataset.txt
+sbatch statistics.sh
 ```
