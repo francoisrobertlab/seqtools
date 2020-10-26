@@ -101,7 +101,7 @@ def test_merge_dataset(testdir, mock_testclass):
     mb.merge_dataset(dataset, samples)
     subprocess.run.assert_any_call(['samtools', 'index', sample1_bam], check=True)
     subprocess.run.assert_any_call(['samtools', 'index', sample2_bam], check=True)
-    subprocess.run.assert_any_call(['samtools', 'merge', dataset_bam, sample1_bam, sample2_bam], check=True)
+    subprocess.run.assert_any_call(['samtools', 'merge', '-f', dataset_bam, sample1_bam, sample2_bam], check=True)
 
 
 def test_merge_dataset_parameter(testdir, mock_testclass):
@@ -118,4 +118,4 @@ def test_merge_dataset_parameter(testdir, mock_testclass):
     mb.merge_dataset(dataset, samples, suffix, threads)
     subprocess.run.assert_any_call(['samtools', 'index', '-@', str(threads - 1), sample1_bam], check=True)
     subprocess.run.assert_any_call(['samtools', 'index', '-@', str(threads - 1), sample2_bam], check=True)
-    subprocess.run.assert_any_call(['samtools', 'merge', '--threads', str(threads - 1), dataset_bam, sample1_bam, sample2_bam], check=True)
+    subprocess.run.assert_any_call(['samtools', 'merge', '-f', '--threads', str(threads - 1), dataset_bam, sample1_bam, sample2_bam], check=True)

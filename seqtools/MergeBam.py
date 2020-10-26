@@ -44,7 +44,7 @@ def merge_dataset(name, samples, suffix='', threads=1):
         subprocess.run(cmd, check=True)
     bams_input = [sample + suffix + '.bam' for sample in samples]
     bam_output = name + suffix + '.bam'
-    cmd = ['samtools', 'merge']
+    cmd = ['samtools', 'merge', '-f']
     if not threads is None and threads > 1:
         cmd.extend(['--threads', str(threads - 1)])
     cmd.extend([bam_output])
