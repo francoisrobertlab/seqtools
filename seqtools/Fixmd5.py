@@ -7,7 +7,7 @@ import click
 
 
 @click.command()
-@click.option('--files', '-f', default='*.md5', help='Files to rename. In first column is the old name, in the second is the new name.')
+@click.option('--files', '-f', default='*.md5', show_default=True, help='MD5 filename(s) to fix. You can use * as a wildcard.')
 @click.option('--dry/--no-dry', default=False, help='Do not rename files.')
 def fixmd5(files, dry):
     fixmd5_(files, dry)
