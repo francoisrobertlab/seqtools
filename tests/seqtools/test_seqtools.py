@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, ANY
 import click
 from click.testing import CliRunner
 import pytest
-from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, ChipexoQual, Download, FilterBam, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBam, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
+from seqtools import seqtools, Bam2Bed, Bowtie2, Bwa, CenterAnnotations, ChipexoQual, Download, FilterBam, Fixmd5, GenomeCoverage, IgnoreStrand, Intersect, Merge, MergeBam, MergeBigwigs, Plot2do, RemoveSecondMate, Rename, ShiftAnnotations, SlowSplit, Split, Statistics, Vap
 
 
 @pytest.fixture
@@ -17,6 +17,7 @@ def mock_testclass():
     chipexoqual_datasets = ChipexoQual.chipexoqual_datasets
     download_samples = Download.download_samples
     filter_bam = FilterBam.filter_bam
+    fixmd5 = Fixmd5.fixmd5_
     genome_coverage_samples = GenomeCoverage.genome_coverage_samples
     ignore_strand_samples = IgnoreStrand.ignore_strand_samples
     intersect_samples = Intersect.intersect_samples
@@ -39,6 +40,7 @@ def mock_testclass():
     ChipexoQual.chipexoqual_datasets = chipexoqual_datasets
     Download.download_samples = download_samples
     FilterBam.filter_bam = filter_bam
+    Fixmd5.fixmd5_ = fixmd5
     GenomeCoverage.genome_coverage_samples = genome_coverage_samples
     IgnoreStrand.ignore_strand_samples = ignore_strand_samples
     Intersect.intersect_samples = intersect_samples
@@ -130,6 +132,14 @@ def test_seqtools_filterbam(testdir, mock_testclass):
     result = runner.invoke(seqtools.seqtools, ['filterbam', '--samples', samples, '--unpaired', '--threads', threads, '--index', index])
     assert result.exit_code == 0
     FilterBam.filter_bam.assert_called_once_with(samples, False, True, threads, index)
+
+
+def test_seqtools_fixmd5(testdir, mock_testclass):
+    Fixmd5.fixmd5_ = MagicMock()
+    runner = CliRunner()
+    result = runner.invoke(seqtools.seqtools, ['fixmd5'])
+    assert result.exit_code == 0
+    Fixmd5.fixmd5_.assert_called_once_with('*.md5', False)
 
 
 def test_seqtools_genomecov(testdir, mock_testclass):
