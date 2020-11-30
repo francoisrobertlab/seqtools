@@ -8,7 +8,7 @@ import click
 
 @click.command()
 @click.option('--files', '-f', default='*.md5', show_default=True, help='MD5 filename(s) to fix. You can use * as a wildcard.')
-@click.option('--dry/--no-dry', default=False, help='Do not rename files.')
+@click.option('--dry/--no-dry', default=False, help='Do not fix files, only show fix messages.')
 def fixmd5(files, dry):
     fixmd5_(files, dry)
 
