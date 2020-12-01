@@ -18,25 +18,27 @@ from seqtools.txt import Parser
               help='FASTA file used for alignment.')
 @click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
+@click.option('--output-suffix', '-os', default='', show_default=True,
+              help='Suffix added to sample name in BAM filename for output.')
 @click.option('--index', type=int, default=None,
               help='Index of sample to process in samples file.')
 @click.argument('bwa_args', nargs=-1, type=click.UNPROCESSED)
-def bwa(samples, fasta, threads, index, bwa_args):
+def bwa(samples, fasta, threads, output_suffix, index, bwa_args):
     '''Align samples using bwa program.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    bwa_samples(samples, fasta, threads, index, bwa_args)
+    bwa_samples(samples, fasta, threads, output_suffix, index, bwa_args)
 
 
-def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, index=None, bwa_args=()):
+def bwa_samples(samples='samples.txt', fasta='sacCer3.fa', threads=None, output_suffix='', index=None, bwa_args=()):
     '''Align samples using bwa program.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        bwa_sample(sample, fasta, threads, bwa_args)
+        bwa_sample(sample, fasta, threads, output_suffix, bwa_args)
 
 
-def bwa_sample(sample, fasta, threads=None, bwa_args=()):
+def bwa_sample(sample, fasta, threads=None, output_suffix='', bwa_args=()):
     '''Align one sample using bwa program.'''
     print ('Running BWA on sample {}'.format(sample))
     fastq1 = Fastq.fastq(sample, 1)
@@ -44,7 +46,7 @@ def bwa_sample(sample, fasta, threads=None, bwa_args=()):
         raise AssertionError('Cannot find FASTQ files for sample ' + sample)
     fastq2 = Fastq.fastq(sample, 2)
     paired = fastq2 is not None and os.path.isfile(fastq2)
-    bam = sample + '.bam'
+    bam = sample + output_suffix + '.bam'
     run_bwa(fastq1, fastq2, fasta, bam, threads, bwa_args)
 
 
