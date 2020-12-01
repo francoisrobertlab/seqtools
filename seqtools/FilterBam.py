@@ -17,31 +17,35 @@ from seqtools.txt import Parser
               help='Remove duplicates')
 @click.option('--threads', '-t', default=1, show_default=True,
               help='Number of threads used to process data per sample.')
+@click.option('--input-suffix', '-is', default='', show_default=True,
+              help='Suffix added to sample name in BAM filename for input.')
+@click.option('--output-suffix', '-os', default='', show_default=True,
+              help='Suffix added to sample name in BAM filename for output.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
-def filterbam(samples, paired, dedup, threads, index):
+def filterbam(samples, paired, dedup, threads, input_suffix, output_suffix, index):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    filter_bam(samples, paired, dedup, threads, index)
+    filter_bam(samples, paired, dedup, threads, input_suffix, output_suffix, index)
 
 
-def filter_bam(samples='samples.txt', paired=True, dedup=True, threads=None, index=None):
+def filter_bam(samples='samples.txt', paired=True, dedup=True, threads=None, input_suffix='', output_suffix='', index=None):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        filter_bam_sample(sample, paired, dedup, threads)
+        filter_bam_sample(sample, paired, dedup, threads, input_suffix, output_suffix)
 
 
-def filter_bam_sample(sample, paired, dedup, threads=None):
+def filter_bam_sample(sample, paired, dedup, threads=None, input_suffix='', output_suffix=''):
     '''Filter BAM file to keep only properly paired reads and remove supplementary alignments and duplicates.'''
     print ('Filtering BAM for sample {}'.format(sample))
-    bam = sample + '.bam'
-    bam_filtered = sample + '-filtered.bam'
+    bam = sample + input_suffix + '.bam'
+    bam_filtered = sample + output_suffix + '-filtered.bam'
     filter_mapped(bam, bam_filtered, paired, threads)
     if dedup:
-        bam_dedup = sample + '-dedup.bam'
+        bam_dedup = sample + output_suffix + '-dedup.bam'
         remove_duplicates(bam_filtered, bam_dedup, threads)
 
 
