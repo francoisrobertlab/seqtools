@@ -5,23 +5,14 @@ import subprocess
 import tempfile
 
 import click
+
+from seqtools import Split
 from seqtools.bed import Bed
 from seqtools.txt import Parser
-
-from . import Split
 
 BASE_SCALE = 1000000
 
 
-def validate_scale_suffix(ctx, param, value):
-    '''Validates that scale and scale suffix are not both specified'''
-    scale = ctx.params['scale'] if 'scale' in ctx.params else None
-    if value and scale:
-        raise click.BadParameter('-scale and --scale-suffix cannot be both present'.format(value))
-    else:
-        return value
-    
-    
 def validate_output_suffix(ctx, param, value):
     '''Validates that output suffix is different than input suffix'''
     input_suffix = ctx.params['input_suffix'] if 'input_suffix' in ctx.params else ''
@@ -31,6 +22,26 @@ def validate_output_suffix(ctx, param, value):
         return value
 
 
+def validate_spike_suffix(ctx, param, value):
+    '''Validates that scale and spike/control suffix are not both specified'''
+    scale = ctx.params['scale'] if 'scale' in ctx.params else None
+    if value and scale:
+        raise click.BadParameter('-scale cannot be used if --spike-suffix is present'.format(value))
+    else:
+        return value
+    return value
+
+
+def validate_control_suffix(ctx, param, value):
+    '''Validates that scale and spike/control suffix are not both specified'''
+    scale = ctx.params['scale'] if 'scale' in ctx.params else None
+    if value and scale:
+        raise click.BadParameter('-scale cannot be used if --spike-suffix is present'.format(value))
+    else:
+        return value
+    return value
+    
+    
 @click.command(context_settings=dict(
     ignore_unknown_options=True,
 ))
@@ -40,50 +51,67 @@ def validate_output_suffix(ctx, param, value):
               help='Size of chromosomes.')
 @click.option('-scale', type=float, default=None,
               help='Scale for genome coverage. Defaults to 1000000 / number of reads.')
-@click.option('--scale-suffix', callback=validate_scale_suffix, default=None,
-              help='Suffix added to sample name of BED file containing spiked reads. Scaling becomes 1000000 * spiked reads / reads.')
 @click.option('-strand', type=click.Choice(['+', '-']), default=None, show_default=True,
               help='Calculate coverage of intervals from a specific strand.')
 @click.option('--input-suffix', '-is', default='', show_default=True,
               help='Suffix added to sample name in BED filename for input.')
 @click.option('--output-suffix', '-os', callback=validate_output_suffix, default='-cov', show_default=True,
               help='Suffix added to sample name in BED filename for output.')
+@click.option('--spike-suffix', callback=validate_spike_suffix, default=None,
+              help='Suffix added to sample name of BED file containing spiked reads.')
+@click.option('--control-suffix', callback=validate_control_suffix, default=None,
+              help='Suffix added to sample name of BED file containing control(input) reads.')
 @click.option('--index', '-i', type=int, default=None,
               help='Index of sample to process in samples file.')
 @click.argument('genomecov_args', nargs=-1, type=click.UNPROCESSED)
-def genomecov(samples, genome, scale, scale_suffix, strand, input_suffix, output_suffix, index, genomecov_args):
-    '''Compute genome coverage on samples.'''
+def genomecov(samples, genome, scale, strand, input_suffix, output_suffix, spike_suffix, control_suffix, index, genomecov_args):
+    '''
+    Compute genome coverage on samples.
+
+    \b
+    - Scaling parameter:
+        \b
+        - If --spike-suffix is present, scaling becomes
+          1000000 * spiked reads / reads.
+        - If --control-suffix is present, scaling becomes
+          1000000 / (reads * control reads).
+        - If --spike-suffix and --control-suffix are both present, scaling becomes
+          1000000 * spiked reads / (reads * control reads).
+    '''
     logging.basicConfig(filename='seqtools.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    genome_coverage_samples(samples, genome, scale, scale_suffix, strand, input_suffix, output_suffix, index, genomecov_args)
+    genome_coverage_samples(samples, genome, scale, strand, input_suffix, output_suffix, spike_suffix, control_suffix, index, genomecov_args)
 
 
-def genome_coverage_samples(samples='samples.txt', genome='sacCer3.chrom.sizes', scale=None, scale_suffix=None, strand=None, input_suffix='', output_suffix='-cov', index=None, genomecov_args=()):
+def genome_coverage_samples(samples='samples.txt', genome='sacCer3.chrom.sizes', scale=None, strand=None, input_suffix='', output_suffix='-cov', spike_suffix=None, control_suffix=None, index=None, genomecov_args=()):
     '''Compute genome coverage on samples.'''
     sample_names = Parser.first(samples)
     if index != None:
         sample_names = [sample_names[index]]
     for sample in sample_names:
-        sample_splits_genome_coverage(sample, genome, scale, scale_suffix, strand, input_suffix, output_suffix, genomecov_args)
+        sample_splits_genome_coverage(sample, genome, scale, strand, input_suffix, output_suffix, spike_suffix, control_suffix, genomecov_args)
 
 
-def sample_splits_genome_coverage(sample, genome, scale=None, scale_suffix=None, strand=None, input_suffix='', output_suffix='-cov', genomecov_args=()):
+def sample_splits_genome_coverage(sample, genome, scale=None, strand=None, input_suffix='', output_suffix='-cov', spike_suffix=None, control_suffix=None, genomecov_args=()):
     '''Compute genome coverage on a single sample.'''
     print ('Computing genome coverage on sample {}'.format(sample))
-    genome_coverage(sample, genome, scale, scale_suffix, strand, input_suffix, output_suffix, genomecov_args)
+    genome_coverage(sample, genome, scale, strand, input_suffix, output_suffix, spike_suffix, control_suffix, genomecov_args)
     splits = Split.splits(sample)
     for split in splits:
-        genome_coverage(split, genome, scale, scale_suffix, strand, input_suffix, output_suffix, genomecov_args)
+        genome_coverage(split, genome, scale, strand, input_suffix, output_suffix, spike_suffix, control_suffix, genomecov_args)
 
 
-def genome_coverage(sample, genome, scale=None, scale_suffix=None, strand=None, input_suffix='', output_suffix='-cov', genomecov_args=()):
+def genome_coverage(sample, genome, scale=None, strand=None, input_suffix='', output_suffix='-cov', spike_suffix=None, control_suffix=None, genomecov_args=()):
     bed_source = sample + input_suffix + '.bed'
     print ('Computing genome coverage on BED {}'.format(bed_source))
-    if not scale or scale_suffix:
+    if not scale or spike_suffix or control_suffix:
         count = Bed.count_bed(bed_source)
         scale = BASE_SCALE / max(count, 1)
-        if scale_suffix:
-            spiked_count = Bed.count_bed(sample + scale_suffix + '.bed')
+        if spike_suffix:
+            spiked_count = Bed.count_bed(sample + spike_suffix + '.bed')
             scale = scale * spiked_count
+        if control_suffix:
+            control_count = Bed.count_bed(sample + control_suffix + '.bed')
+            scale = scale / control_count
     bed = sample + output_suffix + '.bed'
     bigwig = sample + output_suffix + '.bw'
     if strand:
