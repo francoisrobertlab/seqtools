@@ -154,7 +154,7 @@ def test_seqtools_genomecov(testdir, mock_testclass):
     runner = CliRunner()
     result = runner.invoke(seqtools.seqtools, ['genomecov', '--samples', samples, '-g', sizes, '-5', '-scale', scale, '-strand', strand, '-is', input_suffix, '-os', output_suffix, '--index', index])
     assert result.exit_code == 0
-    GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, strand, input_suffix, output_suffix, index, ('-5',))
+    GenomeCoverage.genome_coverage_samples.assert_called_once_with(samples, sizes, scale, None, strand, input_suffix, output_suffix, index, ('-5',))
 
 
 def test_seqtools_ignorestrand(testdir, mock_testclass):
