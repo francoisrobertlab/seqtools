@@ -1,4 +1,6 @@
-# seqtools
+:warning: seqtools was renamed to [robtools](https://github.com/francoisrobertlab/robtools), see https://github.com/francoisrobertlab/robtools
+
+# seqtools : Tools to analyze NGS data
 
 ### Install
 Install requirements:
