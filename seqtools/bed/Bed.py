@@ -4,7 +4,7 @@ import os
 import subprocess
 
 
-def count_bed(bed, strand=None):
+def count_bed(bed, *, strand=None):
     '''Counts number of entry in BED, can be limited to a specific strand.'''
     count = 0
     with open(bed, 'r') as infile:
@@ -20,7 +20,7 @@ def count_bed(bed, strand=None):
     return count
 
 
-def empty_bed(bed_output, sample, strand=None):
+def empty_bed(bed_output, sample, *, strand=None):
     '''Create an empty BED file.'''
     track = 'track type=bedGraph name="' + sample
     if not strand is None:

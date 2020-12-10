@@ -35,7 +35,7 @@ def test_count_bed(testdir, mock_testclass):
 
 def test_count_bed_strand(testdir, mock_testclass):
     bed = Path(__file__).parent.parent.joinpath('sample.bed')
-    assert 4 == Bed.count_bed(bed, '+')
+    assert 4 == Bed.count_bed(bed, strand='+')
 
 
 def test_empty_bed(testdir, mock_testclass):
@@ -52,7 +52,7 @@ def test_empty_bed_plusstrand(testdir, mock_testclass):
     bed = 'sample.bed'
     sample = 'POLR2A'
     strand = '+'
-    Bed.empty_bed(bed, sample, strand)
+    Bed.empty_bed(bed, sample, strand=strand)
     assert os.path.exists(bed)
     with open(bed, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Plus"\n'
@@ -63,7 +63,7 @@ def test_empty_bed_minusstrand(testdir, mock_testclass):
     bed = 'sample.bed'
     sample = 'POLR2A'
     strand = '-'
-    Bed.empty_bed(bed, sample, strand)
+    Bed.empty_bed(bed, sample, strand=strand)
     assert os.path.exists(bed)
     with open(bed, 'r') as infile:
         assert infile.readline() == 'track type=bedGraph name="' + sample + ' Minus"\n'
