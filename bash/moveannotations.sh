@@ -17,4 +17,4 @@ fi
 
 # Usual parameters
 # -d 6 -rn -dn
-exotools moveannotations "${args[@]}"
+exotools moveannotation "${args[@]}"
